@@ -1,0 +1,15 @@
+name: samordningspliktige-hendelser
+image: repo.adeo.no:5443/samordningspliktige-hendelser
+team: teampeon
+replicas:
+  min: 1
+  max: 2
+resources:
+  limits:
+    cpu: 1000m
+    memory: 384Mi
+  requests:
+    cpu: 500m
+    memory: 256Mi
+prometheus:
+  enabled: true

@@ -1,1 +1,1 @@
-# samordning-hendelser
+# Samordningspliktige Hendelser
