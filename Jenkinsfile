@@ -57,19 +57,19 @@ node {
             ])
         }
 
-        stage("deploy prod") {
-            build([
-                    job       : 'nais-deploy-pipeline',
-                    propagate : true,
-                    parameters: [
-                            string(name: 'APP', value: "samordningspliktige-hendelser"),
-                            string(name: 'REPO', value: "navikt/samordningspliktige-hendelser"),
-                            string(name: 'VERSION', value: version),
-                            string(name: 'COMMIT_HASH', value: commitHash),
-                            string(name: 'DEPLOY_ENV', value: 'p')
-                    ]
-            ])
-        }
+//        stage("deploy prod") {
+//            build([
+//                    job       : 'nais-deploy-pipeline',
+//                    propagate : true,
+//                    parameters: [
+//                            string(name: 'APP', value: "samordningspliktige-hendelser"),
+//                            string(name: 'REPO', value: "navikt/samordningspliktige-hendelser"),
+//                            string(name: 'VERSION', value: version),
+//                            string(name: 'COMMIT_HASH', value: commitHash),
+//                            string(name: 'DEPLOY_ENV', value: 'p')
+//                    ]
+//            ])
+//        }
 
         github.commitStatus("navikt-ci-oauthtoken", "navikt/samordningspliktige-hendelser", 'continuous-integration/jenkins', commitHash, 'success', "Build #${env.BUILD_NUMBER} has finished")
     } catch (err) {
