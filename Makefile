@@ -28,10 +28,10 @@ test:
 
 docker:
 	$(NAIS) validate
-	$(DOCKER) build --pull -t $(REGISTRY)/tortuga-loot -t $(REGISTRY)/tortuga-loot:$(VERSION) .
+	$(DOCKER) build --pull -t $(REGISTRY)/samordningspliktige-hendelser -t $(REGISTRY)/samordningspliktige-hendelser:$(VERSION) .
 
 docker-push:
-	$(DOCKER) push $(REGISTRY)/tortuga-loot:$(VERSION)
+	$(DOCKER) push $(REGISTRY)/samordningspliktige-hendelser:$(VERSION)
 
 bump-version:
 	@echo $$(($$(cat ./VERSION) + 1)) > ./VERSION
@@ -42,4 +42,4 @@ tag:
 	git tag -a $(VERSION) -m "auto-tag from Makefile"
 
 manifest:
-	nais upload --app tortuga-loot -v $(VERSION)
+	nais upload --app samordningspliktige-hendelser -v $(VERSION)
