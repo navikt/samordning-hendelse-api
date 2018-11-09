@@ -13,3 +13,11 @@ resources:
     memory: 256Mi
 prometheus:
   enabled: true
+fasitResources:
+  used:
+  - alias: sam-heDB
+    resourceType: datasource
+    propertyMap:
+      url: SPRING_DATASOURCE_URL
+      username: SPRING_DATASOURCE_USERNAME
+      password: SPRING_DATASOURCE_PASSWORD
