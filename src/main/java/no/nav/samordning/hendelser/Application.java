@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -43,17 +44,19 @@ public class Application {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public void nyHendelse(@RequestBody Hendelse hendelse){
-		database.update("insert into T_SAMORDNINGSPLIKTIG_VEDTAK(ytelsesType, identifikator, vedtakId, fom, tom) values(?,?,?, ?, ?)", hendelse.getYtelsesType(), hendelse.getIdentifikator(), hendelse.getVedtakId(), hendelse.getFom(), hendelse.getTom());
+		Date fom = Date.valueOf(hendelse.getFom());
+		Date tom = hendelse.getTom() == null ? null : Date.valueOf(hendelse.getTom());
+		database.update("insert into T_SAMORDNINGSPLIKTIG_VEDTAK(ytelsesType, identifikator, vedtakId, fom, tom) values(?,?,?, ?, ?)", hendelse.getYtelsesType(), hendelse.getIdentifikator(), hendelse.getVedtakId(), fom, tom);
 	}
 
 
 
 	public static class Hendelse{
-		public String ytelsesType;
-		public String identifikator;
-		public String vedtakId;
-		public LocalDate fom;
-		public LocalDate tom;
+		private String ytelsesType;
+		private String identifikator;
+		private String vedtakId;
+		private LocalDate fom;
+		private LocalDate tom;
 
 
 		public String getYtelsesType() {
