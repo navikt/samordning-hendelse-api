@@ -48,6 +48,7 @@
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>12.1.0.2</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
