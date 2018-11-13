@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.feed;
 
+import no.nav.samordning.hendelser.Metrics;
 import no.nav.samordning.hendelser.hendelse.Database;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +22,10 @@ public class FeedController {
 
     @RequestMapping(method = RequestMethod.GET)
     public Feed alleHendelser(){
+        Metrics.incGetRequests();
         var feed = new Feed();
         var domeneHendelser = database.fetchAll();
         feed.setHendelser(domeneHendelser.stream().map(Mapper::map).collect(Collectors.toList()));
         return feed;
     }
-
 }

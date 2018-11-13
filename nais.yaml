@@ -13,6 +13,7 @@ resources:
     memory: 256Mi
 prometheus:
   enabled: true
+  path: actuator/prometheus
 fasitResources:
   used:
   - alias: sam-heDB

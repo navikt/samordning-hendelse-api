@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.util.List;
 
+import no.nav.samordning.hendelser.Metrics;
+
 @Repository
 public class Database {
     private static final String SQL_GOTTA_FETCH_THEM_ALL = "Select ytelsesType, identifikator, vedtakId, fom, tom FROM T_SAMORDNINGSPLIKTIG_VEDTAK";
@@ -28,5 +30,8 @@ public class Database {
 
         Date fom = Date.valueOf(hendelse.getFom());
         Date tom = hendelse.getTom() == null ? null : Date.valueOf(hendelse.getTom());
-        database.update(SQL_INSERT_RECORD, hendelse.getYtelsesType(), hendelse.getIdentifikator(), hendelse.getVedtakId(), fom, tom);    }
+        database.update(SQL_INSERT_RECORD, hendelse.getYtelsesType(), hendelse.getIdentifikator(), hendelse.getVedtakId(), fom, tom);
+
+        Metrics.incAntallHendelser();
+    }
 }
