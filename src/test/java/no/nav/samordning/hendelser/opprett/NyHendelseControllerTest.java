@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(NyHendelseController.class)
-public class NyHendelseController {
+public class NyHendelseControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
