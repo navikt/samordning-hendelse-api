@@ -1,6 +1,6 @@
 package no.nav.samordning.hendelser.opprett;
 
-import no.nav.samordning.hendelser.Metrics;
+import io.micrometer.core.annotation.Timed;
 import no.nav.samordning.hendelser.hendelse.Database;
 import no.nav.samordning.hendelser.hendelse.Hendelse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,9 @@ public class NyHendelseController {
         this.database = database;
     }
 
+    @Timed(value = "post.counter.requests")
     @RequestMapping(method = RequestMethod.POST)
     public void nyHendelse(@RequestBody OpprettHendelseRequest hendelse){
-        Metrics.incPostRequests();
         var domene = new Hendelse();
         domene.setVedtakId(hendelse.getVedtakId());
         domene.setFom(hendelse.getFom());
