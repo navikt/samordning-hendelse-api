@@ -21,7 +21,7 @@ public class NyHendelseController {
     }
 
     @Timed(value = "post.counter.requests")
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(path = "hendelser", method = RequestMethod.POST)
     public void nyHendelse(@RequestBody OpprettHendelseRequest hendelse){
         var domene = new Hendelse();
         domene.setVedtakId(hendelse.getVedtakId());
