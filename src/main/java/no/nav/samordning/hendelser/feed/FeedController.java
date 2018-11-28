@@ -21,7 +21,7 @@ public class FeedController {
     }
 
     @Timed(value = "get.counter.requests")
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(path = "hendelser", method = RequestMethod.GET)
     public Feed alleHendelser(){
         var feed = new Feed();
         var domeneHendelser = database.fetchAll();
