@@ -28,7 +28,7 @@ public class NyHendelseControllerTest {
     public void greetingShouldReturnMessageFromService() throws Exception {
         var req = "{\"ytelsesType\":null,\"identifikator\":null,\"vedtakId\":\"1234\",\"fom\":null,\"tom\":null}";
 
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/hendelse")
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/hendelser")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(req)
         ).andExpect(MockMvcResultMatchers.status().isOk());

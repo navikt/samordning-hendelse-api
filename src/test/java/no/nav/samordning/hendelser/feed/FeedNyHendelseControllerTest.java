@@ -40,7 +40,7 @@ public class FeedNyHendelseControllerTest {
 
         when(service.fetchAll()).thenReturn(List.of(hendelse));
 
-        this.mockMvc.perform(get("/hendelse")).andDo(print()).andExpect(status().isOk())
+        this.mockMvc.perform(get("/hendelser")).andDo(print()).andExpect(status().isOk())
                 .andExpect(content().string(containsString("{\"hendelser\":[{\"ytelsesType\":null,\"identifikator\":null,\"vedtakId\":\"1234\",\"fom\":null,\"tom\":null}]}")));
     }
 
