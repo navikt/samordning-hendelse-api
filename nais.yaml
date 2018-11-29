@@ -23,6 +23,6 @@ fasitResources:
       username: SPRING_DATASOURCE_USERNAME
       password: SPRING_DATASOURCE_PASSWORD
   exposed:
-    - alias: "samordningspliktige-hendelser"
-      resourceType: restservice
-      path: /hendelser
+  - alias: "samordningspliktige-hendelser"
+    resourceType: restservice
+    path: /hendelser
