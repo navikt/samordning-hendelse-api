@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(NyHendelseController.class)
+@WebMvcTest(value = NyHendelseController.class, secure = false)
 public class NyHendelseControllerTest {
 
     @Autowired

@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(FeedController.class)
+@WebMvcTest(value = FeedController.class, secure = false)
 public class FeedNyHendelseControllerTest {
 
     @Autowired
