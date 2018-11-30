@@ -1,4 +1,4 @@
-create table T_SAMORDNINGSPLIKTIG_VEDTAK
+create table if not exists T_SAMORDNINGSPLIKTIG_VEDTAK
 (
   id bigint auto_increment,
   ytelsesType varchar(64) not null,
