@@ -22,6 +22,11 @@ fasitResources:
       url: SPRING_DATASOURCE_URL
       username: SPRING_DATASOURCE_USERNAME
       password: SPRING_DATASOURCE_PASSWORD
+  - alias: srvsam-he
+    resourceType: credential
+    propertyMap:
+      username: SRV_USERNAME
+      password: SRV_PASSWORD
   exposed:
   - alias: "samordningspliktige-hendelser"
     resourceType: restservice
