@@ -1,1 +1,1 @@
-# Samordningspliktige Hendelser
+# Samordning-Hendelse-API

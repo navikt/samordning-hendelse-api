@@ -1,5 +1,5 @@
-name: samordningspliktige-hendelser
-image: repo.adeo.no:5443/samordningspliktige-hendelser
+name: samordning-hendelse-api
+image: repo.adeo.no:5443/samordning-hendelse-api
 team: teampeon
 replicas:
   min: 1
@@ -28,6 +28,6 @@ fasitResources:
       username: SRV_USERNAME
       password: SRV_PASSWORD
   exposed:
-  - alias: "samordningspliktige-hendelser"
+  - alias: "samordning-hendelse-api"
     resourceType: restservice
     path: /hendelser

@@ -10,7 +10,7 @@ node {
         stage("checkout") {
             withCredentials([string(credentialsId: 'navikt-ci-oauthtoken', variable: 'GITHUB_OAUTH_TOKEN')]) {
                 sh "git init"
-                sh "git pull https://${GITHUB_OAUTH_TOKEN}:x-oauth-basic@github.com/navikt/samordningspliktige-hendelser.git"
+                sh "git pull https://${GITHUB_OAUTH_TOKEN}:x-oauth-basic@github.com/navikt/samordning-hendelse-api.git"
             }
 
             sh "make bump-version"
@@ -18,7 +18,7 @@ node {
             version = sh(script: 'cat VERSION', returnStdout: true).trim()
 
             commitHash = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
-            github.commitStatus("navikt-ci-oauthtoken", "navikt/samordningspliktige-hendelser", 'continuous-integration/jenkins', commitHash, 'pending', "Build #${env.BUILD_NUMBER} has started")
+            github.commitStatus("navikt-ci-oauthtoken", "navikt/samordning-hendelse-api", 'continuous-integration/jenkins', commitHash, 'pending', "Build #${env.BUILD_NUMBER} has started")
         }
 
         stage("build") {
@@ -33,7 +33,7 @@ node {
             sh "make release"
 
             withCredentials([string(credentialsId: 'navikt-ci-oauthtoken', variable: 'GITHUB_OAUTH_TOKEN')]) {
-                sh "git push --tags https://${GITHUB_OAUTH_TOKEN}@github.com/navikt/samordningspliktige-hendelser HEAD:master"
+                sh "git push --tags https://${GITHUB_OAUTH_TOKEN}@github.com/navikt/samordning-hendelse-api HEAD:master"
             }
         }
 
@@ -48,8 +48,8 @@ node {
                     job       : 'nais-deploy-pipeline',
                     propagate : true,
                     parameters: [
-                            string(name: 'APP', value: "samordningspliktige-hendelser"),
-                            string(name: 'REPO', value: "navikt/samordningspliktige-hendelser"),
+                            string(name: 'APP', value: "samordning-hendelse-api"),
+                            string(name: 'REPO', value: "navikt/samordning-hendelse-api"),
                             string(name: 'VERSION', value: version),
                             string(name: 'COMMIT_HASH', value: commitHash),
                             string(name: 'DEPLOY_ENV', value: 'q0')
@@ -62,8 +62,8 @@ node {
 //                    job       : 'nais-deploy-pipeline',
 //                    propagate : true,
 //                    parameters: [
-//                            string(name: 'APP', value: "samordningspliktige-hendelser"),
-//                            string(name: 'REPO', value: "navikt/samordningspliktige-hendelser"),
+//                            string(name: 'APP', value: "samordning-hendelse-api"),
+//                            string(name: 'REPO', value: "navikt/samordning-hendelse-api"),
 //                            string(name: 'VERSION', value: version),
 //                            string(name: 'COMMIT_HASH', value: commitHash),
 //                            string(name: 'DEPLOY_ENV', value: 'p')
@@ -71,9 +71,9 @@ node {
 //            ])
 //        }
 
-        github.commitStatus("navikt-ci-oauthtoken", "navikt/samordningspliktige-hendelser", 'continuous-integration/jenkins', commitHash, 'success', "Build #${env.BUILD_NUMBER} has finished")
+        github.commitStatus("navikt-ci-oauthtoken", "navikt/samordning-hendelse-api", 'continuous-integration/jenkins', commitHash, 'success', "Build #${env.BUILD_NUMBER} has finished")
     } catch (err) {
-        github.commitStatus("navikt-ci-oauthtoken", "navikt/samordningspliktige-hendelser", 'continuous-integration/jenkins', commitHash, 'failure', "Build #${env.BUILD_NUMBER} has failed")
+        github.commitStatus("navikt-ci-oauthtoken", "navikt/samordning-hendelse-api", 'continuous-integration/jenkins', commitHash, 'failure', "Build #${env.BUILD_NUMBER} has failed")
 
         throw err
     }

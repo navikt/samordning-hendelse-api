@@ -28,10 +28,10 @@ test:
 
 docker:
 	$(NAIS) validate
-	$(DOCKER) build --pull -t $(REGISTRY)/samordningspliktige-hendelser -t $(REGISTRY)/samordningspliktige-hendelser:$(VERSION) .
+	$(DOCKER) build --pull -t $(REGISTRY)/samordning-hendelse-api -t $(REGISTRY)/samordning-hendelse-api:$(VERSION) .
 
 docker-push:
-	$(DOCKER) push $(REGISTRY)/samordningspliktige-hendelser:$(VERSION)
+	$(DOCKER) push $(REGISTRY)/samordning-hendelse-api:$(VERSION)
 
 bump-version:
 	@echo $$(($$(cat ./VERSION) + 1)) > ./VERSION
@@ -42,4 +42,4 @@ tag:
 	git tag -a $(VERSION) -m "auto-tag from Makefile"
 
 manifest:
-	nais upload --app samordningspliktige-hendelser -v $(VERSION)
+	nais upload --app samordning-hendelse-api -v $(VERSION)
