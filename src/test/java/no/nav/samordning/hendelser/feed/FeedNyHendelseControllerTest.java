@@ -2,7 +2,6 @@ package no.nav.samordning.hendelser.feed;
 
 import no.nav.samordning.hendelser.hendelse.Database;
 import no.nav.samordning.hendelser.hendelse.Hendelse;
-import no.nav.samordning.hendelser.opprett.NyHendelseControllerTest;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class FeedNyHendelseControllerTest {
 
     @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer("postgres");
+    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer("samordninghendelser");
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override

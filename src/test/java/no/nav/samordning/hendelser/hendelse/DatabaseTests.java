@@ -1,32 +1,26 @@
-package no.nav.samordning.hendelser.authentication;
+package no.nav.samordning.hendelser.hendelse;
 
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.time.LocalDate;
+
+import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = BasicAuthenticationTests.Initializer.class)
 @SpringBootTest
-@AutoConfigureMockMvc
-@WebAppConfiguration
-public class BasicAuthenticationTests {
+@ContextConfiguration(initializers = DatabaseTests.Initializer.class)
+public class DatabaseTests {
 
     @ClassRule
     public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer("samordninghendelser");
@@ -44,23 +38,18 @@ public class BasicAuthenticationTests {
     }
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Value("${SRV_USERNAME}")
-    private String username;
-
-    @Value("${SRV_PASSWORD}")
-    private String password;
+    private Database db;
 
     @Test
-    public void correct_credentials_authorized() throws Exception {
-        this.mockMvc.perform(get("/hendelser").with(httpBasic(username, password))
-                .param("side", "1")).andDo(print()).andExpect(status().isOk());
-    }
+    public void fetch() {
+        Hendelse expected = new Hendelse();
+        expected.setYtelsesType("AAP");
+        expected.setIdentifikator("12345678901");
+        expected.setVedtakId("ABC123");
+        expected.setFom(LocalDate.of(2020, 01, 01));
 
-    @Test
-    public void wrong_credentials_unauthorized() throws Exception {
-        this.mockMvc.perform(get("/hendelser").with(httpBasic("user", "..."))
-                .param("side", "1")).andDo(print()).andExpect(status().isUnauthorized());
+        Hendelse result = db.fetchAll(0, 0).get(0);
+
+        assertThat(result, samePropertyValuesAs(result));
     }
 }

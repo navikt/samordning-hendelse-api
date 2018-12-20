@@ -25,7 +25,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public class NyHendelseControllerTest {
 
     @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer("postgres");
+    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer("samordninghendelser");
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override

@@ -1,7 +1,6 @@
 package no.nav.samordning.hendelser.authentication;
 
 import io.jsonwebtoken.*;
-import no.nav.samordning.hendelser.feed.FeedNyHendelseControllerTest;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AuthenticationTests {
 
     @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer("postgres");
+    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer("samordninghendelser");
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
