@@ -16,7 +16,7 @@ prometheus:
   path: actuator/prometheus
 fasitResources:
   used:
-  - alias: sam-heDB
+  - alias: samordninghendelser
     resourceType: datasource
     propertyMap:
       url: SPRING_DATASOURCE_URL
