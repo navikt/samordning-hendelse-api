@@ -22,7 +22,7 @@ public class NyHendelseController {
 
     @Timed(value = "post.counter.requests")
     @RequestMapping(path = "hendelser", method = RequestMethod.POST)
-    public void nyHendelse(@RequestBody OpprettHendelseRequest hendelse){
+    public void nyHendelse(@RequestBody OpprettHendelseRequest hendelse) throws Exception {
         var domene = new Hendelse();
         domene.setVedtakId(hendelse.getVedtakId());
         domene.setFom(hendelse.getFom());
