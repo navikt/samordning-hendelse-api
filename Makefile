@@ -9,8 +9,8 @@ all: build test docker
 release: tag docker-push
 
 build:
-    $(DOCKER) pull postgres
-    $(DOCKER) build -t samordninghendelser .\src\test\resources
+	$(DOCKER) pull postgres
+	$(DOCKER) build -t samordninghendelser .\src\test\resources
 	$(DOCKER) run --rm -t \
 		-v ${PWD}:/usr/src \
 		-w /usr/src \
