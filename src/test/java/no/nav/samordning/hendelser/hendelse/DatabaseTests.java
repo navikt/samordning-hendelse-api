@@ -10,7 +10,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.testcontainers.utility.MountableFile;
 
 import java.time.LocalDate;
 
@@ -23,7 +26,8 @@ import static org.junit.Assert.assertThat;
 public class DatabaseTests {
 
     @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer("samordninghendelser");
+    public static final PostgreSQLContainer postgresContainer = new PostgreSQLContainer<>("postgres")
+            .withCopyFileToContainer(MountableFile.forClasspathResource("schema.sql"), "/docker-entrypoint-initdb.d/");
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override

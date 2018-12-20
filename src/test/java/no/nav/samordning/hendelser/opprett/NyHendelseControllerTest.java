@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.MountableFile;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(initializers = NyHendelseControllerTest.Initializer.class)
@@ -25,7 +26,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public class NyHendelseControllerTest {
 
     @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer("samordninghendelser");
+    public static final PostgreSQLContainer postgresContainer = new PostgreSQLContainer<>("postgres")
+            .withCopyFileToContainer(MountableFile.forClasspathResource("schema.sql"), "/docker-entrypoint-initdb.d/");
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override

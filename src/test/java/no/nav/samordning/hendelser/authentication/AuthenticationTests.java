@@ -15,6 +15,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.MountableFile;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,7 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AuthenticationTests {
 
     @ClassRule
-    public static PostgreSQLContainer postgresContainer = new PostgreSQLContainer("samordninghendelser");
+    public static final PostgreSQLContainer postgresContainer = new PostgreSQLContainer<>("postgres")
+            .withCopyFileToContainer(MountableFile.forClasspathResource("schema.sql"), "/docker-entrypoint-initdb.d/");
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
