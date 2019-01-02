@@ -9,7 +9,6 @@ all: build test docker
 release: tag docker-push
 
 build:
-	$(DOCKER) pull postgres
 	$(DOCKER) run --rm -t \
 		-v ${PWD}:/usr/src \
 		-w /usr/src \
