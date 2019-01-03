@@ -20,6 +20,7 @@ build:
 test:
 	$(DOCKER) run --rm -t \
 		-v ${PWD}:/usr/src \
+		-v /var/run/docker.sock:/var/run/docker.sock \
 		-w /usr/src \
 		-u $(shell id -u) \
 		-v ${HOME}/.m2:/var/maven/.m2 \
