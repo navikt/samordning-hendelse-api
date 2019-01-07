@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -76,11 +77,11 @@ public class FeedNyHendelseControllerTest {
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(3)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(4)));
     }
 
     @Test
-    public void greetingShouldReturnMessageFromServiceWithFilter() throws Exception {
+    public void greetingShouldReturnMessageFromServiceWithBasicFilter() throws Exception {
         this.mockMvc.perform(get("/hendelser")
                 .with(user("srvTest"))
                 .param("side", "3"))
@@ -88,6 +89,17 @@ public class FeedNyHendelseControllerTest {
                 .andExpect(status()
                 .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2040-01-01')].fom").value("2040-01-01"));
+    }
+
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithFromToFilter2() throws Exception {
+        this.mockMvc.perform(get("/hendelser")
+                .with(user("srvTest"))
+                .param("side", "3"))
+                .andDo(print())
+                .andExpect(status()
+                        .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom").value(containsInAnyOrder("2030-01-01", "2040-01-01")));
     }
 
     @Test
