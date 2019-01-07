@@ -10,9 +10,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.TestPropertySourceUtils;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
 import java.time.LocalDate;
@@ -54,6 +52,6 @@ public class DatabaseTests {
 
         Hendelse result = db.fetchAll(0, 0).get(0);
 
-        assertThat(result, samePropertyValuesAs(result));
+        assertThat(expected, samePropertyValuesAs(result));
     }
 }
