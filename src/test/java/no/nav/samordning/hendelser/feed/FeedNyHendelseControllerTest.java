@@ -20,6 +20,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -57,13 +58,36 @@ public class FeedNyHendelseControllerTest {
         this.mockMvc.perform(get("/hendelser")
                 .with(user("srvTest"))
                 .param("side", "1"))
-                .andDo(print()).andExpect(status()
+                .andDo(print())
+                .andExpect(status()
                 .isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].fom").value("2020-01-01"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].ytelsesType").value("AAP"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].identifikator").value("12345678901"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].vedtakId").value("ABC123"));
+    }
+
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithSizeCheck() throws Exception {
+        this.mockMvc.perform(get("/hendelser")
+                .with(user("srvTest"))
+                .param("side", "3"))
+                .andDo(print())
+                .andExpect(status()
+                .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(3)));
+    }
+
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithFilter() throws Exception {
+        this.mockMvc.perform(get("/hendelser")
+                .with(user("srvTest"))
+                .param("side", "3"))
+                .andDo(print())
+                .andExpect(status()
+                .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2040-01-01')].fom").value("2040-01-01"));
     }
 
     @Test
