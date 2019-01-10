@@ -1,5 +1,7 @@
 # Samordning-Hendelse-API
 
+Samordning-hendelse-api gir en liste med samordningspliktige hendelser på json format. 
+Denne listen hentes via /hendelser endepunktet. Se konkrete eksempler under.
 
 ### TODO: Url
 Request/response eksempler:
