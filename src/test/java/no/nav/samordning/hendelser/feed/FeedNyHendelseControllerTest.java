@@ -100,7 +100,6 @@ public class FeedNyHendelseControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(200)));
     }
 
-
     @Test
     public void greetingShouldReturnMessageFromServiceWithBasicFilter() throws Exception {
 
@@ -157,6 +156,45 @@ public class FeedNyHendelseControllerTest {
                         "2030-01-01", "2040-01-01",
                         "2030-01-01", "2040-01-01"
                 )));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void greetingShouldReturnMessageFromServiceWithInvalidParam() throws Exception {
+
+        List<String> excpected = new ArrayList<>();
+
+        for(int i=0; i<25; i++) {
+            excpected.add("2040-01-01");
+        }
+
+        this.mockMvc.perform(get("/hendelser")
+                .with(user("srvTest"))
+                .param("side", "3")
+                .param("antall", "1")
+                .param("ytelsesType", "Trygd"))
+                .andDo(print())
+                .andExpect(status()
+                        .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2100-01-01')].fom").value(excpected));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void greetingShouldReturnMessageFromServiceWithInvalidFoms() throws Exception {
+
+        List<String> excpected = new ArrayList<>();
+        for(int i=0; i<25; i++) {
+            excpected.add("2040-01-01");
+        }
+
+        this.mockMvc.perform(get("/hendelser")
+                .with(user("srvTest"))
+                .param("side", "3")
+                .param("antall", "1")
+                .param("ytelsesType", "Trygd"))
+                .andDo(print())
+                .andExpect(status()
+                        .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2100-01-01')].fom").value(excpected));
     }
 
     @Test
