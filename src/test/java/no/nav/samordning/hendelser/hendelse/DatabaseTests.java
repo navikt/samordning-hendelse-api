@@ -58,7 +58,7 @@ public class DatabaseTests {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void fetchTestWithNoRecordsPresent() {
+    public void fetchTestWithInvalidYtelsesType() {
 
         Hendelse expected = new Hendelse();
         expected.setYtelsesType("Alderstrygd");
