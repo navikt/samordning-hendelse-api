@@ -25,7 +25,7 @@ public class FeedController {
 
     @Timed(value = "get.counter.requests")
     @RequestMapping(path = "hendelser", method = RequestMethod.GET)
-    public Feed alleHendelser(@RequestParam(value="side") String sideInt, @RequestParam(value="antall", defaultValue=DEFAULT_ANTALL) String antallInt) throws BadParameterException {
+    public Feed alleHendelser(@RequestParam(value="side") String sideInt, @RequestParam(value="antall", defaultValue=DEFAULT_ANTALL) String antallInt, @RequestParam(value="ytelsesType", defaultValue=DEFAULT_ANTALL) String ytelsesType) throws BadParameterException {
         var side = convertToInt(sideInt, "side");
         var antall = convertToInt(antallInt, "antall");
 
@@ -34,7 +34,7 @@ public class FeedController {
         }
 
         var feed = new Feed();
-        var domeneHendelser = database.fetchAll(side, antall);
+        var domeneHendelser = database.fetch(side, antall, ytelsesType);
         feed.setHendelser(domeneHendelser.stream().map(Mapper::map).collect(Collectors.toList()));
         return feed;
     }
