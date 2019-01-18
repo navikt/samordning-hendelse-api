@@ -8,12 +8,17 @@ import org.springframework.stereotype.Repository;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class Database {
-    private static final String SQL_GOTTA_FETCH_THEM_ALL = "SELECT * FROM T_SAMORDNINGSPLIKTIG_VEDTAK";
+
+    private String SQL_FETCH = "SELECT * \n" +
+            "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n" +
+            "WHERE data @> ?::jsonb";
+
     private static final String SQL_INSERT_RECORD = "INSERT INTO T_SAMORDNINGSPLIKTIG_VEDTAK VALUES('?')";
 
     private JdbcTemplate database;
@@ -23,9 +28,10 @@ public class Database {
         this.database = database;
     }
 
-    public List<Hendelse> fetchAll(Integer side, Integer antall){
+    public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType){
+        String json = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
         List<Hendelse> hendelser = new ArrayList<>();
-        List<PGobject> jsonHendelser = database.queryForList(SQL_GOTTA_FETCH_THEM_ALL, PGobject.class);
+        List<PGobject> jsonHendelser = database.queryForList(SQL_FETCH, PGobject.class, json );
 
         Jsonb jsonb = JsonbBuilder.create();
 
