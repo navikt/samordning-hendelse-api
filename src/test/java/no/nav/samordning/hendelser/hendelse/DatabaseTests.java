@@ -43,14 +43,30 @@ public class DatabaseTests {
     private Database db;
 
     @Test
-    public void fetch() {
+    public void fetchTest() {
+
         Hendelse expected = new Hendelse();
         expected.setYtelsesType("AAP");
         expected.setIdentifikator("12345678901");
         expected.setVedtakId("ABC123");
         expected.setFom(LocalDate.of(2020, 01, 01));
 
-        Hendelse result = db.fetchAll(0, 0).get(0);
+        Hendelse result = db.fetch(0, 0, "AAP").get(0);
+
+        assertThat(expected, samePropertyValuesAs(result));
+
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void fetchTestWithNoRecordsPresent() {
+
+        Hendelse expected = new Hendelse();
+        expected.setYtelsesType("Alderstrygd");
+        expected.setIdentifikator("12345678901");
+        expected.setVedtakId("ABC123");
+        expected.setFom(LocalDate.of(2020, 01, 01));
+
+        Hendelse result = db.fetch(0, 0, "Alderstrygd").get(0);
 
         assertThat(expected, samePropertyValuesAs(result));
     }
