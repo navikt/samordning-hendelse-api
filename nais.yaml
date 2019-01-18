@@ -16,7 +16,7 @@ prometheus:
   path: actuator/prometheus
 fasitResources:
   used:
-  - alias: samordninghendelser
+  - alias: sam-heDB
     resourceType: datasource
     propertyMap:
       url: SPRING_DATASOURCE_URL
@@ -27,6 +27,10 @@ fasitResources:
     propertyMap:
       username: SRV_USERNAME
       password: SRV_PASSWORD
+  - alias: security-token-service-jwks
+    resourceType: restservice
+    propertyMap:
+      url: SPRING.SECURITY.OAUTH2.RESOURCESERVER.JWT.JWK-SET-URI
   exposed:
   - alias: "samordning-hendelse-api"
     resourceType: restservice
