@@ -97,7 +97,7 @@ public class FeedNyHendelseControllerTest {
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(200)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(150)));
     }
 
     @Test
@@ -113,7 +113,9 @@ public class FeedNyHendelseControllerTest {
                 .with(user("srvTest"))
                 .param("side", "3")
                 .param("antall", "1")
-                .param("ytelsesType", "AAP"))
+                .param("ytelsesType", "AAP")
+                .param("fom", "2020-01-01")
+                .param("tom", "2070-01-01"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())

@@ -17,7 +17,8 @@ public class Database {
 
     private String SQL_FETCH = "SELECT * \n" +
             "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n" +
-            "WHERE data @> ?::jsonb";
+            "WHERE data @> ?::jsonb \n" +
+            "AND to_date(DATA->>'fom', 'YYYY-MM-DD') BETWEEN '2020-01-01' AND '2070-01-01'";
 
     private static final String SQL_INSERT_RECORD = "INSERT INTO T_SAMORDNINGSPLIKTIG_VEDTAK VALUES('?')";
 
@@ -28,7 +29,7 @@ public class Database {
         this.database = database;
     }
 
-    public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType){
+    public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType, String fom, String tom){
         String json = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
         List<Hendelse> hendelser = new ArrayList<>();
         List<PGobject> jsonHendelser = database.queryForList(SQL_FETCH, PGobject.class, json );
