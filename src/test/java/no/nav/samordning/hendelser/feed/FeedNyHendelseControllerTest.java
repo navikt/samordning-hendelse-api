@@ -19,6 +19,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
@@ -61,16 +65,18 @@ public class FeedNyHendelseControllerTest {
                 .param("side", "1"))
                 .andDo(print())
                 .andExpect(status()
-                        .isOk())
+                .isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE));
     }
 
-    /*
+
     @Test
-    public void greetingShouldReturnMessageFromServiceWithData() throws Exception {
+    public void greetingShouldReturnMessageFromServiceWithFirstRecord() throws Exception {
         this.mockMvc.perform(get("/hendelser")
                 .with(user("srvTest"))
-                .param("side", "1"))
+                .param("side", "1")
+                .param("antall", "1")
+                .param("ytelsesType", "AAP"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
@@ -81,39 +87,78 @@ public class FeedNyHendelseControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].vedtakId").value("ABC123"));
     }
 
-        @Test
-        public void greetingShouldReturnMessageFromServiceWithSizeCheck() throws Exception {
-            this.mockMvc.perform(get("/hendelser")
-                    .with(user("srvTest"))
-                    .param("side", "3"))
-                    .andDo(print())
-                    .andExpect(status()
-                    .isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(199)));
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithSizeCheck() throws Exception {
+        this.mockMvc.perform(get("/hendelser")
+                .with(user("srvTest"))
+                .param("side", "3")
+                .param("antall", "1")
+                .param("ytelsesType", "AAP"))
+                .andDo(print())
+                .andExpect(status()
+                .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(200)));
+    }
+
+
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithBasicFilter() throws Exception {
+
+        List<String> excpected = new ArrayList<>();
+
+        for(int i=0; i<25; i++) {
+            excpected.add("2040-01-01");
         }
 
-        @Test
-        public void greetingShouldReturnMessageFromServiceWithBasicFilter() throws Exception {
-            this.mockMvc.perform(get("/hendelser")
-                    .with(user("srvTest"))
-                    .param("side", "3"))
-                    .andDo(print())
-                    .andExpect(status()
-                    .isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2040-01-01')].fom").value("2040-01-01"));
-        }
+        this.mockMvc.perform(get("/hendelser")
+                .with(user("srvTest"))
+                .param("side", "3")
+                .param("antall", "1")
+                .param("ytelsesType", "AAP"))
+                .andDo(print())
+                .andExpect(status()
+                .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2040-01-01')].fom").value(excpected));
+    }
 
-        @Test
-        public void greetingShouldReturnMessageFromServiceWithFromToFilter2() throws Exception {
-            this.mockMvc.perform(get("/hendelser")
-                    .with(user("srvTest"))
-                    .param("side", "3"))
-                    .andDo(print())
-                    .andExpect(status()
-                            .isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom").value(containsInAnyOrder("2030-01-01", "2040-01-01")));
-        }
-    */
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithFromToFilter() throws Exception {
+        this.mockMvc.perform(get("/hendelser")
+                .with(user("srvTest"))
+                .param("side", "3")
+                .param("antall", "1")
+                .param("ytelsesType", "AAP"))
+                .andDo(print())
+                .andExpect(status()
+                .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom").value(containsInAnyOrder("2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01",
+                        "2030-01-01", "2040-01-01"
+                )));
+    }
+
     @Test
     public void serviceShouldRequirePageParameter() throws Exception {
         var hendelse = new Hendelse();
