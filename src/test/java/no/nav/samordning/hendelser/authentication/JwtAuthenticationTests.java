@@ -31,11 +31,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = AuthenticationTests.Initializer.class)
+@ContextConfiguration(initializers = JwtAuthenticationTests.Initializer.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @WebAppConfiguration
-public class AuthenticationTests {
+public class JwtAuthenticationTests {
 
     @ClassRule
     public static final PostgreSQLContainer postgresContainer = new PostgreSQLContainer<>("postgres")
