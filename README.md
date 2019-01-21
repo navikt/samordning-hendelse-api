@@ -3,10 +3,13 @@
 Samordning-hendelse-api gir en liste med samordningspliktige hendelser på json format. 
 Denne listen hentes via /hendelser endepunktet. Se konkrete eksempler under.
 
-### TODO: Url
 Request/response eksempler:
 ```bash
-
+curl -k -X GET -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" https://samordning-hendelse-api.nais.preprod.local/hendelser
+# Output:
+# {
+#   "hendelser": [...]
+# }
 ```
 
 #### Metrikker
