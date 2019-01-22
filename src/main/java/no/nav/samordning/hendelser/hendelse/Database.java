@@ -14,14 +14,13 @@ import java.util.List;
 
 @Repository
 public class Database {
-
     private String SQL_FETCH = "SELECT * \n" +
-            "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n" +
-            "WHERE data @> ?::jsonb \n" +
-            "AND to_date(DATA->>'fom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
-            "AND (ctid::text::point)[0]::int = ? " +
-            "LIMIT ?" +
-            "";
+        "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n" +
+        "WHERE data @> ?::jsonb \n" +
+        "AND to_date(DATA->>'fom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
+        "AND (ctid::text::point)[0]::int = ? " +
+        "LIMIT ?" +
+        "";
 
     private static final String SQL_INSERT_RECORD = "INSERT INTO T_SAMORDNINGSPLIKTIG_VEDTAK VALUES('?')";
 
@@ -36,9 +35,17 @@ public class Database {
         String ytelsestypeJson = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
         LocalDate fomDate = LocalDate.parse(fom);
         LocalDate tomDate = LocalDate.parse(tom);
+
         List<Hendelse> hendelser = new ArrayList<>();
 
-        List<PGobject> jsonHendelser = database.queryForList(SQL_FETCH, PGobject.class, ytelsestypeJson, fomDate, tomDate, side, antall);
+        List<PGobject> jsonHendelser = database.queryForList(
+                SQL_FETCH,
+                PGobject.class,
+                ytelsestypeJson,
+                fomDate,
+                tomDate,
+                side,
+                antall);
 
         Jsonb jsonb = JsonbBuilder.create();
 
