@@ -18,8 +18,8 @@ public class Database {
     private String SQL_FETCH = "SELECT * \n" +
             "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n" +
             "WHERE data @> ?::jsonb \n" +
-            "AND to_date(DATA->>'fom', 'YYYY-MM-DD') BETWEEN '2020-01-01' AND '2070-01-01'" +
-            "AND (ctid::text::point)[0]::int = ?" +
+            "AND to_date(DATA->>'fom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
+            "AND (ctid::text::point)[0]::int = ? " +
             "LIMIT ?" +
             "";
 
@@ -33,10 +33,12 @@ public class Database {
     }
 
     public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType, String fom, String tom){
-        //antall = 20;
         String ytelsestypeJson = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
+        LocalDate fomDate = LocalDate.parse(fom);
+        LocalDate tomDate = LocalDate.parse(tom);
         List<Hendelse> hendelser = new ArrayList<>();
-        List<PGobject> jsonHendelser = database.queryForList(SQL_FETCH, PGobject.class, ytelsestypeJson, side, antall);
+
+        List<PGobject> jsonHendelser = database.queryForList(SQL_FETCH, PGobject.class, ytelsestypeJson, fomDate, tomDate, side, antall);
 
         Jsonb jsonb = JsonbBuilder.create();
 

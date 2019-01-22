@@ -47,14 +47,15 @@ public class DatabaseTests {
 
         Hendelse expected = new Hendelse();
         expected.setYtelsesType("AAP");
-        expected.setIdentifikator("12345678901");
-        expected.setVedtakId("ABC123");
-        expected.setFom(LocalDate.of(2020, 01, 01));
+        expected.setIdentifikator("23456789012");
+        expected.setVedtakId("123ABC");
+        expected.setFom(LocalDate.of(2030, 01, 01));
+        expected.setTom(LocalDate.of(2031, 02, 02));
+
 
         Hendelse result = db.fetch(0, 20, "AAP", "2030-01-01","2031-02-02").get(0);
 
         assertThat(expected, samePropertyValuesAs(result));
-
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
