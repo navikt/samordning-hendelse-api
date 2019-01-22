@@ -91,13 +91,13 @@ public class FeedNyHendelseControllerTest {
     public void greetingShouldReturnMessageFromServiceWithSizeCheck() throws Exception {
         this.mockMvc.perform(get("/hendelser")
                 .with(user("srvTest"))
-                .param("side", "3")
+                .param("side", "0")
                 .param("antall", "1")
                 .param("ytelsesType", "AAP"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(150)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(20)));
     }
 
     @Test
@@ -105,13 +105,13 @@ public class FeedNyHendelseControllerTest {
 
         List<String> excpected = new ArrayList<>();
 
-        for(int i=0; i<25; i++) {
+        for(int i=0; i<3; i++) {
             excpected.add("2040-01-01");
         }
 
         this.mockMvc.perform(get("/hendelser")
                 .with(user("srvTest"))
-                .param("side", "3")
+                .param("side", "2")
                 .param("antall", "1")
                 .param("ytelsesType", "AAP")
                 .param("fom", "2020-01-01")
@@ -126,35 +126,13 @@ public class FeedNyHendelseControllerTest {
     public void greetingShouldReturnMessageFromServiceWithFromToFilter() throws Exception {
         this.mockMvc.perform(get("/hendelser")
                 .with(user("srvTest"))
-                .param("side", "3")
+                .param("side", "2")
                 .param("antall", "1")
                 .param("ytelsesType", "AAP"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom").value(containsInAnyOrder("2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
                         "2030-01-01", "2040-01-01",
                         "2030-01-01", "2040-01-01"
                 )));
