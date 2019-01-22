@@ -132,7 +132,8 @@ public class FeedNyHendelseControllerTest {
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom").value(containsInAnyOrder("2030-01-01", "2040-01-01",
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom")
+                        .value(containsInAnyOrder("2030-01-01", "2040-01-01",
                         "2030-01-01", "2040-01-01",
                         "2030-01-01", "2040-01-01"
                 )));
@@ -173,7 +174,7 @@ public class FeedNyHendelseControllerTest {
                 .param("ytelsesType", "Trygd"))
                 .andDo(print())
                 .andExpect(status()
-                        .isOk())
+                .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2100-01-01')].fom").value(excpected));
     }
 
