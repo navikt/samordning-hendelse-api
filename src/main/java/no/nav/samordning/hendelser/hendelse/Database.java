@@ -20,7 +20,7 @@ public class Database {
             "WHERE data @> ?::jsonb \n" +
             "AND to_date(DATA->>'fom', 'YYYY-MM-DD') BETWEEN '2020-01-01' AND '2070-01-01'" +
             "AND (ctid::text::point)[0]::int = ?" +
-            "LIMIT 20" +
+            "LIMIT ?" +
             "";
 
     private static final String SQL_INSERT_RECORD = "INSERT INTO T_SAMORDNINGSPLIKTIG_VEDTAK VALUES('?')";
@@ -33,9 +33,10 @@ public class Database {
     }
 
     public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType, String fom, String tom){
+        //antall = 20;
         String ytelsestypeJson = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
         List<Hendelse> hendelser = new ArrayList<>();
-        List<PGobject> jsonHendelser = database.queryForList(SQL_FETCH, PGobject.class, ytelsestypeJson, side );
+        List<PGobject> jsonHendelser = database.queryForList(SQL_FETCH, PGobject.class, ytelsestypeJson, side, antall);
 
         Jsonb jsonb = JsonbBuilder.create();
 
