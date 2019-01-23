@@ -66,5 +66,13 @@ public class Database {
         database.update(SQL_INSERT_RECORD, data);
     }
 
+    public int getNumberOfPages() {
+        String SQL_GET_NUMBER_OF_PAGES = "SELECT MAX((ctid::text::point)[0]::int) \n" +
+                "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n";
 
+        String numberOfPages = database.queryForObject(
+                SQL_GET_NUMBER_OF_PAGES, String.class);
+
+        return Integer.parseInt(numberOfPages);
+    }
 }

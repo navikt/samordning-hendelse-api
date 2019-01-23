@@ -60,9 +60,9 @@ public class FeedNyHendelseControllerTest {
 
     @Test
     public void greetingShouldReturnMessageFromService() throws Exception {
-        this.mockMvc.perform(get("/hendelser")
-                .with(user("srvTest"))
-                .param("side", "1"))
+        this.mockMvc.perform(get("/hendelser?side=1")
+                .with(user("srvTest")))
+                //.param("side", "1"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
@@ -72,11 +72,11 @@ public class FeedNyHendelseControllerTest {
 
     @Test
     public void greetingShouldReturnMessageFromServiceWithFirstRecord() throws Exception {
-        this.mockMvc.perform(get("/hendelser")
-                .with(user("srvTest"))
-                .param("side", "1")
-                .param("antall", "1")
-                .param("ytelsesType", "AAP"))
+        this.mockMvc.perform(get("/hendelser?side=1&antall=1&ytelsesType=AAP")
+                .with(user("srvTest")))
+                //.param("side", "1")
+                //.param("antall", "1")
+                //.param("ytelsesType", "AAP"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
@@ -89,12 +89,12 @@ public class FeedNyHendelseControllerTest {
 
     @Test
     public void greetingShouldReturnMessageFromServiceWithSizeCheck() throws Exception {
-        this.mockMvc.perform(get("/hendelser")
-                .with(user("srvTest"))
-                .param("side", "0")
-                .param("antall", "20")
-                .param("ytelsesType", "AAP"))
-                .andDo(print())
+        this.mockMvc.perform(get("/hendelser?side=0&antall=20&ytelsesType=AAP")
+                .with(user("srvTest")))
+                //.param("side", "0")
+                //.param("antall", "20")
+                //.param("ytelsesType", "AAP"))
+                //.andDo(print())
                 .andExpect(status()
                 .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(20)));
@@ -109,13 +109,13 @@ public class FeedNyHendelseControllerTest {
             excpected.add("2040-01-01");
         }
 
-        this.mockMvc.perform(get("/hendelser")
-                .with(user("srvTest"))
-                .param("side", "2")
-                .param("antall", "20")
-                .param("ytelsesType", "AAP")
-                .param("fom", "2020-01-01")
-                .param("tom", "2070-01-01"))
+        this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP&fom=2020-01-01&2070-01-01")
+                .with(user("srvTest")))
+                //.param("side", "2")
+                //.param("antall", "20")
+                //.param("ytelsesType", "AAP")
+                //.param("fom", "2020-01-01")
+                //.param("tom", "2070-01-01"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
@@ -124,11 +124,11 @@ public class FeedNyHendelseControllerTest {
 
     @Test
     public void greetingShouldReturnMessageFromServiceWithFromToFilter() throws Exception {
-        this.mockMvc.perform(get("/hendelser")
-                .with(user("srvTest"))
-                .param("side", "2")
-                .param("antall", "20")
-                .param("ytelsesType", "AAP"))
+        this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP")
+                .with(user("srvTest")))
+                //.param("side", "2")
+                //.param("antall", "20")
+                //.param("ytelsesType", "AAP"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
@@ -198,5 +198,19 @@ public class FeedNyHendelseControllerTest {
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().string(containsString("Man kan ikke be om flere enn 10000 hendelser.")));
+    }
+
+    @Test
+    public void greetingShouldReturnMessageFromServiceAndReceiveURL() throws Exception {
+        this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP")
+                .with(user("srvTest")))
+                .andDo(print())
+                .andExpect(status()
+                        .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom")
+                        .value(containsInAnyOrder("2030-01-01", "2040-01-01",
+                                "2030-01-01", "2040-01-01",
+                                "2030-01-01", "2040-01-01"
+                        )));
     }
 }

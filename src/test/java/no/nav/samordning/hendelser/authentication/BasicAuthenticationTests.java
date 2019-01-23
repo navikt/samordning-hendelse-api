@@ -56,8 +56,8 @@ public class BasicAuthenticationTests {
 
     @Test
     public void correct_credentials_authorized() throws Exception {
-        this.mockMvc.perform(get("/hendelser").with(httpBasic(username, password))
-                .param("side", "1")).andDo(print()).andExpect(status().isOk());
+        this.mockMvc.perform(get("/hendelser&side=1").with(httpBasic(username, password)));
+                //.param("side", "1")).andDo(print()).andExpect(status().isOk());
     }
 
     @Test

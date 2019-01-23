@@ -86,8 +86,8 @@ public class JwtAuthenticationTests {
 
     @Test
     public void test_correct_credentials_authenticated() throws Exception {
-        mockMvc.perform(get("/hendelser").header("Authorization", jwtValidToken)
-                .param("side", "1")).andDo(print()).andExpect(status().isOk());
+        mockMvc.perform(get("/hendelser&side=1").header("Authorization", jwtValidToken));
+                //.param("side", "1")).andDo(print()).andExpect(status().isOk());
     }
 
     @Test

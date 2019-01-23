@@ -16,6 +16,7 @@ import org.testcontainers.utility.MountableFile;
 import java.time.LocalDate;
 
 import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -70,5 +71,11 @@ public class DatabaseTests {
         Hendelse result = db.fetch(0, 0, "Alderstrygd", "2030-01-01", "2031-02-02").get(0);
 
         assertThat(expected, samePropertyValuesAs(result));
+    }
+
+    @Test
+    public void countTest() {
+        int result = db.getNumberOfPages();
+        assertEquals(result, 3);
     }
 }
