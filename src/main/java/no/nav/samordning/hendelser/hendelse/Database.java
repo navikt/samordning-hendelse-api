@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.hendelse;
 
+import org.apache.tomcat.jni.Local;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,10 +32,8 @@ public class Database {
         this.database = database;
     }
 
-    public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType, String fom, String tom){
+    public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType, LocalDate fom, LocalDate tom){
         String ytelsestypeJson = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
-        LocalDate fomDate = LocalDate.parse(fom);
-        LocalDate tomDate = LocalDate.parse(tom);
 
         List<Hendelse> hendelser = new ArrayList<>();
 
@@ -42,8 +41,8 @@ public class Database {
                 SQL_FETCH,
                 PGobject.class,
                 ytelsestypeJson,
-                fomDate,
-                tomDate,
+                fom,
+                tom,
                 side,
                 antall);
 

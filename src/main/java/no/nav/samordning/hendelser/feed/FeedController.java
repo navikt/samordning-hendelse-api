@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 
@@ -34,11 +35,13 @@ public class FeedController {
                               @RequestParam(value="side", defaultValue=DEFAULT_SIDE) String sideInt,
                               @RequestParam(value="antall", defaultValue=DEFAULT_ANTALL) String antallInt,
                               @RequestParam(value="ytelsesType", defaultValue=DEFAULT_YTELSESTYPE) String ytelsesType,
-                              @RequestParam(value="fom", defaultValue=DEFAULT_FOM) String fom,
-                              @RequestParam(value="tom", defaultValue=DEFAULT_TOM) String tom) throws BadParameterException {
+                              @RequestParam(value="fom", defaultValue=DEFAULT_FOM) String fomLocalDate,
+                              @RequestParam(value="tom", defaultValue=DEFAULT_TOM) String tomLocalDate) throws BadParameterException {
 
         var side = convertToInt(sideInt, "side");
         var antall = convertToInt(antallInt, "antall");
+        var fom = LocalDate.parse(fomLocalDate);
+        var tom = LocalDate.parse(tomLocalDate);
 
         if(antall>MAX_ANTALL) {
             throw new BadParameterException("Man kan ikke be om flere enn " + MAX_ANTALL + " hendelser.");
