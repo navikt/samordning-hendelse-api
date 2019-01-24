@@ -17,9 +17,9 @@ public class FeedController {
     private static final Integer MAX_ANTALL = 10000;
     private static final String DEFAULT_SIDE = "0";
     private static final String DEFAULT_ANTALL = "10000";
-    private static final String DEFAULT_YTELSESTYPE = "AAP";
-    private static final String DEFAULT_FOM = "2020-01-01";
-    private static final String DEFAULT_TOM = "2070-02-02";
+    private static final String DEFAULT_YTELSESTYPE = "";
+    private static final String DEFAULT_FOM = "1814-05-17";
+    private static final String DEFAULT_TOM = "2100-01-01";
 
     private Database database;
 

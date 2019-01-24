@@ -81,10 +81,10 @@ public class FeedNyHendelseControllerTest {
                 .andExpect(status()
                 .isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].fom").value("2020-01-01"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].fom").value("2080-01-01"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].ytelsesType").value("AAP"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].identifikator").value("12345678901"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].vedtakId").value("ABC123"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].identifikator").value("10000000001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].vedtakId").value("A1B2C3"));
     }
 
     @Test
@@ -109,13 +109,12 @@ public class FeedNyHendelseControllerTest {
             excpected.add("2040-01-01");
         }
 
-        this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP&fom=2020-01-01&2070-01-01")
+        this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP&fom=2040-01-01")
                 .with(user("srvTest")))
                 //.param("side", "2")
                 //.param("antall", "20")
                 //.param("ytelsesType", "AAP")
-                //.param("fom", "2020-01-01")
-                //.param("tom", "2070-01-01"))
+                //.param("fom", "2040-01-01"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
@@ -134,7 +133,6 @@ public class FeedNyHendelseControllerTest {
                 .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom")
                         .value(containsInAnyOrder("2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01",
                         "2030-01-01", "2040-01-01"
                 )));
     }
@@ -209,7 +207,6 @@ public class FeedNyHendelseControllerTest {
                         .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom")
                         .value(containsInAnyOrder("2030-01-01", "2040-01-01",
-                                "2030-01-01", "2040-01-01",
                                 "2030-01-01", "2040-01-01"
                         )));
     }
