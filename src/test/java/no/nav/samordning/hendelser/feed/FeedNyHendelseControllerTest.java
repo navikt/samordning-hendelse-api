@@ -23,9 +23,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -122,29 +120,9 @@ public class FeedNyHendelseControllerTest {
     }
 
     @Test
-    public void greetingShouldReturnMessageFromServiceWithFromToFilter() throws Exception {
-        this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP")
-                .with(user("srvTest")))
-                //.param("side", "2")
-                //.param("antall", "20")
-                //.param("ytelsesType", "AAP"))
-                .andDo(print())
-                .andExpect(status()
-                .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom")
-                        .value(containsInAnyOrder("2030-01-01", "2040-01-01",
-                        "2030-01-01", "2040-01-01"
-                )));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void greetingShouldReturnMessageFromServiceWithInvalidParam() throws Exception {
+    public void greetingShouldReturnMessageFromServiceWithNonPresentYtelsesType() throws Exception {
 
         List<String> excpected = new ArrayList<>();
-
-        for(int i=0; i<25; i++) {
-            excpected.add("2040-01-01");
-        }
 
         this.mockMvc.perform(get("/hendelser")
                 .with(user("srvTest"))
@@ -154,28 +132,43 @@ public class FeedNyHendelseControllerTest {
                 .andDo(print())
                 .andExpect(status()
                         .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2100-01-01')].fom").value(excpected));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser").value(excpected));
     }
 
-    @Test(expected = AssertionError.class)
-    public void greetingShouldReturnMessageFromServiceWithInvalidFoms() throws Exception {
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithFomOutOfBounds() throws Exception {
 
         List<String> excpected = new ArrayList<>();
-        for(int i=0; i<25; i++) {
-            excpected.add("2040-01-01");
-        }
 
         this.mockMvc.perform(get("/hendelser")
                 .with(user("srvTest"))
                 .param("side", "3")
                 .param("antall", "1")
-                .param("ytelsesType", "Trygd"))
+                .param("ytelsesType", "AAP")
+                .param("fom", "2101-01-01"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2100-01-01')].fom").value(excpected));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser").value(excpected));
     }
+/*
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithInvalidFom() throws Exception {
 
+        List<String> excpected = new ArrayList<>();
+
+        this.mockMvc.perform(get("/hendelser")
+                .with(user("srvTest"))
+                .param("side", "3")
+                .param("antall", "1")
+                .param("ytelsesType", "AAP")
+                .param("fom", "Jens Jensen"))
+                .andDo(print())
+                .andExpect(status()
+                        .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser").value(excpected));
+    }
+*/
     @Test
     public void serviceShouldRequirePageParameter() throws Exception {
         var hendelse = new Hendelse();
