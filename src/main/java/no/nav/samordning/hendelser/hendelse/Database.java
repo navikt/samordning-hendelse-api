@@ -67,12 +67,15 @@ public class Database {
     }
 
     public int getNumberOfPages() {
-        String SQL_GET_NUMBER_OF_PAGES = "SELECT MAX((ctid::text::point)[0]::int) \n" +
-                "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n";
+        var SQL_GET_NUMBER_OF_PAGES = "SELECT MAX((ctid::text::point)[0]::int) FROM T_SAMORDNINGSPLIKTIG_VEDTAK";
+        int numberOfPages;
 
-        String numberOfPages = database.queryForObject(
-                SQL_GET_NUMBER_OF_PAGES, String.class);
+        try {
+            numberOfPages = Integer.parseInt(database.queryForObject(SQL_GET_NUMBER_OF_PAGES, String.class));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
 
-        return Integer.parseInt(numberOfPages);
+        return numberOfPages;
     }
 }
