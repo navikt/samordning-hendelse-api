@@ -145,11 +145,11 @@ public class FeedNyHendelseControllerTest {
                 .param("side", "3")
                 .param("antall", "1")
                 .param("ytelsesType", "AAP")
-                .param("fom", "2101-01-01"))
+                .param("fomFom", "2101-01-01"))
                 .andDo(print())
-                .andExpect(status()
-                .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser").value(excpected));
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(content().string(containsString("Du har oppgitt en ugyldig dato")));
     }
 /*
     @Test
@@ -200,6 +200,7 @@ public class FeedNyHendelseControllerTest {
                         .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom")
                         .value(containsInAnyOrder("2030-01-01", "2040-01-01",
+                                "2030-01-01", "2040-01-01",
                                 "2030-01-01", "2040-01-01"
                         )));
     }

@@ -19,6 +19,7 @@ public class Database {
         "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n" +
         "WHERE data @> ?::jsonb \n" +
         "AND to_date(DATA->>'fom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
+        "AND to_date(DATA->>'tom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
         "AND (ctid::text::point)[0]::int = ? " +
         "LIMIT ?" +
         "";
@@ -32,7 +33,7 @@ public class Database {
         this.database = database;
     }
 
-    public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType, LocalDate fom, LocalDate tom){
+    public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType, LocalDate fomFom, LocalDate tomFom, LocalDate fomTom, LocalDate tomTom){
         String ytelsestypeJson = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
 
         List<Hendelse> hendelser = new ArrayList<>();
@@ -41,8 +42,10 @@ public class Database {
                 SQL_FETCH,
                 PGobject.class,
                 ytelsestypeJson,
-                fom,
-                tom,
+                fomFom,
+                tomFom,
+                fomTom,
+                tomTom,
                 side,
                 antall);
 
