@@ -2,7 +2,6 @@ package no.nav.samordning.hendelser.feed;
 
 import io.micrometer.core.annotation.Timed;
 import no.nav.samordning.hendelser.hendelse.Database;
-import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,10 +22,10 @@ public class FeedController {
     private static final String DEFAULT_SIDE = "0";
     private static final String DEFAULT_ANTALL = "10000";
     private static final String DEFAULT_YTELSESTYPE = "";
-    private static final String DEFAULT_FOMFOM = "1814-05-17";
-    private static final String DEFAULT_TOMFOM = "2100-01-01";
-    private static final String DEFAULT_FOMTOM = "1814-05-17";
-    private static final String DEFAULT_TOMTOM = "2100-01-01";
+    private static final String DEFAULT_FRAFOM = "1814-05-17";
+    private static final String DEFAULT_TILFOM = "2100-01-01";
+    private static final String DEFAULT_FRATOM = "1814-05-17";
+    private static final String DEFAULT_TILTOM = "2100-01-01";
 
 
     private Database database;
@@ -42,30 +41,28 @@ public class FeedController {
                               @RequestParam(value="side", defaultValue=DEFAULT_SIDE) String sideInt,
                               @RequestParam(value="antall", defaultValue=DEFAULT_ANTALL) String antallInt,
                               @RequestParam(value="ytelsesType", defaultValue=DEFAULT_YTELSESTYPE) String ytelsesType,
-                              @RequestParam(value="fomFom", defaultValue=DEFAULT_FOMFOM) String fomFomLocalDate,
-                              @RequestParam(value="tomFom", defaultValue=DEFAULT_TOMFOM) String tomFomLocalDate,
-                              @RequestParam(value="fomTom", defaultValue=DEFAULT_FOMTOM) String fomTomLocalDate,
-                              @RequestParam(value="tomTom", defaultValue=DEFAULT_TOMTOM) String tomTomLocalDate) throws BadParameterException {
+                              @RequestParam(value="fraFom", defaultValue=DEFAULT_FRAFOM) String fraFomLocalDate,
+                              @RequestParam(value="tilFom", defaultValue=DEFAULT_TILFOM) String tilFomLocalDate,
+                              @RequestParam(value="fraTom", defaultValue=DEFAULT_FRATOM) String fraTomLocalDate,
+                              @RequestParam(value="tilTom", defaultValue=DEFAULT_TILTOM) String tilTomLocalDate) throws BadParameterException {
 
         var side = convertToInt(sideInt, "side");
         var antall = convertToInt(antallInt, "antall");
-        var fomFom = LocalDate.parse(fomFomLocalDate);
-        var tomFom = LocalDate.parse(tomFomLocalDate);
-        var fomTom = LocalDate.parse(fomTomLocalDate);
-        var tomTom = LocalDate.parse(tomTomLocalDate);
+        var fraFom = LocalDate.parse(fraFomLocalDate);
+        var tilFom = LocalDate.parse(tilFomLocalDate);
+        var fraTom = LocalDate.parse(fraTomLocalDate);
+        var tilTom = LocalDate.parse(tilTomLocalDate);
 
         if(antall>MAX_ANTALL) {
             throw new BadParameterException("Man kan ikke be om flere enn " + MAX_ANTALL + " hendelser.");
         }
 
-        if(fomFom.isBefore(MIN_DATE) ||tomFom.isBefore(MIN_DATE) || tomFom.isBefore(MIN_DATE) || tomTom.isBefore(MIN_DATE)
-                || fomFom.isAfter(MAX_DATE) || tomFom.isAfter(MAX_DATE) || fomTom.isAfter(MAX_DATE) || tomTom.isAfter(MAX_DATE)) {
-            throw new BadParameterException("Du har oppgitt en ugyldig dato");
+        if(outsideDateRange(fraFom, tilFom, fraTom, tilTom)) {
+            throw new BadParameterException("Du har oppgitt ugyldig dato");
         }
 
-
         var feed = new Feed();
-        var hendelser = database.fetch(side, antall, ytelsesType, fomFom, tomFom, fomTom, tomTom);
+        var hendelser = database.fetch(side, antall, ytelsesType, fraFom, tilFom, fraTom, tilTom);
         feed.setHendelser(hendelser.stream().map(Mapper::map).collect(Collectors.toList()));
 
         if (side < database.getNumberOfPages()) {
@@ -83,5 +80,12 @@ public class FeedController {
         } catch (NumberFormatException e) {
             throw new BadParameterException("Parameteren " + label + " er ikke et gyldig tall");
         }
+    }
+
+    private static boolean outsideDateRange(LocalDate... dates) {
+        for(LocalDate date:dates) {
+            return date.isBefore(MIN_DATE) || date.isAfter(MAX_DATE);
+        }
+        return false;
     }
 }

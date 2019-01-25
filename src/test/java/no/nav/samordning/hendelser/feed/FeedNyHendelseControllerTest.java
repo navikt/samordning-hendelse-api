@@ -145,11 +145,11 @@ public class FeedNyHendelseControllerTest {
                 .param("side", "3")
                 .param("antall", "1")
                 .param("ytelsesType", "AAP")
-                .param("fomFom", "2101-01-01"))
+                .param("fraFom", "2101-01-01"))
                 .andDo(print())
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(content().string(containsString("Du har oppgitt en ugyldig dato")));
+                .andExpect(content().string(containsString("Du har oppgitt ugyldig dato")));
     }
 /*
     @Test

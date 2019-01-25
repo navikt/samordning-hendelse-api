@@ -33,7 +33,7 @@ public class Database {
         this.database = database;
     }
 
-    public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType, LocalDate fomFom, LocalDate tomFom, LocalDate fomTom, LocalDate tomTom){
+    public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType, LocalDate fraFom, LocalDate tilFom, LocalDate fraTom, LocalDate tilTom){
         String ytelsestypeJson = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
 
         List<Hendelse> hendelser = new ArrayList<>();
@@ -42,10 +42,10 @@ public class Database {
                 SQL_FETCH,
                 PGobject.class,
                 ytelsestypeJson,
-                fomFom,
-                tomFom,
-                fomTom,
-                tomTom,
+                fraFom,
+                tilFom,
+                fraTom,
+                tilTom,
                 side,
                 antall);
 
