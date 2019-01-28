@@ -16,17 +16,14 @@ import java.util.stream.Collectors;
 @RestController
 public class FeedController {
     private static final Integer MAX_ANTALL = 10000;
-    private static final LocalDate MIN_DATE = LocalDate.of(1814,05,17);
-    private static final LocalDate MAX_DATE = LocalDate.of(2100,01,01);
+    private static final String MIN_DATE_LOCALDATE = "1814-05-17";
+    private static final String MAX_DATE_LOCALDATE = "2100-01-01";
+    private static final LocalDate MIN_DATE = LocalDate.parse(MIN_DATE_LOCALDATE);
+    private static final LocalDate MAX_DATE = LocalDate.parse(MAX_DATE_LOCALDATE);
 
     private static final String DEFAULT_SIDE = "0";
     private static final String DEFAULT_ANTALL = "10000";
     private static final String DEFAULT_YTELSESTYPE = "";
-    private static final String DEFAULT_FRAFOM = "1814-05-17";
-    private static final String DEFAULT_TILFOM = "2100-01-01";
-    private static final String DEFAULT_FRATOM = "1814-05-17";
-    private static final String DEFAULT_TILTOM = "2100-01-01";
-
 
     private Database database;
 
@@ -41,10 +38,11 @@ public class FeedController {
                               @RequestParam(value="side", defaultValue=DEFAULT_SIDE) String sideInt,
                               @RequestParam(value="antall", defaultValue=DEFAULT_ANTALL) String antallInt,
                               @RequestParam(value="ytelsesType", defaultValue=DEFAULT_YTELSESTYPE) String ytelsesType,
-                              @RequestParam(value="fraFom", defaultValue=DEFAULT_FRAFOM) String fraFomLocalDate,
-                              @RequestParam(value="tilFom", defaultValue=DEFAULT_TILFOM) String tilFomLocalDate,
-                              @RequestParam(value="fraTom", defaultValue=DEFAULT_FRATOM) String fraTomLocalDate,
-                              @RequestParam(value="tilTom", defaultValue=DEFAULT_TILTOM) String tilTomLocalDate) throws BadParameterException {
+                              @RequestParam(value="fraFom", defaultValue=MIN_DATE_LOCALDATE) String fraFomLocalDate,
+                              @RequestParam(value="tilFom", defaultValue=MAX_DATE_LOCALDATE) String tilFomLocalDate,
+                              @RequestParam(value="fraTom", defaultValue=MIN_DATE_LOCALDATE) String fraTomLocalDate,
+                              @RequestParam(value="tilTom", defaultValue=MAX_DATE_LOCALDATE) String tilTomLocalDate)
+            throws BadParameterException {
 
         var side = convertToInt(sideInt, "side");
         var antall = convertToInt(antallInt, "antall");
@@ -57,7 +55,7 @@ public class FeedController {
             throw new BadParameterException("Man kan ikke be om flere enn " + MAX_ANTALL + " hendelser.");
         }
 
-        if(outsideDateRange(fraFom, tilFom, fraTom, tilTom)) {
+        if (outsideDateRange(fraFom, tilFom, fraTom, tilTom)) {
             throw new BadParameterException("Du har oppgitt ugyldig dato");
         }
 
@@ -84,7 +82,9 @@ public class FeedController {
 
     private static boolean outsideDateRange(LocalDate... dates) {
         for(LocalDate date:dates) {
-            return date.isBefore(MIN_DATE) || date.isAfter(MAX_DATE);
+            if (date.isBefore(MIN_DATE) || date.isAfter(MAX_DATE)) {
+                return true;
+            }
         }
         return false;
     }

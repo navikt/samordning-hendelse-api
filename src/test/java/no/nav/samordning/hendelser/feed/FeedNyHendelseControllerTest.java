@@ -135,22 +135,6 @@ public class FeedNyHendelseControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser").value(excpected));
     }
 
-    @Test
-    public void greetingShouldReturnMessageFromServiceWithFomOutOfBounds() throws Exception {
-
-        List<String> excpected = new ArrayList<>();
-
-        this.mockMvc.perform(get("/hendelser")
-                .with(user("srvTest"))
-                .param("side", "3")
-                .param("antall", "1")
-                .param("ytelsesType", "AAP")
-                .param("fraFom", "2101-01-01"))
-                .andDo(print())
-                .andDo(print())
-                .andExpect(status().is4xxClientError())
-                .andExpect(content().string(containsString("Du har oppgitt ugyldig dato")));
-    }
 /*
     @Test
     public void greetingShouldReturnMessageFromServiceWithInvalidFom() throws Exception {

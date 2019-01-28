@@ -33,7 +33,13 @@ public class Database {
         this.database = database;
     }
 
-    public List<Hendelse> fetch(Integer side, Integer antall, String ytelsesType, LocalDate fraFom, LocalDate tilFom, LocalDate fraTom, LocalDate tilTom){
+    public List<Hendelse> fetch(Integer side,
+                                Integer antall,
+                                String ytelsesType,
+                                LocalDate fraFom,
+                                LocalDate tilFom,
+                                LocalDate fraTom,
+                                LocalDate tilTom){
         String ytelsestypeJson = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
 
         List<Hendelse> hendelser = new ArrayList<>();
