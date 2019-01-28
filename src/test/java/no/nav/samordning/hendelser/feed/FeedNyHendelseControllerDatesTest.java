@@ -58,26 +58,27 @@ public class FeedNyHendelseControllerDatesTest {
     private MockMvc mockMvc;
 
     @Test
-    public void greetingShouldReturnMessageFromServiceWithFraFomBeforeMinDate() throws Exception {
+    public void greetingShouldReturnMessageFromServiceWithSokFraBeforeMinDate() throws Exception {
 
         List<String> excpected = new ArrayList<>();
 
-        this.mockMvc.perform(get("/hendelser?side=3&antall=1&ytelsesType=AAP&fraFom=0800-12-12")
+        this.mockMvc.perform(get("/hendelser?side=3&antall=1&ytelsesType=AAP&sokFra=0800-12-12")
                 .with(user("srvTest")))
                 //.param("side", "3")
                 //.param("antall", "1")
                 //.param("ytelsesType", "AAP")
-                //.param("fraFom", "0800-12-12"))
+                //.param("sokFra", "0800-12-12"))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().string(containsString("Du har oppgitt ugyldig dato")));
     }
+
     @Test
-    public void greetingShouldReturnMessageFromServiceWithFraFomAfterMaxDate() throws Exception {
+    public void greetingShouldReturnMessageFromServiceWithSokFraAfterMaxDate() throws Exception {
 
         List<String> excpected = new ArrayList<>();
 
-        this.mockMvc.perform(get("/hendelser?side=3&antall=20&ytelsesType=AAP&fraFom=2101-01-01")
+        this.mockMvc.perform(get("/hendelser?side=3&antall=20&ytelsesType=AAP&sokFra=2101-01-01")
                 .with(user("srvTest")))
                 //.param("side", "3")
                 //.param("antall", "1")
@@ -89,11 +90,11 @@ public class FeedNyHendelseControllerDatesTest {
     }
 
     @Test
-    public void greetingShouldReturnMessageFromServiceWithTilFomBeforeMinDate() throws Exception {
+    public void greetingShouldReturnMessageFromServiceWithSokTilBeforeMinDate() throws Exception {
 
         List<String> excpected = new ArrayList<>();
 
-        this.mockMvc.perform(get("/hendelser?side=2&antall=50&ytelsesType=AAP&tilFom=0800-12-12")
+        this.mockMvc.perform(get("/hendelser?side=2&antall=50&ytelsesType=AAP&sokTil=0800-12-12")
                 .with(user("srvTest")))
                 //.param("side", "3")
                 //.param("antall", "1")
@@ -105,11 +106,11 @@ public class FeedNyHendelseControllerDatesTest {
     }
 
     @Test
-    public void greetingShouldReturnMessageFromServiceWithTilFomAfterMaxDate() throws Exception {
+    public void greetingShouldReturnMessageFromServiceWithSokTilAfterMaxDate() throws Exception {
 
         List<String> excpected = new ArrayList<>();
 
-        this.mockMvc.perform(get("/hendelser?side=1&antall=10&ytelsesType=AAP&tilFom=2200-12-30")
+        this.mockMvc.perform(get("/hendelser?side=1&antall=10&ytelsesType=AAP&sokTil=2200-12-30")
                 .with(user("srvTest")))
                 //.param("side", "1")
                 //.param("antall", "10")
@@ -120,6 +121,21 @@ public class FeedNyHendelseControllerDatesTest {
                 .andExpect(content().string(containsString("Du har oppgitt ugyldig dato")));
     }
 
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithValidDates() throws Exception {
+
+        this.mockMvc.perform(get("/hendelser?side=1&antall=10&ytelsesType=AAP&sokFra=2020-01-01&sokTil=2040-01-01")
+                .with(user("srvTest")))
+                //.param("side", "1")
+                //.param("antall", "10")
+                //.param("ytelsesType", "AAP")
+                //.param("tilFom", "9999-12-30"))
+                .andDo(print())
+                .andExpect(status()
+                        .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(7)));
+    }
+/*
     @Test
     public void greetingShouldReturnMessageFromServiceWithFraTomBeforeMinDate() throws Exception {
 
@@ -182,4 +198,5 @@ public class FeedNyHendelseControllerDatesTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().string(containsString("Du har oppgitt ugyldig dato")));
     }
+    */
 }

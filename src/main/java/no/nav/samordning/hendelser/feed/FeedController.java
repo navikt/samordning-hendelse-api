@@ -38,29 +38,25 @@ public class FeedController {
                               @RequestParam(value="side", defaultValue=DEFAULT_SIDE) String sideInt,
                               @RequestParam(value="antall", defaultValue=DEFAULT_ANTALL) String antallInt,
                               @RequestParam(value="ytelsesType", defaultValue=DEFAULT_YTELSESTYPE) String ytelsesType,
-                              @RequestParam(value="fraFom", defaultValue=MIN_DATE_LOCALDATE) String fraFomLocalDate,
-                              @RequestParam(value="tilFom", defaultValue=MAX_DATE_LOCALDATE) String tilFomLocalDate,
-                              @RequestParam(value="fraTom", defaultValue=MIN_DATE_LOCALDATE) String fraTomLocalDate,
-                              @RequestParam(value="tilTom", defaultValue=MAX_DATE_LOCALDATE) String tilTomLocalDate)
+                              @RequestParam(value="sokFra", defaultValue=MIN_DATE_LOCALDATE) String fraTomLocalDate,
+                              @RequestParam(value="sokTil", defaultValue=MAX_DATE_LOCALDATE) String tilTomLocalDate)
             throws BadParameterException {
 
         var side = convertToInt(sideInt, "side");
         var antall = convertToInt(antallInt, "antall");
-        var fraFom = LocalDate.parse(fraFomLocalDate);
-        var tilFom = LocalDate.parse(tilFomLocalDate);
-        var fraTom = LocalDate.parse(fraTomLocalDate);
-        var tilTom = LocalDate.parse(tilTomLocalDate);
+        var sokFra = LocalDate.parse(fraTomLocalDate);
+        var sokTil = LocalDate.parse(tilTomLocalDate);
 
         if(antall>MAX_ANTALL) {
             throw new BadParameterException("Man kan ikke be om flere enn " + MAX_ANTALL + " hendelser.");
         }
 
-        if (outsideDateRange(fraFom, tilFom, fraTom, tilTom)) {
+        if (outsideDateRange(sokFra, sokTil)) {
             throw new BadParameterException("Du har oppgitt ugyldig dato");
         }
 
         var feed = new Feed();
-        var hendelser = database.fetch(side, antall, ytelsesType, fraFom, tilFom, fraTom, tilTom);
+        var hendelser = database.fetch(side, antall, ytelsesType, sokFra, sokTil);
         feed.setHendelser(hendelser.stream().map(Mapper::map).collect(Collectors.toList()));
 
         if (side < database.getNumberOfPages()) {

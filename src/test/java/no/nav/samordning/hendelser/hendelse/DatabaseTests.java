@@ -58,8 +58,6 @@ public class DatabaseTests {
                 20,
                 "AAP",
                 LocalDate.of(2030, 01, 01),
-                LocalDate.of(2031, 02, 02),
-                LocalDate.of(2030, 01, 01),
                 LocalDate.of(2031, 02, 02))
                 .get(0);
 
@@ -78,8 +76,6 @@ public class DatabaseTests {
         Hendelse result = db.fetch(0,
                 0,
                 "Alderstrygd",
-                LocalDate.of(2020, 01, 01),
-                LocalDate.of(2021, 02, 02),
                 LocalDate.of(2020, 01, 01),
                 LocalDate.of(2021, 02, 02))
                 .get(0);

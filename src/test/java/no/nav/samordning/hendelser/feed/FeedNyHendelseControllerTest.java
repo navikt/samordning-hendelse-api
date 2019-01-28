@@ -16,6 +16,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.util.NestedServletException;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
@@ -98,6 +99,7 @@ public class FeedNyHendelseControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(20)));
     }
 
+    /*
     @Test
     public void greetingShouldReturnMessageFromServiceWithBasicFilter() throws Exception {
 
@@ -107,7 +109,7 @@ public class FeedNyHendelseControllerTest {
             excpected.add("2040-01-01");
         }
 
-        this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP&fom=2040-01-01")
+        this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP&sokFra=2040-01-01&sokTil=2040-01-01")
                 .with(user("srvTest")))
                 //.param("side", "2")
                 //.param("antall", "20")
@@ -118,6 +120,7 @@ public class FeedNyHendelseControllerTest {
                 .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2040-01-01')].fom").value(excpected));
     }
+    */
 
     @Test
     public void greetingShouldReturnMessageFromServiceWithNonPresentYtelsesType() throws Exception {
@@ -135,24 +138,23 @@ public class FeedNyHendelseControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser").value(excpected));
     }
 
-/*
-    @Test
-    public void greetingShouldReturnMessageFromServiceWithInvalidFom() throws Exception {
+    @Test(expected = NestedServletException.class)
+    public void greetingShouldReturnMessageFromServiceWithInvalidSokFra() throws Exception {
 
         List<String> excpected = new ArrayList<>();
 
-        this.mockMvc.perform(get("/hendelser")
-                .with(user("srvTest"))
-                .param("side", "3")
-                .param("antall", "1")
-                .param("ytelsesType", "AAP")
-                .param("fom", "Jens Jensen"))
+        this.mockMvc.perform(get("/hendelser?side=3&antall=1&ytelsesType=AAP&sokFra=Jens_Jensen")
+                .with(user("srvTest")))
+                //.param("side", "3")
+                //.param("antall", "1")
+                //.param("ytelsesType", "AAP")
+                //.param("fom", "Jens Jensen"))
                 .andDo(print())
                 .andExpect(status()
                         .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser").value(excpected));
     }
-*/
+
     @Test
     public void serviceShouldRequirePageParameter() throws Exception {
         var hendelse = new Hendelse();
