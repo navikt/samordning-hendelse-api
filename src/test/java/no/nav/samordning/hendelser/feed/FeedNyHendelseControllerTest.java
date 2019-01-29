@@ -20,7 +20,6 @@ import org.springframework.web.util.NestedServletException;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +60,6 @@ public class FeedNyHendelseControllerTest {
     public void greetingShouldReturnMessageFromService() throws Exception {
         this.mockMvc.perform(get("/hendelser?side=1")
                 .with(user("srvTest")))
-                //.param("side", "1"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
@@ -73,70 +71,56 @@ public class FeedNyHendelseControllerTest {
     public void greetingShouldReturnMessageFromServiceWithFirstRecord() throws Exception {
         this.mockMvc.perform(get("/hendelser?side=1&antall=1&ytelsesType=AAP")
                 .with(user("srvTest")))
-                //.param("side", "1")
-                //.param("antall", "1")
-                //.param("ytelsesType", "AAP"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].fom").value("2080-01-01"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].fom").value("2020-01-01"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].ytelsesType").value("AAP"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].identifikator").value("10000000001"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].vedtakId").value("A1B2C3"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].identifikator").value("12345678901"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].vedtakId").value("ABC123"));
     }
 
     @Test
     public void greetingShouldReturnMessageFromServiceWithSizeCheck() throws Exception {
         this.mockMvc.perform(get("/hendelser?side=0&antall=20&ytelsesType=AAP")
                 .with(user("srvTest")))
-                //.param("side", "0")
-                //.param("antall", "20")
-                //.param("ytelsesType", "AAP"))
-                //.andDo(print())
                 .andExpect(status()
                 .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(20)));
     }
 
-    /*
     @Test
     public void greetingShouldReturnMessageFromServiceWithBasicFilter() throws Exception {
 
         List<String> excpected = new ArrayList<>();
 
-        for(int i=0; i<3; i++) {
+        for(int i=0; i<20; i++) {
             excpected.add("2040-01-01");
         }
 
         this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP&sokFra=2040-01-01&sokTil=2040-01-01")
                 .with(user("srvTest")))
-                //.param("side", "2")
-                //.param("antall", "20")
-                //.param("ytelsesType", "AAP")
-                //.param("fom", "2040-01-01"))
                 .andDo(print())
                 .andExpect(status()
                 .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2040-01-01')].fom").value(excpected));
     }
-    */
 
+    /*
     @Test
     public void greetingShouldReturnMessageFromServiceWithNonPresentYtelsesType() throws Exception {
 
         List<String> excpected = new ArrayList<>();
 
-        this.mockMvc.perform(get("/hendelser")
-                .with(user("srvTest"))
-                .param("side", "3")
-                .param("antall", "1")
-                .param("ytelsesType", "Trygd"))
+        this.mockMvc.perform(get("/hendelser?side=3&antall=1&ytelsesType=Trygd")
+                .with(user("srvTest")))
                 .andDo(print())
                 .andExpect(status()
                         .isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser").value(excpected));
     }
+    */
 
     @Test(expected = NestedServletException.class)
     public void greetingShouldReturnMessageFromServiceWithInvalidSokFra() throws Exception {
@@ -145,10 +129,6 @@ public class FeedNyHendelseControllerTest {
 
         this.mockMvc.perform(get("/hendelser?side=3&antall=1&ytelsesType=AAP&sokFra=Jens_Jensen")
                 .with(user("srvTest")))
-                //.param("side", "3")
-                //.param("antall", "1")
-                //.param("ytelsesType", "AAP")
-                //.param("fom", "Jens Jensen"))
                 .andDo(print())
                 .andExpect(status()
                         .isOk())

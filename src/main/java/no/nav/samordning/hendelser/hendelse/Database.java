@@ -19,7 +19,7 @@ public class Database {
         "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n" +
         "WHERE data @> ?::jsonb \n" +
         "AND to_date(DATA->>'fom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
-        "AND to_date(DATA->>'tom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
+        "OR to_date(DATA->>'tom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
         "AND (ctid::text::point)[0]::int = ? " +
         "LIMIT ?" +
         "";
