@@ -21,7 +21,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         var error_message = new ObjectMapper()
-                .writeValueAsBytes(Collections.singletonMap("error", "Unauthorized JWT"));
+                .writeValueAsBytes(Collections.singletonMap("error", "Unauthorized token"));
 
         httpServletResponse.getOutputStream().write(error_message);
     }

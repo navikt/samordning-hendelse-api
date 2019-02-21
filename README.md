@@ -3,11 +3,42 @@
 Samordning-hendelse-api gir en liste med samordningspliktige hendelser på json format. 
 Denne listen hentes via /hendelser endepunktet. Se konkrete eksempler under.
 
-### TODO: Url
 Request/response eksempler:
 ```bash
-
+curl -k -X GET https://samordning-hendelse-api.nais.preprod.local/hendelser \
+    -H 'Accept: application/json' \
+    -H "Authorization: Bearer ${TOKEN}"
+# Output:
+# {
+#   "hendelser":[
+#       {
+#       "vedtakId": "...",
+#       "ytelsesType": "...",
+#       "identifikator": "...",
+#       "fom": "...",
+#       "tom": "..."
+#       },
+#       {
+#       "vedtakId": "...",
+#       "ytelsesType": "...",
+#       "identifikator": "...",
+#       "fom": "...",
+#       "tom": "..."
+#       }
+#   ],
+#   "nextUrl": ...
+# }
 ```
+
+Parametere:
+
+| Parameter                   | Beskrivelse                       |
+|:----------------------------|:----------------------------------|
+| `side`                      | Side nummer. |
+| `antall`                    | Antall hendelser per side.        |
+| `ytelsesType`               | Ytelsestype. |
+| `fom`                       | Fra-og-med dato. |
+| `tom`                       | Til-og-med dato. |
 
 #### Metrikker
 Grafana dashboards brukes for å f.eks. monitorere minne, cpu-bruk og andre metrikker.

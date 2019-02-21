@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.hendelse;
 
+import org.apache.tomcat.jni.Local;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,12 +9,21 @@ import org.springframework.stereotype.Repository;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class Database {
-    private static final String SQL_GOTTA_FETCH_THEM_ALL = "SELECT * FROM T_SAMORDNINGSPLIKTIG_VEDTAK";
+    private String SQL_FETCH = "SELECT * \n" +
+        "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n" +
+        "WHERE data @> ?::jsonb \n" +
+        "AND to_date(DATA->>'fom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
+        "OR to_date(DATA->>'tom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
+        "AND (ctid::text::point)[0]::int = ? " +
+        "LIMIT ?" +
+        "";
+
     private static final String SQL_INSERT_RECORD = "INSERT INTO T_SAMORDNINGSPLIKTIG_VEDTAK VALUES('?')";
 
     private JdbcTemplate database;
@@ -23,9 +33,25 @@ public class Database {
         this.database = database;
     }
 
-    public List<Hendelse> fetchAll(Integer side, Integer antall){
+    public List<Hendelse> fetch(Integer side,
+                                Integer antall,
+                                String ytelsesType,
+                                LocalDate sokFra,
+                                LocalDate sokTil){
+        String ytelsestypeJson = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
+
         List<Hendelse> hendelser = new ArrayList<>();
-        List<PGobject> jsonHendelser = database.queryForList(SQL_GOTTA_FETCH_THEM_ALL, PGobject.class);
+
+        List<PGobject> jsonHendelser = database.queryForList(
+                SQL_FETCH,
+                PGobject.class,
+                ytelsestypeJson,
+                sokFra,
+                sokTil,
+                sokFra,
+                sokTil,
+                side,
+                antall);
 
         Jsonb jsonb = JsonbBuilder.create();
 
@@ -46,5 +72,16 @@ public class Database {
         database.update(SQL_INSERT_RECORD, data);
     }
 
+    public int getNumberOfPages() {
+        var SQL_GET_NUMBER_OF_PAGES = "SELECT MAX((ctid::text::point)[0]::int) FROM T_SAMORDNINGSPLIKTIG_VEDTAK";
+        int numberOfPages;
 
+        try {
+            numberOfPages = Integer.parseInt(database.queryForObject(SQL_GET_NUMBER_OF_PAGES, String.class));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+
+        return numberOfPages;
+    }
 }

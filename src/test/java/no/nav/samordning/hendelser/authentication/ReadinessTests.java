@@ -4,7 +4,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
@@ -17,17 +16,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = BasicAuthenticationTests.Initializer.class)
+@ContextConfiguration(initializers = ReadinessTests.Initializer.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @WebAppConfiguration
-public class BasicAuthenticationTests {
+public class ReadinessTests {
 
     @ClassRule
     public static final PostgreSQLContainer postgresContainer = new PostgreSQLContainer<>("postgres")
@@ -48,21 +45,18 @@ public class BasicAuthenticationTests {
     @Autowired
     private MockMvc mockMvc;
 
-    @Value("${SRV_USERNAME}")
-    private String username;
-
-    @Value("${SRV_PASSWORD}")
-    private String password;
-
     @Test
-    public void correct_credentials_authorized() throws Exception {
-        this.mockMvc.perform(get("/hendelser&side=1").with(httpBasic(username, password)));
-                //.param("side", "1")).andDo(print()).andExpect(status().isOk());
+    public void isAlive_is_reachable() throws Exception {
+        mockMvc.perform(get("/isAlive")).andExpect(status().isOk());
     }
 
     @Test
-    public void wrong_credentials_unauthorized() throws Exception {
-        this.mockMvc.perform(get("/hendelser").with(httpBasic("user", "..."))
-                .param("side", "1")).andDo(print()).andExpect(status().isUnauthorized());
+    public void isReady_is_reachable() throws Exception {
+        mockMvc.perform(get("/isReady")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void metrics_are_reachable() throws Exception {
+        mockMvc.perform(get("/actuator")).andExpect(status().isOk());
     }
 }
