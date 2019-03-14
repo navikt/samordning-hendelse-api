@@ -16,7 +16,6 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.util.NestedServletException;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
@@ -68,74 +67,6 @@ public class FeedNyHendelseControllerTest {
 
 
     @Test
-    public void greetingShouldReturnMessageFromServiceWithFirstRecord() throws Exception {
-        this.mockMvc.perform(get("/hendelser?side=1&antall=1&ytelsesType=AAP")
-                .with(user("srvTest")))
-                .andDo(print())
-                .andExpect(status()
-                .isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].fom").value("2020-01-01"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].ytelsesType").value("AAP"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].identifikator").value("12345678901"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].vedtakId").value("ABC123"));
-    }
-
-    @Test
-    public void greetingShouldReturnMessageFromServiceWithSizeCheck() throws Exception {
-        this.mockMvc.perform(get("/hendelser?side=0&antall=20&ytelsesType=AAP")
-                .with(user("srvTest")))
-                .andExpect(status()
-                .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(20)));
-    }
-
-    @Test
-    public void greetingShouldReturnMessageFromServiceWithBasicFilter() throws Exception {
-
-        List<String> excpected = new ArrayList<>();
-
-        for(int i=0; i<20; i++) {
-            excpected.add("2040-01-01");
-        }
-
-        this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP&sokFra=2040-01-01&sokTil=2040-01-01")
-                .with(user("srvTest")))
-                .andDo(print())
-                .andExpect(status()
-                .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2040-01-01')].fom").value(excpected));
-    }
-
-    /*
-    @Test
-    public void greetingShouldReturnMessageFromServiceWithNonPresentYtelsesType() throws Exception {
-
-        List<String> excpected = new ArrayList<>();
-
-        this.mockMvc.perform(get("/hendelser?side=3&antall=1&ytelsesType=Trygd")
-                .with(user("srvTest")))
-                .andDo(print())
-                .andExpect(status()
-                        .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser").value(excpected));
-    }
-    */
-
-    @Test(expected = NestedServletException.class)
-    public void greetingShouldReturnMessageFromServiceWithInvalidSokFra() throws Exception {
-
-        List<String> excpected = new ArrayList<>();
-
-        this.mockMvc.perform(get("/hendelser?side=3&antall=1&ytelsesType=AAP&sokFra=Jens_Jensen")
-                .with(user("srvTest")))
-                .andDo(print())
-                .andExpect(status()
-                        .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser").value(excpected));
-    }
-
-    @Test
     public void serviceShouldRequirePageParameter() throws Exception {
         var hendelse = new Hendelse();
         hendelse.setVedtakId("1234");
@@ -158,16 +89,51 @@ public class FeedNyHendelseControllerTest {
     }
 
     @Test
-    public void greetingShouldReturnMessageFromServiceAndReceiveURL() throws Exception {
-        this.mockMvc.perform(get("/hendelser?side=2&antall=20&ytelsesType=AAP")
+    public void greetingShouldReturnMessageFromServiceWithFirstRecord() throws Exception {
+        this.mockMvc.perform(get("/hendelser?side=1&antall=1")
                 .with(user("srvTest")))
                 .andDo(print())
                 .andExpect(status()
+                .isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].fom").value("2080-01-01"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].ytelsesType").value("AAP"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].identifikator").value("10000000001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].vedtakId").value("A1B2C3"));
+    }
+
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithBasicFilter() throws Exception {
+
+        List<String> excpected = new ArrayList<>();
+
+        for(int i=0; i<2; i++) {
+            excpected.add("2040-01-01");
+        }
+
+        this.mockMvc.perform(get("/hendelser?side=2&antall=20")
+                .with(user("srvTest")))
+                .andDo(print())
+                .andExpect(status()
+                .isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom=='2040-01-01')].fom").value(excpected));
+    }
+
+    @Test
+    public void greetingShouldReturnMessageFromServiceWithSizeCheck() throws Exception {
+        this.mockMvc.perform(get("/hendelser?side=0&antall=20")
+                .with(user("srvTest")))
+                .andExpect(status()
                         .isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[?(@.fom>'2020-01-01' && @.fom<'2050-01-01')].fom")
-                        .value(containsInAnyOrder("2030-01-01", "2040-01-01",
-                                "2030-01-01", "2040-01-01",
-                                "2030-01-01", "2040-01-01"
-                        )));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(20)));
+    }
+
+    @Test
+    public void greetingShouldReturnMessageFromServiceAndReceiveURL() throws Exception {
+        this.mockMvc.perform(get("/hendelser?side=2&antall=20")
+                .with(user("srvTest")))
+                .andDo(print())
+                .andExpect(status()
+                        .isOk());
     }
 }

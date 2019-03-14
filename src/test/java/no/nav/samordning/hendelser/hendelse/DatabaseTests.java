@@ -48,36 +48,12 @@ public class DatabaseTests {
 
         Hendelse expected = new Hendelse();
         expected.setYtelsesType("AAP");
-        expected.setIdentifikator("23456789012");
-        expected.setVedtakId("123ABC");
-        expected.setFom(LocalDate.of(2030, 01, 01));
-        expected.setTom(LocalDate.of(2031, 02, 02));
-
-
-        Hendelse result = db.fetch(0,
-                20,
-                "AAP",
-                LocalDate.of(2030, 01, 01),
-                LocalDate.of(2031, 02, 02))
-                .get(0);
-
-        assertThat(expected, samePropertyValuesAs(result));
-    }
-
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void fetchTestWithInvalidYtelsesType() {
-
-        Hendelse expected = new Hendelse();
-        expected.setYtelsesType("Alderstrygd");
         expected.setIdentifikator("12345678901");
         expected.setVedtakId("ABC123");
         expected.setFom(LocalDate.of(2020, 01, 01));
 
         Hendelse result = db.fetch(0,
-                0,
-                "Alderstrygd",
-                LocalDate.of(2020, 01, 01),
-                LocalDate.of(2021, 02, 02))
+                20)
                 .get(0);
 
         assertThat(expected, samePropertyValuesAs(result));

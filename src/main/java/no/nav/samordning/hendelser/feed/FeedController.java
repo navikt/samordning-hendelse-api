@@ -23,7 +23,6 @@ public class FeedController {
 
     private static final String DEFAULT_SIDE = "0";
     private static final String DEFAULT_ANTALL = "10000";
-    private static final String DEFAULT_YTELSESTYPE = "";
 
     private Database database;
 
@@ -36,27 +35,18 @@ public class FeedController {
     @RequestMapping(path = "hendelser", method = RequestMethod.GET)
     public Feed alleHendelser(HttpServletRequest request,
                               @RequestParam(value="side", defaultValue=DEFAULT_SIDE) String sideInt,
-                              @RequestParam(value="antall", defaultValue=DEFAULT_ANTALL) String antallInt,
-                              @RequestParam(value="ytelsesType", defaultValue=DEFAULT_YTELSESTYPE) String ytelsesType,
-                              @RequestParam(value="sokFra", defaultValue=MIN_DATE_LOCALDATE) String fraTomLocalDate,
-                              @RequestParam(value="sokTil", defaultValue=MAX_DATE_LOCALDATE) String tilTomLocalDate)
+                              @RequestParam(value="antall", defaultValue=DEFAULT_ANTALL) String antallInt)
             throws BadParameterException {
 
         var side = convertToInt(sideInt, "side");
         var antall = convertToInt(antallInt, "antall");
-        var sokFra = LocalDate.parse(fraTomLocalDate);
-        var sokTil = LocalDate.parse(tilTomLocalDate);
 
         if(antall>MAX_ANTALL) {
             throw new BadParameterException("Man kan ikke be om flere enn " + MAX_ANTALL + " hendelser.");
         }
 
-        if (outsideDateRange(sokFra, sokTil)) {
-            throw new BadParameterException("Du har oppgitt ugyldig dato");
-        }
-
         var feed = new Feed();
-        var hendelser = database.fetch(side, antall, ytelsesType, sokFra, sokTil);
+        var hendelser = database.fetch(side, antall);
         feed.setHendelser(hendelser.stream().map(Mapper::map).collect(Collectors.toList()));
 
         if (side < database.getNumberOfPages()) {
@@ -74,14 +64,5 @@ public class FeedController {
         } catch (NumberFormatException e) {
             throw new BadParameterException("Parameteren " + label + " er ikke et gyldig tall");
         }
-    }
-
-    private static boolean outsideDateRange(LocalDate... dates) {
-        for(LocalDate date:dates) {
-            if (date.isBefore(MIN_DATE) || date.isAfter(MAX_DATE)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

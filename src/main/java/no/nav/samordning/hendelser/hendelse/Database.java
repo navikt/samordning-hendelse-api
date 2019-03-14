@@ -17,10 +17,7 @@ import java.util.List;
 public class Database {
     private String SQL_FETCH = "SELECT * \n" +
         "FROM T_SAMORDNINGSPLIKTIG_VEDTAK \n" +
-        "WHERE data @> ?::jsonb \n" +
-        "AND to_date(DATA->>'fom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
-        "OR to_date(DATA->>'tom', 'YYYY-MM-DD') BETWEEN ? AND ? " +
-        "AND (ctid::text::point)[0]::int = ? " +
+        "WHERE (ctid::text::point)[0]::int = ? " +
         "LIMIT ?" +
         "";
 
@@ -34,22 +31,13 @@ public class Database {
     }
 
     public List<Hendelse> fetch(Integer side,
-                                Integer antall,
-                                String ytelsesType,
-                                LocalDate sokFra,
-                                LocalDate sokTil){
-        String ytelsestypeJson = "{\"ytelsesType\": \""+ ytelsesType + "\"}";
+                                Integer antall) {
 
         List<Hendelse> hendelser = new ArrayList<>();
 
         List<PGobject> jsonHendelser = database.queryForList(
                 SQL_FETCH,
                 PGobject.class,
-                ytelsestypeJson,
-                sokFra,
-                sokTil,
-                sokFra,
-                sokTil,
                 side,
                 antall);
 
