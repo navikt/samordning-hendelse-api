@@ -31,6 +31,6 @@ public class DatabaseConfig {
         postgres.execInContainer("psql",
             "-U", postgres.getUsername(),
             "-d", postgres.getDatabaseName(),
-            "-a", "-f", "schema.sql");
+            "-a", "-f", "/docker-entrypoint-initdb.d/schema.sql");
     }
 }
