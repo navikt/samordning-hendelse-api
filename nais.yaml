@@ -1,37 +1,28 @@
-name: samordning-hendelse-api
-image: repo.adeo.no:5443/samordning-hendelse-api
-team: teampeon
-replicas:
-  min: 1
-  max: 2
-resources:
-  limits:
-    cpu: 1000m
-    memory: 384Mi
-  requests:
-    cpu: 500m
-    memory: 256Mi
-prometheus:
-  enabled: true
-  path: actuator/prometheus
-fasitResources:
-  used:
-  - alias: sam-heDB
-    resourceType: datasource
-    propertyMap:
-      url: SPRING_DATASOURCE_URL
-      username: SPRING_DATASOURCE_USERNAME
-      password: SPRING_DATASOURCE_PASSWORD
-  - alias: srvsam-he
-    resourceType: credential
-    propertyMap:
-      username: SRV_USERNAME
-      password: SRV_PASSWORD
-  - alias: security-token-service-jwks
-    resourceType: restservice
-    propertyMap:
-      url: SPRING.SECURITY.OAUTH2.RESOURCESERVER.JWT.JWK-SET-URI
-  exposed:
-  - alias: "samordning-hendelse-api"
-    resourceType: restservice
-    path: /hendelser
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: samordning-hendelse-api
+  namespace: default
+  labels:
+    team: teampeon
+spec:
+  image: repo.adeo.no:5443/samordning-hendelse-api:latest
+  port: 8080
+  team: teampeon
+  liveness:
+    path: isAlive
+  readiness:
+    path: isReady
+  secrets: true
+  vault:
+    enabled: true
+  replicas:
+    min: 1
+    max: 2
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi

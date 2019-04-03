@@ -54,7 +54,7 @@ public class FeedNyHendelseControllerDatesTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
+/*    @Test
     public void greetingShouldReturnMessageFromServiceWithSokFraBeforeMinDate() throws Exception {
 
         List<String> excpected = new ArrayList<>();
@@ -100,7 +100,7 @@ public class FeedNyHendelseControllerDatesTest {
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().string(containsString("Du har oppgitt ugyldig dato")));
-    }
+    }*/
 
     @Test
     public void greetingShouldReturnMessageFromServiceWithValidDates() throws Exception {
