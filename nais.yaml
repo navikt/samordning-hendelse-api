@@ -17,7 +17,7 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: /kv/preprod/fss/samordning-hendelse-api/default
+      - kvPath: /kv/preprod/fss/samordning-hendelse-api/deafult
         mountPath: /var/run/secrets/nais.io/vault
   replicas:
     min: 1
