@@ -13,7 +13,6 @@ spec:
     path: isAlive
   readiness:
     path: isReady
-  secrets: true
   vault:
     enabled: true
     paths:
