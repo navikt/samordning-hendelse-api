@@ -104,12 +104,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc6</artifactId>
-			<version>12.1.0.2</version>
-			<scope>runtime</scope>
-		</dependency>
 		<!-- Vault JDBC -->
 		<dependency>
 			<groupId>com.bettercloud</groupId>
