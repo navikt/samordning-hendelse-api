@@ -12,13 +12,13 @@ import org.testcontainers.utility.MountableFile;
 public class DatabaseConfig {
     private static PostgreSQLContainer postgres;
     private static GenericContainer vault;
-    private static Network network = Network.newNetwork();
+    private static Network network = Network.SHARED;
 
     private String DATABASE_NAME = "samordning-hendelser";
     private String DATABASE_USERNAME = "username";
     private String DATABASE_PASSWORD = "password";
 
-    @Autowired(required = true)
+    @Autowired
     public void setup() throws Exception {
         postgres = new PostgreSQLContainer()
             .withDatabaseName(DATABASE_NAME)
@@ -27,7 +27,6 @@ public class DatabaseConfig {
         postgres
             .withNetwork(network)
             .withNetworkAliases(DATABASE_NAME)
-            .withExtraHost("host", "127.0.0.1")
             .withExposedPorts(5432)
             .withCopyFileToContainer(MountableFile.forClasspathResource("schema.sql"),
             "/docker-entrypoint-initdb.d/");
@@ -48,7 +47,6 @@ public class DatabaseConfig {
             .withNetwork(network)
             .withExposedPorts(8200)
             .withNetworkAliases("vault")
-            .withExtraHost("host", "127.0.0.1")
             .withCopyFileToContainer(MountableFile.forClasspathResource("policy_db.hcl"), "/")
             .withCopyFileToContainer(MountableFile.forClasspathResource("vault_setup.sh"), "/");
         vault.start();
@@ -56,7 +54,8 @@ public class DatabaseConfig {
         System.setProperty("DB_URL", postgres.getJdbcUrl());
         System.setProperty("DB_MOUNT_PATH", "secrets/test");
         System.setProperty("DB_ROLE", "user");
-        System.setProperty("VAULT_ADDR", "http://localhost:" + vault.getMappedPort(8200));
+        System.setProperty("VAULT_ADDR", String.format("http://%s:%d",
+            vault.getContainerIpAddress(), vault.getMappedPort(8200)));
         System.setProperty("VAULT_TOKEN", "secret");
 
         vault.execInContainer("sh", "vault_setup.sh");
