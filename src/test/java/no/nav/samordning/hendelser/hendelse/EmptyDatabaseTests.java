@@ -35,7 +35,6 @@ public class EmptyDatabaseTests {
 
     @Test
     public void null_count_returns_0() {
-        var count = db.getNumberOfPages();
-        assertEquals(0, count);
+        assertEquals(0, db.getNumberOfPages(0));
     }
 }

@@ -1,13 +1,12 @@
 package no.nav.samordning.hendelser.hendelse;
 
+import no.nav.samordning.hendelser.TestDataHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.time.LocalDate;
 
 import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
 import static org.junit.Assert.assertEquals;
@@ -21,19 +20,16 @@ public class DatabaseTests {
     @Autowired
     private Database db;
 
+    @Autowired
+    private TestDataHelper testData;
+
     @Test
-    public void fetchTest() {
-        Hendelse expected = new Hendelse();
-        expected.setYtelsesType("AAP");
-        expected.setIdentifikator("12345678901");
-        expected.setVedtakId("ABC123");
-        expected.setFom(LocalDate.of(2020, 01, 01));
-        assertThat(expected, samePropertyValuesAs(db.fetch(0, 20).get(0)));
+    public void fetch_test() {
+        assertThat(testData.hendelse("0"), samePropertyValuesAs(db.fetch(0, 5).get(0)));
     }
 
     @Test
-    public void countTest() {
-        int result = db.getNumberOfPages();
-        assertEquals(result, 3);
+    public void count_test() {
+        assertEquals(3, db.getNumberOfPages(4));
     }
 }

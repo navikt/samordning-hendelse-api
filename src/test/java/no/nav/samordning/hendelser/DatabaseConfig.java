@@ -29,7 +29,7 @@ public class DatabaseConfig {
             .withNetworkAliases(DATABASE_NAME)
             .withExposedPorts(5432)
             .withCopyFileToContainer(MountableFile.forClasspathResource("schema.sql"),
-            "/docker-entrypoint-initdb.d/");
+            "/docker-entrypoint-initdb.d/schema.sql");
         postgres.start();
 
         vault = new GenericContainer(
@@ -47,8 +47,8 @@ public class DatabaseConfig {
             .withNetwork(network)
             .withExposedPorts(8200)
             .withNetworkAliases("vault")
-            .withCopyFileToContainer(MountableFile.forClasspathResource("policy_db.hcl"), "/")
-            .withCopyFileToContainer(MountableFile.forClasspathResource("vault_setup.sh"), "/");
+            .withCopyFileToContainer(MountableFile.forClasspathResource("policy_db.hcl"), "/policy_db.hcl")
+            .withCopyFileToContainer(MountableFile.forClasspathResource("vault_setup.sh"), "/vault_setup.sh");
         vault.start();
 
         System.setProperty("DB_URL", postgres.getJdbcUrl());
@@ -65,7 +65,7 @@ public class DatabaseConfig {
         postgres.execInContainer("psql",
             "-U", postgres.getUsername(),
             "-d", postgres.getDatabaseName(),
-            "-c", "TRUNCATE TABLE T_SAMORDNINGSPLIKTIG_VEDTAK");
+            "-c", "TRUNCATE TABLE HENDELSER");
     }
 
     public void refillDatabase() throws Exception {
