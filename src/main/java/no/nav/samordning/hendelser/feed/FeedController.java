@@ -3,25 +3,20 @@ package no.nav.samordning.hendelser.feed;
 import io.micrometer.core.annotation.Timed;
 import no.nav.samordning.hendelser.database.Database;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.ArrayList;
 
 @RestController
+@Validated
 public class FeedController {
-
-    @Value("${FEED_MAX_ANTALL}")
-    private int MAX_ANTALL;
-
-    @Value("${FEED_DEFAULT_SIDE}")
-    private int DEFAULT_SIDE;
-
-    @Value("${FEED_DEFAULT_ANTALL}")
-    private int DEFAULT_ANTALL;
 
     private Database database;
 
@@ -32,21 +27,16 @@ public class FeedController {
 
     @RequestMapping
     @Timed(value = "get.counter.requests")
-    public Feed hendelser(HttpServletRequest request,
-                          @RequestParam(value = "antall", required = false) Integer antall,
-                          @RequestParam(value = "side", required = false) Integer side) throws BadParameterException {
-        if (side == null) side = DEFAULT_SIDE;
-        if (antall == null) antall = DEFAULT_ANTALL;
-        if (antall > MAX_ANTALL) {
-            throw new BadParameterException("Man kan ikke be om flere enn " + MAX_ANTALL + " hendelser.");
-        }
-
-        var hendelser = new ArrayList<>(database.fetch(side, antall));
+    public Feed hendelser(
+        HttpServletRequest request,
+        @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero Integer side,
+        @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) Integer antall,
+        @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) Integer sekvensnummer) {
+        var hendelser = new ArrayList<>(database.fetch(side, antall, sekvensnummer));
         String nextUrl = null;
         if (side < database.getNumberOfPages(antall) - 1) {
             nextUrl = request.getRequestURL().toString() + String.format("?side=%d&antall=%d", side + 1, antall);
         }
-
         return new Feed(hendelser, nextUrl);
     }
 }

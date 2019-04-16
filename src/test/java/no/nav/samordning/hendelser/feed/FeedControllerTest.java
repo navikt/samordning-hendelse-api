@@ -34,9 +34,6 @@ public class FeedControllerTest {
     @Autowired
     private TestDataHelper testData;
 
-    @Value("${FEED_MAX_ANTALL}")
-    private String maxAntall;
-
     @Test
     public void greeting_should_return_message_from_service() throws Exception {
         mockMvc.perform(get("/hendelser")
@@ -49,9 +46,8 @@ public class FeedControllerTest {
     public void service_shouldnt_accept_too_large_requests() throws Exception {
         mockMvc.perform(get("/hendelser")
             .with(user("srvTest"))
-            .param("antall", "" + Integer.parseInt(maxAntall) + 1))
-            .andDo(print()).andExpect(status().is4xxClientError())
-            .andExpect(content().string(containsString("flere enn " + maxAntall + " hendelser.")));
+            .param("antall", "10001"))
+            .andDo(print()).andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -65,8 +61,15 @@ public class FeedControllerTest {
 
     @Test
     public void greeting_should_return_message_from_service_with_size_check() throws Exception {
-        mockMvc.perform(get("/hendelser")
+        mockMvc.perform(get("/hendelser?side=0&antall=5")
             .with(user("srvTest")))
             .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(5)));
+    }
+
+    @Test
+    public void bad_parameters_return_400() throws Exception {
+        mockMvc.perform(get("/hendelser?side=-1")
+            .with(user("srvTest")))
+            .andDo(print()).andExpect(status().isBadRequest());
     }
 }

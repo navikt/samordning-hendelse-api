@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,13 +30,10 @@ public class PaginationTests {
     @Autowired
     private TestDataHelper testData;
 
-    @Value("${FEED_MAX_ANTALL}")
-    private String maxAntall;
-
     @Test
     public void iterate_feed_with_next_page_url() throws Exception {
         String nextUrl = new JSONObject(
-            mockMvc.perform(get("/hendelser").with(user("srvTest")))
+            mockMvc.perform(get("/hendelser?antall=5").with(user("srvTest")))
                 .andDo(print()).andReturn().getResponse().getContentAsString())
             .getString("next_url");
         assertEquals("http://localhost/hendelser?side=1&antall=5", nextUrl);

@@ -11,16 +11,16 @@ import java.util.stream.Collectors;
 
 @Repository
 public class Database {
-    private final String SQL_FETCH = "SELECT HENDELSE_DATA FROM HENDELSER OFFSET ? LIMIT ?";
-    private final String SQL_TOTAL_COUNT = "SELECT COUNT(HENDELSE_DATA) FROM HENDELSER";
+    private final String SQL_FETCH_HENDELSER = "SELECT HENDELSE_DATA FROM HENDELSER WHERE ID >= ? OFFSET ? LIMIT ?";
+    private final String SQL_TOTAL_COUNT     = "SELECT COUNT(HENDELSE_DATA) FROM HENDELSER";
     private JdbcTemplate database;
 
     public Database(JdbcTemplate database) {
         this.database = database;
     }
 
-    public List<Hendelse> fetch(int side, int antall) {
-        return database.queryForList(SQL_FETCH, PGobject.class, side * antall, antall)
+    public List<Hendelse> fetch(int side, int antall, int sekvensnummer) {
+        return database.queryForList(SQL_FETCH_HENDELSER, PGobject.class, sekvensnummer, side * antall, antall)
             .stream().map(hendelse -> JsonbBuilder.create().fromJson(hendelse.getValue(), Hendelse.class))
             .collect(Collectors.toList());
     }
