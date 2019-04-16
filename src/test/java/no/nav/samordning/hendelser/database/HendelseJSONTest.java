@@ -1,6 +1,7 @@
-package no.nav.samordning.hendelser.hendelse;
+package no.nav.samordning.hendelser.database;
 
 import com.jayway.jsonpath.JsonPath;
+import no.nav.samordning.hendelser.hendelse.Hendelse;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -20,8 +21,8 @@ public class HendelseJSONTest {
         hendelse.setYtelsesType("AAP");
         hendelse.setIdentifikator("12345678901");
         hendelse.setVedtakId("ABC123");
-        hendelse.setFom(LocalDate.of(2020, 01, 01));
-        hendelse.setTom(LocalDate.of(2025, 01, 01));
+        hendelse.setFom(LocalDate.of(2020, 1, 1));
+        hendelse.setTom(LocalDate.of(2025, 1, 1));
 
         Jsonb jsonb = JsonbBuilder.create();
         String json = "{\"ytelsesType\":\"AAP\",\"identifikator\":\"12345678901\",\"vedtakId\":\"ABC123\",\"fom\":\"2020-01-01\",\"tom\":\"2025-01-01\"}";
@@ -36,8 +37,8 @@ public class HendelseJSONTest {
         hendelse.setYtelsesType("AAP");
         hendelse.setIdentifikator("12345678901");
         hendelse.setVedtakId("ABC123");
-        hendelse.setFom(LocalDate.of(2020, 01, 01));
-        hendelse.setTom(LocalDate.of(2025, 01, 01));
+        hendelse.setFom(LocalDate.of(2020, 1, 1));
+        hendelse.setTom(LocalDate.of(2025, 1, 1));
 
         Jsonb jsonb = JsonbBuilder.create();
         String result = jsonb.toJson(hendelse);

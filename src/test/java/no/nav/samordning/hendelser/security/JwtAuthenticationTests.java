@@ -1,4 +1,4 @@
-package no.nav.samordning.hendelser.authentication;
+package no.nav.samordning.hendelser.security;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

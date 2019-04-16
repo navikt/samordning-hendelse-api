@@ -1,5 +1,6 @@
-package no.nav.samordning.hendelser.hendelse;
+package no.nav.samordning.hendelser.database;
 
+import no.nav.samordning.hendelser.hendelse.Hendelse;
 import org.postgresql.util.PGobject;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

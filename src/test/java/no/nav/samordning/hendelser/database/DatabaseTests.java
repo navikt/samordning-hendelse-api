@@ -1,8 +1,6 @@
-package no.nav.samordning.hendelser.hendelse;
+package no.nav.samordning.hendelser.database;
 
-import no.nav.samordning.hendelser.DatabaseConfig;
-import org.junit.After;
-import org.junit.Before;
+import no.nav.samordning.hendelser.TestDataHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,31 +8,28 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class EmptyDatabaseTests {
+public class DatabaseTests {
 
     @Autowired
     private Database db;
 
     @Autowired
-    private DatabaseConfig conf;
+    private TestDataHelper testData;
 
-    @Before
-    public void setup() throws Exception {
-        conf.emptyDatabase();
-    }
-
-    @After
-    public void cleanup() throws Exception {
-        conf.refillDatabase();
+    @Test
+    public void fetch_test() {
+        assertThat(testData.hendelse("0"), samePropertyValuesAs(db.fetch(0, 5).get(0)));
     }
 
     @Test
-    public void null_count_returns_0() {
-        assertEquals(0, db.getNumberOfPages(0));
+    public void count_test() {
+        assertEquals(3, db.getNumberOfPages(4));
     }
 }
