@@ -24,12 +24,12 @@ public class EmptyDatabaseTests {
     private DatabaseConfig conf;
 
     @Before
-    public void setup() throws Exception {
+    public void clear() throws Exception {
         conf.emptyDatabase();
     }
 
     @After
-    public void cleanup() throws Exception {
+    public void refill() throws Exception {
         conf.refillDatabase();
     }
 

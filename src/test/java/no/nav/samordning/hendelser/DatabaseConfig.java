@@ -65,7 +65,8 @@ public class DatabaseConfig {
         postgres.execInContainer("psql",
             "-U", postgres.getUsername(),
             "-d", postgres.getDatabaseName(),
-            "-c", "TRUNCATE TABLE HENDELSER");
+            "-c", "TRUNCATE TABLE HENDELSER",
+            "-c", "ALTER SEQUENCE HENDELSER_ID_SEQ RESTART WITH 1");
     }
 
     public void refillDatabase() throws Exception {
