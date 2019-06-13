@@ -1,8 +1,12 @@
 package no.nav.samordning.hendelser;
 
+import org.mockserver.client.server.MockServerClient;
+import org.mockserver.model.HttpRequest;
+import org.mockserver.model.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
@@ -10,55 +14,74 @@ import org.testcontainers.utility.MountableFile;
 
 @Component
 public class DatabaseConfig {
-    private static PostgreSQLContainer postgres;
-    private static GenericContainer vault;
-    private static Network network = Network.SHARED;
 
-    private String DATABASE_NAME = "samordning-hendelser";
-    private String DATABASE_USERNAME = "username";
-    private String DATABASE_PASSWORD = "password";
+    private PostgreSQLContainer postgres;
 
     @Autowired
-    public void setup() throws Exception {
+    public void setupPostgresAndVault() throws Exception {
         postgres = new PostgreSQLContainer()
-            .withDatabaseName(DATABASE_NAME)
-            .withUsername(DATABASE_USERNAME)
-            .withPassword(DATABASE_PASSWORD);
+            .withDatabaseName("samordning-hendelser")
+            .withUsername("user")
+            .withPassword("pass");
         postgres
-            .withNetwork(network)
-            .withNetworkAliases(DATABASE_NAME)
+            .withNetwork(Network.SHARED)
+            .withNetworkAliases("samordning-hendelser")
             .withExposedPorts(5432)
             .withCopyFileToContainer(MountableFile.forClasspathResource("schema.sql"),
-            "/docker-entrypoint-initdb.d/schema.sql");
+                "/docker-entrypoint-initdb.d/schema.sql");
         postgres.start();
 
-        vault = new GenericContainer(
+        GenericContainer vault = new GenericContainer(
             new ImageFromDockerfile()
                 .withDockerfileFromBuilder(builder ->
                     builder
                         .from("vault:1.1.0")
-                        .env("DB_NAME", DATABASE_NAME)
-                        .env("DB_USERNAME", DATABASE_USERNAME)
-                        .env("DB_PASSWORD", DATABASE_PASSWORD)
+                        .env("DB_NAME", postgres.getDatabaseName())
+                        .env("DB_USERNAME", postgres.getUsername())
+                        .env("DB_PASSWORD", postgres.getPassword())
                         .env("VAULT_ADDR", "http://localhost:8200")
                         .env("VAULT_DEV_ROOT_TOKEN_ID", "secret")
                         .env("VAULT_TOKEN", "secret")
                         .build()))
-            .withNetwork(network)
+            .withNetwork(Network.SHARED)
             .withExposedPorts(8200)
             .withNetworkAliases("vault")
-            .withCopyFileToContainer(MountableFile.forClasspathResource("policy_db.hcl"), "/policy_db.hcl")
             .withCopyFileToContainer(MountableFile.forClasspathResource("vault_setup.sh"), "/vault_setup.sh");
         vault.start();
 
         System.setProperty("DB_URL", postgres.getJdbcUrl());
         System.setProperty("DB_MOUNT_PATH", "secrets/test");
         System.setProperty("DB_ROLE", "user");
+        System.setProperty("VAULT_TOKEN", "secret");
         System.setProperty("VAULT_ADDR", String.format("http://%s:%d",
             vault.getContainerIpAddress(), vault.getMappedPort(8200)));
-        System.setProperty("VAULT_TOKEN", "secret");
 
         vault.execInContainer("sh", "vault_setup.sh");
+    }
+
+    @Autowired
+    public void setupMockServer() {
+        MockServerContainer mockServer = new MockServerContainer();
+        mockServer.start();
+        new MockServerClient("localhost", mockServer.getServerPort())
+            .when(HttpRequest.request()
+                .withMethod("GET")
+                .withPath("/jwks"))
+            .respond(HttpResponse.response()
+                .withStatusCode(200)
+                .withHeader("\"Content-type\", \"application/json\"")
+                .withBody("{\n" +
+                    "  \"keys\": [{\n" +
+                    "      \"kty\": \"RSA\",\n" +
+                    "      \"e\": \"AQAB\",\n" +
+                    "      \"use\": \"sig\",\n" +
+                    "      \"n\": \"33TqqLR3eeUmDtHS89qF3p4MP7Wfqt2Zjj3lZjLjjCGDvwr9cJNlNDiuKboODgUiT4ZdPWbOiMAfDcDzlOxA04DDnEFGAf-kDQiNSe2ZtqC7bnIc8-KSG_qOGQIVaay4Ucr6ovDkykO5Hxn7OU7sJp9TP9H0JH8zMQA6YzijYH9LsupTerrY3U6zyihVEDXXOv08vBHk50BMFJbE9iwFwnxCsU5-UZUZYw87Uu0n4LPFS9BT8tUIvAfnRXIEWCha3KbFWmdZQZlyrFw0buUEf0YN3_Q0auBkdbDR_ES2PbgKTJdkjc_rEeM0TxvOUf7HuUNOhrtAVEN1D5uuxE1WSw\"\n" +
+                    "    }\n" +
+                    "  ]\n" +
+                    "}")
+            );
+
+        System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.getEndpoint() + "/jwks");
     }
 
     public void emptyDatabase() throws Exception {
