@@ -7,7 +7,6 @@ node {
     def DOCKER_REPO = "repo.adeo.no:5443"
     def COMMIT_HASH_LONG
     def COMMIT_HASH_SHORT
-    cleanWs()
     stage('checkout') {
         try {
             sh "git init"

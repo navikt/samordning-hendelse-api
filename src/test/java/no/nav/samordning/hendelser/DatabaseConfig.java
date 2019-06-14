@@ -63,7 +63,7 @@ public class DatabaseConfig {
     public void setupMockServer() {
         MockServerContainer mockServer = new MockServerContainer();
         mockServer.start();
-        new MockServerClient("localhost", mockServer.getServerPort())
+        new MockServerClient(mockServer.getContainerIpAddress(), mockServer.getServerPort())
             .when(HttpRequest.request()
                 .withMethod("GET")
                 .withPath("/jwks"))
