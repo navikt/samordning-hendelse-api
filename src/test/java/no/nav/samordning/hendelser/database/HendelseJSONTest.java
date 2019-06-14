@@ -3,7 +3,7 @@ package no.nav.samordning.hendelser.database;
 import com.jayway.jsonpath.JsonPath;
 import no.nav.samordning.hendelser.hendelse.Hendelse;
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;

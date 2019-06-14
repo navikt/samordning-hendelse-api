@@ -1,20 +1,15 @@
 package no.nav.samordning.hendelser.database;
 
 import no.nav.samordning.hendelser.DatabaseConfig;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 public class EmptyDatabaseTests {
 
     @Autowired
@@ -23,12 +18,12 @@ public class EmptyDatabaseTests {
     @Autowired
     private DatabaseConfig conf;
 
-    @Before
+    @BeforeEach
     public void clear() throws Exception {
         conf.emptyDatabase();
     }
 
-    @After
+    @AfterEach
     public void refill() throws Exception {
         conf.refillDatabase();
     }

@@ -3,6 +3,8 @@ package no.nav.samordning.hendelser;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.testcontainers.containers.GenericContainer;
@@ -12,13 +14,28 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
+/**
+ * Creates and manages shared testcontainers between all tests to mock database/vault/STS
+ */
 @Component
 public class DatabaseConfig {
 
-    private PostgreSQLContainer postgres;
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
+
+    private static PostgreSQLContainer postgres;
+    private static GenericContainer vault;
+    private static MockServerContainer mockServer;
 
     @Autowired
-    public void setupPostgresAndVault() throws Exception {
+    public void init() {
+        if (postgres == null && vault == null) {
+            setupPostgresContainer();
+            setupVaultContainer();
+        }
+        if (mockServer == null) setupMockServer();
+    }
+
+    private void setupPostgresContainer() {
         postgres = new PostgreSQLContainer()
             .withDatabaseName("samordning-hendelser")
             .withUsername("user")
@@ -30,8 +47,10 @@ public class DatabaseConfig {
             .withCopyFileToContainer(MountableFile.forClasspathResource("schema.sql"),
                 "/docker-entrypoint-initdb.d/schema.sql");
         postgres.start();
+    }
 
-        GenericContainer vault = new GenericContainer(
+    private void setupVaultContainer() {
+        vault = new GenericContainer(
             new ImageFromDockerfile()
                 .withDockerfileFromBuilder(builder ->
                     builder
@@ -56,12 +75,15 @@ public class DatabaseConfig {
         System.setProperty("VAULT_ADDR", String.format("http://%s:%d",
             vault.getContainerIpAddress(), vault.getMappedPort(8200)));
 
-        vault.execInContainer("sh", "vault_setup.sh");
+        try {
+            vault.execInContainer("sh", "vault_setup.sh");
+        } catch (Exception e) {
+            logger.error("Failed to setup vault testcontainer", e);
+        }
     }
 
-    @Autowired
-    public void setupMockServer() {
-        MockServerContainer mockServer = new MockServerContainer();
+    private void setupMockServer() {
+        mockServer = new MockServerContainer();
         mockServer.start();
         new MockServerClient(mockServer.getContainerIpAddress(), mockServer.getServerPort())
             .when(HttpRequest.request()
