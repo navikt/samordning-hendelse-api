@@ -3,39 +3,36 @@ package no.nav.samordning.hendelser;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MockServerContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
 /**
- * Creates and manages shared testcontainers between all tests to mock database/vault/STS
+ * Creates and manages shared testcontainers for all tests
  */
 @Component
 public class DatabaseConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
-
     private static PostgreSQLContainer postgres;
-    private static GenericContainer vault;
     private static MockServerContainer mockServer;
 
     @Autowired
     public void init() {
-        if (postgres == null && vault == null) {
-            setupPostgresContainer();
-            setupVaultContainer();
+        if (postgres == null && mockServer == null) {
+            initPostgresContainer();
+            initMockServerContainer();
+
+            System.setProperty("spring.datasource.url", postgres.getJdbcUrl());
+            System.setProperty("spring.datasource.username", postgres.getUsername());
+            System.setProperty("spring.datasource.password", postgres.getPassword());
+            System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.getEndpoint() + "/jwks");
         }
-        if (mockServer == null) setupMockServer();
     }
 
-    private void setupPostgresContainer() {
+    private void initPostgresContainer() {
         postgres = new PostgreSQLContainer()
             .withDatabaseName("samordning-hendelser")
             .withUsername("user")
@@ -49,40 +46,7 @@ public class DatabaseConfig {
         postgres.start();
     }
 
-    private void setupVaultContainer() {
-        vault = new GenericContainer(
-            new ImageFromDockerfile()
-                .withDockerfileFromBuilder(builder ->
-                    builder
-                        .from("vault:1.1.0")
-                        .env("DB_NAME", postgres.getDatabaseName())
-                        .env("DB_USERNAME", postgres.getUsername())
-                        .env("DB_PASSWORD", postgres.getPassword())
-                        .env("VAULT_ADDR", "http://localhost:8200")
-                        .env("VAULT_DEV_ROOT_TOKEN_ID", "secret")
-                        .env("VAULT_TOKEN", "secret")
-                        .build()))
-            .withNetwork(Network.SHARED)
-            .withExposedPorts(8200)
-            .withNetworkAliases("vault")
-            .withCopyFileToContainer(MountableFile.forClasspathResource("vault_setup.sh"), "/vault_setup.sh");
-        vault.start();
-
-        System.setProperty("DB_URL", postgres.getJdbcUrl());
-        System.setProperty("DB_MOUNT_PATH", "secrets/test");
-        System.setProperty("DB_ROLE", "user");
-        System.setProperty("VAULT_TOKEN", "secret");
-        System.setProperty("VAULT_ADDR", String.format("http://%s:%d",
-            vault.getContainerIpAddress(), vault.getMappedPort(8200)));
-
-        try {
-            vault.execInContainer("sh", "vault_setup.sh");
-        } catch (Exception e) {
-            logger.error("Failed to setup vault testcontainer", e);
-        }
-    }
-
-    private void setupMockServer() {
+    private void initMockServerContainer() {
         mockServer = new MockServerContainer();
         mockServer.start();
         new MockServerClient(mockServer.getContainerIpAddress(), mockServer.getServerPort())
@@ -102,8 +66,6 @@ public class DatabaseConfig {
                     "  ]\n" +
                     "}")
             );
-
-        System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.getEndpoint() + "/jwks");
     }
 
     public void emptyDatabase() throws Exception {
