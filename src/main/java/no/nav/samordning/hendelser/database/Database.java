@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class Database {
-    private final String SQL_FETCH_HENDELSER = "SELECT HENDELSE_DATA FROM HENDELSER WHERE ID >= ? OFFSET ? LIMIT ?";
+    private final String SQL_FETCH_HENDELSER = "SELECT HENDELSE_DATA #>> '{}' FROM HENDELSER WHERE ID >= ? OFFSET ? LIMIT ?";
     private final String SQL_TOTAL_COUNT     = "SELECT COUNT(HENDELSE_DATA) FROM HENDELSER";
     private JdbcTemplate database;
 
