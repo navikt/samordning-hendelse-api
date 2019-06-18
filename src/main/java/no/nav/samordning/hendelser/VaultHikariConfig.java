@@ -21,7 +21,7 @@ public class VaultHikariConfig implements InitializingBean {
 
     @Value("${VAULT_POSTGRES_BACKEND}")
     private String vaultPostgresBackend;
-    @Value("${SPRING_CLOUD_VAULT_KUBERNETES_ROLE}")
+    @Value("${VAULT_POSTGRES_ROLE}")
     private String vaultPostgresRole;
 
     private static Logger LOGGER = LoggerFactory.getLogger(VaultHikariConfig.class.getName());
