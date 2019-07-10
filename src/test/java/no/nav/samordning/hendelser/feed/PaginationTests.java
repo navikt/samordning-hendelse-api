@@ -1,19 +1,16 @@
 package no.nav.samordning.hendelser.feed;
 
-import no.nav.samordning.hendelser.TestDataHelper;
 import no.nav.samordning.hendelser.TestToken;
-import no.nav.samordning.hendelser.hendelse.Hendelse;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.List;
-
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -24,48 +21,18 @@ public class PaginationTests {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private TestDataHelper testData;
-
     @Test
     public void iterate_feed_with_next_page_url() throws Exception {
         String nextUrl = new JSONObject(
-            mockMvc.perform(get("/hendelser?antall=5")
+            mockMvc.perform(get("/hendelser?tpnr=4000&antall=2")
                 .header("Authorization", TestToken.getValidAccessToken()))
                 .andDo(print()).andReturn().getResponse().getContentAsString())
             .getString("next_url");
-        assertEquals("http://localhost/hendelser?side=1&antall=5", nextUrl);
 
-        String lastUrl = new JSONObject(
-            mockMvc.perform(get(nextUrl)
-                .header("Authorization", TestToken.getValidAccessToken()))
-                .andDo(print()).andReturn().getResponse().getContentAsString())
-            .getString("next_url");
-        assertEquals("null", lastUrl);
-    }
+        assertEquals("http://localhost/hendelser?tpnr=4000&side=1&antall=2", nextUrl);
 
-    @Test
-    public void first_page_links_to_second_page_with_remaining_items() throws Exception {
-        List<Hendelse> firstPage = testData.mapJsonToHendelser(
-            mockMvc.perform(get("/hendelser?side=0&antall=4")
-                .header("Authorization", TestToken.getValidAccessToken()))
-                .andDo(print()).andReturn().getResponse().getContentAsString());
-
-        List<Hendelse> secondPage = testData.mapJsonToHendelser(
-            mockMvc.perform(get("/hendelser?side=1&antall=4")
-                .header("Authorization", TestToken.getValidAccessToken()))
-                .andDo(print()).andReturn().getResponse().getContentAsString());
-
-        List<Hendelse> thirdPage = testData.mapJsonToHendelser(
-            mockMvc.perform(get("/hendelser?side=2&antall=4")
-                .header("Authorization", TestToken.getValidAccessToken()))
-                .andDo(print()).andReturn().getResponse().getContentAsString());
-
-        assertTrue(firstPage.stream().allMatch(hendelse -> testData.hendelseIdList("0", "1", "2", "3")
-            .contains(hendelse.getIdentifikator())));
-        assertTrue(secondPage.stream().allMatch(hendelse -> testData.hendelseIdList("4", "5", "6", "7")
-            .contains(hendelse.getIdentifikator())));
-        assertTrue(thirdPage.stream().allMatch(hendelse -> testData.hendelseIdList("8", "9")
-            .contains(hendelse.getIdentifikator())));
+        mockMvc.perform(get(nextUrl)
+            .header("Authorization", TestToken.getValidAccessToken()))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.next_url", isEmptyOrNullString()));
     }
 }

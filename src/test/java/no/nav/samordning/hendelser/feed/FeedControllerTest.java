@@ -1,8 +1,6 @@
 package no.nav.samordning.hendelser.feed;
 
-import no.nav.samordning.hendelser.TestDataHelper;
 import no.nav.samordning.hendelser.TestToken;
-import no.nav.samordning.hendelser.hendelse.Hendelse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,11 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.List;
-
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.hasToString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,12 +23,9 @@ public class FeedControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private TestDataHelper testData;
-
     @Test
     public void greeting_should_return_message_from_service() throws Exception {
-        mockMvc.perform(get("/hendelser")
+        mockMvc.perform(get("/hendelser?tpnr=1000")
             .header("Authorization", TestToken.getValidAccessToken()))
             .andDo(print()).andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE));
@@ -49,18 +41,17 @@ public class FeedControllerTest {
 
     @Test
     public void greeting_should_return_message_from_service_with_first_record() throws Exception {
-        List<Hendelse> result = testData.mapJsonToHendelser(
-            mockMvc.perform(get("/hendelser?antall=1")
-                .header("Authorization", TestToken.getValidAccessToken()))
-                .andDo(print()).andReturn().getResponse().getContentAsString());
-        assertThat(result.get(0), samePropertyValuesAs(testData.hendelse("0")));
+        mockMvc.perform(get("/hendelser?tpnr=1000&antall=1")
+            .header("Authorization", TestToken.getValidAccessToken()))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].identifikator", hasToString("01016600000")))
+            .andDo(print());
     }
 
     @Test
     public void greeting_should_return_message_from_service_with_size_check() throws Exception {
-        mockMvc.perform(get("/hendelser?side=0&antall=5")
+        mockMvc.perform(get("/hendelser?tpnr=4000&side=0&antall=5")
             .header("Authorization", TestToken.getValidAccessToken()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(5)));
+            .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(3)));
     }
 
     @Test

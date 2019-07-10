@@ -21,12 +21,12 @@ public class JwtAuthenticationTests {
     @Test
     public void test_correct_credentials_authenticated() throws Exception {
         mockMvc.perform(get("/hendelser").header("Authorization", TestToken.getValidAccessToken())
-                .param("side", "1")).andDo(print()).andExpect(status().isOk());
+                .param("tpnr", "1000")).andDo(print()).andExpect(status().isOk());
     }
 
     @Test
     public void test_wrong_credentials_unauthenticated() throws Exception {
         mockMvc.perform(get("/hendelser").header("Authorization", TestToken.getInvalidAccessToken())
-                .param("side", "1")).andDo(print()).andExpect(status().isUnauthorized());
+                .param("tpnr", "1000")).andDo(print()).andExpect(status().isUnauthorized());
     }
 }

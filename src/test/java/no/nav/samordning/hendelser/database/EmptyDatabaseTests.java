@@ -30,6 +30,6 @@ public class EmptyDatabaseTests {
 
     @Test
     public void null_count_returns_0() {
-        assertEquals(0, db.getNumberOfPages(0));
+        assertEquals(0, db.getNumberOfPages("1000", 0));
     }
 }

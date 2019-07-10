@@ -3,14 +3,13 @@ package no.nav.samordning.hendelser.database;
 import no.nav.samordning.hendelser.TestDataHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Collections;
 
 import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 @SpringBootTest
 public class DatabaseTests {
@@ -22,39 +21,63 @@ public class DatabaseTests {
     private TestDataHelper testData;
 
     @Test
-    public void fetch_valid_hendelser() {
-        assertThat(testData.hendelse("0"), samePropertyValuesAs(db.fetch(0, 5, 0).get(0)));
-        assertThat(testData.hendelse("1"), samePropertyValuesAs(db.fetch(0, 5, 0).get(1)));
-        assertThat(testData.hendelse("2"), samePropertyValuesAs(db.fetch(0, 5, 0).get(2)));
-        assertThat(testData.hendelse("3"), samePropertyValuesAs(db.fetch(0, 5, 0).get(3)));
+    public void expected_hendelse_is_fetched() {
+        var expectedHendelse = testData.hendelse("01016600000");
+        var hendelse = db.fetchHendelser("1000", 0, 0 ,1).get(0);
+
+        assertThat(expectedHendelse, samePropertyValuesAs(hendelse));
     }
 
     @Test
-    public void page_count() {
-        assertEquals(3, db.getNumberOfPages(4));
-        assertEquals(2, db.getNumberOfPages(5));
-        assertEquals(10, db.getNumberOfPages(1));
+    public void expected_hendelse_from_multiple_tpnr_is_fetched() {
+        var expectedHendelse = testData.hendelse("01016700000");
+        var hendelse1 = db.fetchHendelser("2000", 0, 0 ,2).get(0);
+        var hendelse2 = db.fetchHendelser("3000", 0, 0, 2).get(0);
+
+        assertThat(expectedHendelse, samePropertyValuesAs(hendelse1));
+        assertThat(expectedHendelse, samePropertyValuesAs(hendelse2));
     }
 
     @Test
-    public void pagination() {
-        assertThat(testData.hendelse("0"), samePropertyValuesAs(db.fetch(0, 5, 0).get(0)));
-        assertTrue(db.fetch(0, 4, 0).stream().allMatch(hendelse ->
-            testData.hendelseIdList("0", "1", "2", "3").contains(hendelse.getIdentifikator())));
-        assertTrue(db.fetch(1, 4, 0).stream().allMatch(hendelse ->
-            testData.hendelseIdList("4", "5", "6", "7").contains(hendelse.getIdentifikator())));
-        assertTrue(db.fetch(2, 4, 0).stream().allMatch(hendelse ->
-            testData.hendelseIdList("8", "9").contains(hendelse.getIdentifikator())));
-        assertEquals(Collections.emptyList(), db.fetch(2, 5, 0));
+    public void multiple_expected_hendelser_are_fetched() {
+        var expectedHendelser = testData.hendelser("01016800000", "01016900000", "01017000000");
+        var hendelser = db.fetchHendelser("4000", 0, 0, 3);
+
+        for (int i = 0; i < hendelser.size(); i++)
+            assertThat(hendelser.get(i), samePropertyValuesAs(expectedHendelser.get(i)));
     }
 
     @Test
-    public void sequence_number() {
-        assertThat(testData.hendelse("0"), samePropertyValuesAs(db.fetch(0, 5, 1).get(0)));
-        assertThat(testData.hendelse("1"), samePropertyValuesAs(db.fetch(0, 5, 2).get(0)));
-        assertThat(testData.hendelse("9"), samePropertyValuesAs(db.fetch(0, 5, 10).get(0)));
-        assertTrue(db.fetch(1, 3, 3).stream().allMatch(hendelse ->
-            testData.hendelseIdList("5", "6", "7").contains(hendelse.getIdentifikator())));
-        assertEquals(Collections.emptyList(), db.fetch(0, 5, 11));
+    public void unknown_hendelse_returns_empty_list() {
+        assertEquals(Collections.emptyList(), db.fetchHendelser("1234", 1, 0, 9999));
+    }
+
+    @Test
+    public void page_counting() {
+        assertEquals(1, db.getNumberOfPages("2000", 1));
+        assertEquals(3, db.getNumberOfPages("4000", 1));
+        assertEquals(2, db.getNumberOfPages("4000", 2));
+    }
+
+    @Test
+    public void hendelser_split_with_pagination() {
+        var expectedPageOne = testData.hendelser("01016800000", "01016900000");
+        var expectedPageTwo = testData.hendelser("01017000000");
+
+        var pageOne = db.fetchHendelser("4000", 0, 0, 2);
+        var pageTwo = db.fetchHendelser("4000", 0, 1, 2);
+
+        for (int i = 0; i < pageOne.size(); i++)
+            assertThat(pageOne.get(i), samePropertyValuesAs(expectedPageOne.get(i)));
+        assertThat(pageTwo.get(0), samePropertyValuesAs(expectedPageTwo.get(0)));
+    }
+
+    @Test
+    public void skip_hendelser_with_offset() {
+        var expectedHendelse = testData.hendelse("01017000000");
+        var hendelser = db.fetchHendelser("4000",6, 0, 3);
+
+        assertEquals(1, hendelser.size());
+        assertThat(hendelser.get(0), samePropertyValuesAs(expectedHendelse));
     }
 }
