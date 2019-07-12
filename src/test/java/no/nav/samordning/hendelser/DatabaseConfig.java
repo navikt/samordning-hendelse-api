@@ -56,15 +56,7 @@ public class DatabaseConfig {
             .respond(HttpResponse.response()
                 .withStatusCode(200)
                 .withHeader("\"Content-type\", \"application/json\"")
-                .withBody("{\n" +
-                    "  \"keys\": [{\n" +
-                    "      \"kty\": \"RSA\",\n" +
-                    "      \"e\": \"AQAB\",\n" +
-                    "      \"use\": \"sig\",\n" +
-                    "      \"n\": \"33TqqLR3eeUmDtHS89qF3p4MP7Wfqt2Zjj3lZjLjjCGDvwr9cJNlNDiuKboODgUiT4ZdPWbOiMAfDcDzlOxA04DDnEFGAf-kDQiNSe2ZtqC7bnIc8-KSG_qOGQIVaay4Ucr6ovDkykO5Hxn7OU7sJp9TP9H0JH8zMQA6YzijYH9LsupTerrY3U6zyihVEDXXOv08vBHk50BMFJbE9iwFwnxCsU5-UZUZYw87Uu0n4LPFS9BT8tUIvAfnRXIEWCha3KbFWmdZQZlyrFw0buUEf0YN3_Q0auBkdbDR_ES2PbgKTJdkjc_rEeM0TxvOUf7HuUNOhrtAVEN1D5uuxE1WSw\"\n" +
-                    "    }\n" +
-                    "  ]\n" +
-                    "}")
+                .withBody(TestTokenHelper.generateJwks())
             );
     }
 

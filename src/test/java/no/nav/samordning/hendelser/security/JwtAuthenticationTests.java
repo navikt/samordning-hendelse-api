@@ -1,6 +1,6 @@
 package no.nav.samordning.hendelser.security;
 
-import no.nav.samordning.hendelser.TestToken;
+import no.nav.samordning.hendelser.TestTokenHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,14 +19,26 @@ public class JwtAuthenticationTests {
     private MockMvc mockMvc;
 
     @Test
-    public void test_correct_credentials_authenticated() throws Exception {
-        mockMvc.perform(get("/hendelser").header("Authorization", TestToken.getValidAccessToken())
+    public void valid_token_issuer_is_authorized() throws Exception {
+        mockMvc.perform(get("/hendelser").header("Authorization", TestTokenHelper.getValidAccessToken())
                 .param("tpnr", "1000")).andDo(print()).andExpect(status().isOk());
     }
 
     @Test
-    public void test_wrong_credentials_unauthenticated() throws Exception {
-        mockMvc.perform(get("/hendelser").header("Authorization", TestToken.getInvalidAccessToken())
+    public void invalid_token_issuer_is_unauthorized() throws Exception {
+        mockMvc.perform(get("/hendelser").header("Authorization", TestTokenHelper.getInvalidAccessToken())
+                .param("tpnr", "1000")).andDo(print()).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void valid_token_and_valid_claims_is_authorized() throws Exception {
+        mockMvc.perform(get("/hendelser").header("Authorization", TestTokenHelper.getInvalidAccessToken())
+            .param("tpnr", "1000")).andDo(print()).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void valid_token_issuer_and_invalid_claims_is_unauthorized() throws Exception {
+        mockMvc.perform(get("/hendelser").header("Authorization", TestTokenHelper.getInvalidAccessToken())
                 .param("tpnr", "1000")).andDo(print()).andExpect(status().isUnauthorized());
     }
 }
