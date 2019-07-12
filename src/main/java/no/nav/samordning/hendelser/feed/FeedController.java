@@ -25,7 +25,7 @@ public class FeedController {
         this.database = database;
     }
 
-    @RequestMapping
+    @RequestMapping("/hendelser")
     @Timed(value = "get.counter.requests")
     public Feed hendelser(
         HttpServletRequest request,
@@ -39,7 +39,6 @@ public class FeedController {
         var hendelser = new ArrayList<>(database.fetchHendelser(tpnr, sekvensnummer, side, antall));
 
         String nextUrl = null;
-        var test = database.getNumberOfPages(tpnr, antall);
         if (side < database.getNumberOfPages(tpnr, antall) - 1)
             nextUrl = request.getRequestURL().toString() + String.format("?tpnr=%s&side=%d&antall=%d", tpnr, side + 1, antall);
 

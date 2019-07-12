@@ -58,6 +58,10 @@
 					<artifactId>junit</artifactId>
 					<groupId>junit</groupId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.vaadin.external.google</groupId>
+					<artifactId>android-json</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<!-- Spring Security -->
@@ -66,11 +70,21 @@
 			<artifactId>spring-security-oauth2</artifactId>
 			<version>2.3.6.RELEASE</version>
 		</dependency>
-		<!-- JSON & JAXB-->
+		<!-- JSON -->
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.0</version>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>3.8.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180813</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.json.bind</groupId>
+			<artifactId>javax.json.bind-api</artifactId>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse</groupId>
@@ -81,11 +95,6 @@
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.json</artifactId>
 			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20180813</version>
 		</dependency>
 		<!-- Metrics and Logging -->
 		<dependency>
