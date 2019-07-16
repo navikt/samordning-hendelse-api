@@ -24,12 +24,18 @@ public class TokenResolver implements org.springframework.security.oauth2.server
     @Override
     public String resolve(HttpServletRequest request) {
         var token = new DefaultBearerTokenResolver().resolve(request);
+
+        if (token == null)
+            return null;
+
         var claims = getClaims(token);
         var tpnr = request.getParameter("tpnr");
 
-        if (tpregisteretConsumer.validateOrganisation(claims.get("client_orgno"), tpnr)) {
+        if (claims.getOrDefault("sub", "").equals("srvtjenestepensjon"))
             return token;
-        }
+
+        if (tpregisteretConsumer.validateOrganisation(claims.get("client_orgno"), tpnr))
+            return token;
 
         return null;
     }

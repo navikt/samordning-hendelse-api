@@ -33,4 +33,11 @@ public class AuthenticationTests {
                 .param("tpnr", "1000"))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    public void no_token_is_unauthorized() throws Exception {
+        mockMvc.perform(get("/hendelser")
+                .param("tpnr", "1000"))
+                .andExpect(status().isUnauthorized());
+    }
 }
