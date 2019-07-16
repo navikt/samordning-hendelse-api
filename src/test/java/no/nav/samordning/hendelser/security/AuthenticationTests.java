@@ -35,6 +35,22 @@ public class AuthenticationTests {
     }
 
     @Test
+    public void invalid_orgnr_is_unauthorized() throws Exception {
+        mockMvc.perform(get("/hendelser")
+                .header("Authorization", TestTokenHelper.token("1111111111", false))
+                .param("tpnr", "1000"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void invalid_tpnr_is_unauthorized() throws Exception {
+        mockMvc.perform(get("/hendelser")
+                .header("Authorization", TestTokenHelper.token("0000000000", false))
+                .param("tpnr", "1235"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     public void no_token_is_unauthorized() throws Exception {
         mockMvc.perform(get("/hendelser")
                 .param("tpnr", "1000"))
