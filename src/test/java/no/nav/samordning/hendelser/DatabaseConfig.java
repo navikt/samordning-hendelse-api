@@ -10,6 +10,8 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Creates and manages shared testcontainers for all tests
  */
@@ -20,7 +22,7 @@ public class DatabaseConfig {
     private static MockServerContainer mockServer;
 
     @Autowired
-    public void init() {
+    public void init() throws Exception {
         if (postgres == null && mockServer == null) {
             initPostgresContainer();
             initMockServerContainer();
@@ -29,6 +31,7 @@ public class DatabaseConfig {
             System.setProperty("spring.datasource.username", postgres.getUsername());
             System.setProperty("spring.datasource.password", postgres.getPassword());
             System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.getEndpoint() + "/jwks");
+            System.setProperty("TPREGISTERET_URL", mockServer.getEndpoint());
         }
     }
 
@@ -46,11 +49,13 @@ public class DatabaseConfig {
         postgres.start();
     }
 
-    private void initMockServerContainer() {
+    private void initMockServerContainer() throws NoSuchAlgorithmException {
         mockServer = new MockServerContainer();
         mockServer.start();
-        new MockServerClient(mockServer.getContainerIpAddress(), mockServer.getServerPort())
-            .when(HttpRequest.request()
+
+        var mockClient = new MockServerClient(mockServer.getContainerIpAddress(), mockServer.getServerPort());
+
+        mockClient.when(HttpRequest.request()
                 .withMethod("GET")
                 .withPath("/jwks"))
             .respond(HttpResponse.response()
@@ -58,6 +63,18 @@ public class DatabaseConfig {
                 .withHeader("\"Content-type\", \"application/json\"")
                 .withBody(TestTokenHelper.generateJwks())
             );
+
+        mockClient.when(HttpRequest.request()
+                .withMethod("GET")
+                .withPath("/organisation/0000000000/tpnr/1000"))
+                .respond(HttpResponse.response()
+                .withStatusCode(200));
+
+        mockClient.when(HttpRequest.request()
+                .withMethod("GET")
+                .withPath("/organisation/4444444444/tpnr/4000"))
+                .respond(HttpResponse.response()
+                .withStatusCode(200));
     }
 
     public void emptyDatabase() throws Exception {

@@ -25,14 +25,14 @@ public class PaginationTests {
     public void iterate_feed_with_next_page_url() throws Exception {
         String nextUrl = new JSONObject(
             mockMvc.perform(get("/hendelser?tpnr=4000&antall=2")
-                .header("Authorization", TestTokenHelper.getValidAccessToken()))
+                .header("Authorization", TestTokenHelper.token("4444444444", true)))
                 .andDo(print()).andReturn().getResponse().getContentAsString())
             .getString("next_url");
 
         assertEquals("http://localhost/hendelser?tpnr=4000&side=1&antall=2", nextUrl);
 
         mockMvc.perform(get(nextUrl)
-            .header("Authorization", TestTokenHelper.getValidAccessToken()))
+            .header("Authorization", TestTokenHelper.token("4444444444", true)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.next_url", isEmptyOrNullString()));
     }
 }

@@ -12,20 +12,10 @@ import java.util.Base64;
 
 public class TestTokenHelper {
 
-    private static RSAPrivateKey privateKey;
-    private static RSAPublicKey publicKey;
+    private static KeyPair keyPair;
 
-    public static String generateJwks() {
-        try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(1024);
-            KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            privateKey = (RSAPrivateKey) keyPair.getPrivate();
-            publicKey = (RSAPublicKey) keyPair.getPublic();
-        } catch (NoSuchAlgorithmException e) {
-            System.exit(-1);
-        }
-
+    public static String generateJwks() throws NoSuchAlgorithmException {
+        keyPair = generateKeyPair();
         return String.format("{\n" +
             "  \"keys\": [{\n" +
             "      \"kty\": \"RSA\",\n" +
@@ -34,18 +24,28 @@ public class TestTokenHelper {
             "      \"n\": \"%s\"\n" +
             "    }\n" +
             "  ]\n" +
-            "}", Base64.getUrlEncoder().encodeToString(publicKey.getModulus().toByteArray()));
+            "}", Base64.getUrlEncoder().encodeToString(((RSAPublicKey)keyPair.getPublic()).getModulus().toByteArray()));
     }
 
-    public static String getValidAccessToken() {
-        var algorithm = Algorithm.RSA256(publicKey, privateKey);
+    public static String token(String orgno, Boolean verifiedSignature) throws NoSuchAlgorithmException {
+        var signingKeys = keyPair;
+
+        if (!verifiedSignature) {
+            signingKeys = generateKeyPair();
+        }
+
+        var algorithm = Algorithm.RSA256((RSAPublicKey) signingKeys.getPublic(), (RSAPrivateKey) signingKeys.getPrivate());
         var builder = JWT.create();
-        builder.withClaim("name", "bob");
-        builder.withClaim("sub", "hendelser");
+        builder.withClaim("iss", "https://badserver/provider/");
+        builder.withClaim("scope", "nav:samordning/v1/hendelser");
+        builder.withClaim("client_id", "tp_ordning");
+        builder.withClaim("client_orgno", orgno);
         return "Bearer " + builder.sign(algorithm);
     }
 
-    public static String getInvalidAccessToken() {
-        return "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.TCYt5XsITJX1CxPCT8yAV-TVkIEq_PbChOMqsLfRoPsnsgw5WEuts01mq-pQy7UJiN5mgRxD-WUcX16dUEMGlv50aqzpqh4Qktb3rk-BuQy72IFLOqV0G_zS245-kronKb78cPN25DGlcTwLtjPAYuNzVBAh4vGHSrQyHUdBBPM";
+    private static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(1024);
+        return keyPairGenerator.generateKeyPair();
     }
 }

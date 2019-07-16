@@ -1,8 +1,10 @@
 package no.nav.samordning.hendelser.security;
 
 import com.auth0.jwt.JWT;
+import no.nav.samordning.hendelser.consumer.TpregisteretConsumer;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.server.resource.BearerTokenError;
@@ -16,14 +18,20 @@ import java.util.Map;
 
 public class TokenResolver implements org.springframework.security.oauth2.server.resource.web.BearerTokenResolver {
 
+    @Autowired
+    private TpregisteretConsumer tpregisteretConsumer;
+
     @Override
     public String resolve(HttpServletRequest request) {
         var token = new DefaultBearerTokenResolver().resolve(request);
         var claims = getClaims(token);
+        var tpnr = request.getParameter("tpnr");
 
-        // TODO: Claim verifications
+        if (tpregisteretConsumer.validateOrganisation(claims.get("client_orgno"), tpnr)) {
+            return token;
+        }
 
-        return token;
+        return null;
     }
 
     private Map<String, String> getClaims(String token) {
@@ -32,8 +40,10 @@ public class TokenResolver implements org.springframework.security.oauth2.server
         var json = new JSONObject(payload);
 
         try {
-            return Map.of("sub", json.getString("sub"),
-                "name", json.getString("name"));
+            return Map.of("iss", json.getString("iss"),
+                    "scope", json.getString("scope"),
+                    "client_id", json.getString("client_id"),
+                    "client_orgno", json.getString("client_orgno"));
         } catch (JSONException e) {
             throw tokenError("Missing required parameter: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
