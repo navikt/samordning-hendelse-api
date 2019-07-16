@@ -75,12 +75,12 @@ node {
             sh "sed -i \'s/${COMMIT_HASH_SHORT}/latest/\' nais.yaml"
             github.commitStatus("success", "navikt/${APP_NAME}", APP_TOKEN, COMMIT_HASH_LONG)
             slackSend([color  : 'good',
-                       message: "Successfully deployed ${APP_NAME}:<https://github.com/navikt/${APP_NAME}/commit/${COMMIT_HASH_LONG}|`${COMMIT_HASH_SHORT}`>" + " to dev-fss :feelsgoodman:"
+                       message: "Successfully deployed ${APP_NAME}:<https://github.com/navikt/${APP_NAME}/commit/${COMMIT_HASH_LONG}|`${COMMIT_HASH_SHORT}`>" + " to dev-fss :pogchamp:"
             ])
         } catch (err) {
             github.commitStatus("failure", "navikt/${APP_NAME}", APP_TOKEN, COMMIT_HASH_LONG)
             slackSend([color  : 'danger',
-                       message: "Failed to deploy ${APP_NAME}:<https://github.com/navikt/${APP_NAME}/commit/${COMMIT_HASH_LONG}|`${COMMIT_HASH_SHORT}`>" + " to dev-fss :feelsbadman:"
+                       message: "Failed to deploy ${APP_NAME}:<https://github.com/navikt/${APP_NAME}/commit/${COMMIT_HASH_LONG}|`${COMMIT_HASH_SHORT}`>" + " to dev-fss :angery:"
             ])
             error("Failed deploy stage")
         }
