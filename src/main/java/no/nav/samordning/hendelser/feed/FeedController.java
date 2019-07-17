@@ -1,6 +1,10 @@
 package no.nav.samordning.hendelser.feed;
 
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import no.nav.samordning.hendelser.database.Database;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -25,16 +29,15 @@ public class FeedController {
         this.database = database;
     }
 
-    @RequestMapping("/hendelser")
-    @Timed(value = "get.counter.requests")
+    @Timed
+    @RequestMapping(path = "/hendelser")
+    @ApiOperation(value = "Samordningspliktige hendelse feed")
     public Feed hendelser(
         HttpServletRequest request,
         @RequestParam(value = "tpnr") String tpnr,
         @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero Integer side,
         @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) Integer antall,
         @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) Integer sekvensnummer) {
-
-        // TODO: Validate tpnr with token
 
         var hendelser = new ArrayList<>(database.fetchHendelser(tpnr, sekvensnummer, side, antall));
 
