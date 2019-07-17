@@ -32,4 +32,12 @@ public class TokenResolverTests {
                 .param("tpnr", "4000"))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    public void missing_required_parameter_returns_bad_request() throws Exception {
+        mockMvc.perform(get("/hendelser")
+                .header("Authorization", TestTokenHelper.emptyToken())
+                .param("tpnr", "2000"))
+                .andExpect(status().isBadRequest());
+    }
 }

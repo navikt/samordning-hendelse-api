@@ -43,6 +43,12 @@ public class TestTokenHelper {
         return "Bearer " + builder.sign(algorithm);
     }
 
+    public static String emptyToken() {
+        var algorithm = Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
+        var builder = JWT.create();
+        return "Bearer " + builder.sign(algorithm);
+    }
+
     private static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(1024);
