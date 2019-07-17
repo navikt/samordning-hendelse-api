@@ -71,9 +71,7 @@ node {
             sh "sed -i \'s/latest/${COMMIT_HASH_SHORT}/\' nais.yaml"
             sh "kubectl config use-context dev-fss"
             sh "kubectl apply -f nais.yaml"
-            sh "sleep 5"
             sh "kubectl rollout status -w deployment/${APP_NAME}"
-            sh "sed -i \'s/${COMMIT_HASH_SHORT}/latest/\' nais.yaml"
             github.commitStatus("success", "navikt/${APP_NAME}", APP_TOKEN, COMMIT_HASH_LONG)
             slackSend([color  : 'good',
                        message: "Successfully deployed ${APP_NAME}:<https://github.com/navikt/${APP_NAME}/commit/${COMMIT_HASH_LONG}|`${COMMIT_HASH_SHORT}`>" + " to dev-fss :pogchamp:"
@@ -85,5 +83,6 @@ node {
             ])
             error("Failed deploy stage")
         }
+        sh "sed -i \'s/${COMMIT_HASH_SHORT}/latest/\' nais.yaml"
     }
 }
