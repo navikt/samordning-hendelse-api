@@ -36,6 +36,7 @@ public class TestTokenHelper {
 
         var algorithm = Algorithm.RSA256((RSAPublicKey) signingKeys.getPublic(), (RSAPrivateKey) signingKeys.getPrivate());
         var builder = JWT.create();
+        builder.withArrayClaim("aud", new String[]{"tp_ordning", "preprod"});
         builder.withClaim("iss", "https://badserver/provider/");
         builder.withClaim("scope", "nav:samordning/v1/hendelser");
         builder.withClaim("client_id", "tp_ordning");

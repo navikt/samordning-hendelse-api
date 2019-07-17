@@ -32,26 +32,26 @@ public class TokenResolver implements org.springframework.security.oauth2.server
         var claims = getClaims(token);
         var tpnr = request.getParameter("tpnr");
 
-        if (claims.get("client_id").equals("srvtjenestepensjon"))
+        if (claims.get("client_id").toString().equals("srvtjenestepensjon"))
             return token;
 
-        if (tpregisteretConsumer.validateOrganisation(claims.get("client_orgno"), tpnr))
+        if (tpregisteretConsumer.validateOrganisation(claims.get("client_orgno").toString(), tpnr))
             return token;
 
         return null;
     }
 
-    private Map<String, String> getClaims(String token) {
+    private Map<String, Object> getClaims(String token) {
         var decoded = JWT.decode(token);
         var payload = new String(Base64.getUrlDecoder().decode(decoded.getPayload()), StandardCharsets.UTF_8);
         var json = new JSONObject(payload);
 
-        var map = new HashMap<String, String>();
+        var map = new HashMap<String, Object>();
         var keys = json.keys();
 
         while (keys.hasNext()) {
             var key = keys.next();
-            map.put(key, json.getString(key));
+            map.put(key, json.get(key));
         }
 
         var requiredParams = List.of("client_id", "client_orgno", "iss", "scope");
