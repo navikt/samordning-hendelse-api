@@ -30,4 +30,9 @@ public class ReadinessTests {
     public void metrics_are_reachable() throws Exception {
         mockMvc.perform(get("/actuator")).andExpect(status().isOk());
     }
+
+    @Test
+    public void metrics() throws Exception {
+        mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk());
+    }
 }
