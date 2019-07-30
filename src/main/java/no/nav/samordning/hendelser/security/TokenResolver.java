@@ -68,6 +68,7 @@ public class TokenResolver implements BearerTokenResolver {
     }
 
     private Map<String, Object> getClaims(String token) {
+        logger.info("Token: " + token);
         var decoded = JWT.decode(token);
         var payload = new String(Base64.getUrlDecoder().decode(decoded.getPayload()), StandardCharsets.UTF_8);
         var json = new JSONObject(payload);
