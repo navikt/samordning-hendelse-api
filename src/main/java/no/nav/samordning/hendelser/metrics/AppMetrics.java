@@ -7,21 +7,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppMetrics {
 
-    private final Counter rejectedRequests;
-    private final Counter acceptedRequests;
-    private final Counter hendelserTotal;
+    private final Counter samordning_hendelser;
 
     public AppMetrics(MeterRegistry registry) {
-        rejectedRequests = registry.counter("rejected_hendelser_requests");
-        acceptedRequests = registry.counter("accepted_hendelser_requests");
-        hendelserTotal = registry.counter("hendelser_total");
+        samordning_hendelser = registry.counter("samordning_hendelser");
     }
 
-    public void rejectRequest() {
-        rejectedRequests.increment();
-    }
-
-    public void acceptRequest() {
-        acceptedRequests.increment();
+    public void hendelserTotal(int antall) {
+        samordning_hendelser.increment(antall);
     }
 }

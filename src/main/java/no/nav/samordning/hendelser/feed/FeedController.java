@@ -1,11 +1,8 @@
 package no.nav.samordning.hendelser.feed;
 
 import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 import no.nav.samordning.hendelser.database.Database;
+import no.nav.samordning.hendelser.metrics.AppMetrics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,16 +19,14 @@ import java.util.ArrayList;
 @Validated
 public class FeedController {
 
+    @Autowired
     private Database database;
 
     @Autowired
-    public FeedController(Database database) {
-        this.database = database;
-    }
+    private AppMetrics metrics;
 
     @Timed
     @RequestMapping(path = "/hendelser")
-    @ApiOperation(value = "Samordningspliktige hendelse feed")
     public Feed hendelser(
         HttpServletRequest request,
         @RequestParam(value = "tpnr") String tpnr,
@@ -40,6 +35,8 @@ public class FeedController {
         @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) Integer sekvensnummer) {
 
         var hendelser = new ArrayList<>(database.fetchHendelser(tpnr, sekvensnummer, side, antall));
+
+        metrics.hendelserTotal(hendelser.size());
 
         String nextUrl = null;
         if (side < database.getNumberOfPages(tpnr, antall) - 1)

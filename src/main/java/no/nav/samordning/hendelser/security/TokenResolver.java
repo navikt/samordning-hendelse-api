@@ -2,7 +2,6 @@ package no.nav.samordning.hendelser.security;
 
 import com.auth0.jwt.JWT;
 import no.nav.samordning.hendelser.consumer.TpregisteretConsumer;
-import no.nav.samordning.hendelser.metrics.AppMetrics;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +23,10 @@ import java.util.Map;
 
 public class TokenResolver implements BearerTokenResolver {
 
-    private static final Logger logger = LoggerFactory.getLogger(TokenResolver.class);
+    private Logger logger = LoggerFactory.getLogger(TokenResolver.class);
 
     @Autowired
     private TpregisteretConsumer tpregisteretConsumer;
-
-    @Autowired
-    private AppMetrics metrics;
 
     @Value("${service.user}")
     private String srvUser;
@@ -43,8 +39,6 @@ public class TokenResolver implements BearerTokenResolver {
         var token = new DefaultBearerTokenResolver().resolve(request);
 
         if (token == null) {
-            logger.debug("Rejected invalid Bearer token");
-            metrics.rejectRequest();
             return token;
         }
 
@@ -54,8 +48,6 @@ public class TokenResolver implements BearerTokenResolver {
         if (claims.containsKey("azp") && claims.containsKey("iss")) {
             if (claims.get("azp").toString().equals(srvUser) &&
                 claims.get("iss").toString().equals(srvUserIss)) {
-                logger.debug("Accepted valid service token from " + claims.get("azp").toString());
-                metrics.acceptRequest();
                 return token;
             }
         }
@@ -66,12 +58,12 @@ public class TokenResolver implements BearerTokenResolver {
         }
 
         if (tpregisteretConsumer.validateOrganisation(claims.get("client_orgno").toString(), tpnr)) {
-            metrics.acceptRequest();
+            logger.info("Validated tpnr " + tpnr + " for client_id " + claims.get("client_id"));
             return token;
+        } else {
+            logger.info("Unvalid tpnr " + tpnr + " for client_id " + claims.get("client_id"));
         }
 
-        logger.debug("Rejected token claims from " + claims.get("client_id"));
-        metrics.rejectRequest();
         return null;
     }
 

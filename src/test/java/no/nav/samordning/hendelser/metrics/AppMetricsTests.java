@@ -19,25 +19,15 @@ public class AppMetricsTests {
     private MockMvc mockMvc;
 
     @Test
-    public void rejected_request_increments_counter() throws Exception {
-        var before = getMetricValue("rejected_hendelser_requests");
-
-        mockMvc.perform(get("/hendelser"))
-                .andExpect(status().isUnauthorized());
-
-        assertEquals(before + 1.0, getMetricValue("rejected_hendelser_requests"));
-    }
-
-    @Test
-    public void accepted_request_increments_counter() throws Exception {
-        var before = getMetricValue("accepted_hendelser_requests");
+    public void hendelser_total() throws Exception {
+        var before = getMetricValue("samordning_hendelser_total");
 
         mockMvc.perform(get("/hendelser")
                 .header("Authorization", TestTokenHelper.srvToken())
-                .param("tpnr", "1000"))
+                .param("tpnr", "4000"))
                 .andExpect(status().isOk());
 
-        assertEquals(before + 1.0, getMetricValue("accepted_hendelser_requests"));
+        assertEquals(before + 3, getMetricValue("samordning_hendelser_total"));
     }
 
     private double getMetricValue(String metricName) throws Exception {
@@ -46,7 +36,7 @@ public class AppMetricsTests {
 
         for (var line : response) {
             if (line.startsWith(metricName)) {
-                var startIndex = metricName.length() + "_total".length() + 1;
+                var startIndex = metricName.length() + 1;
                 return Double.parseDouble(line.substring(startIndex, startIndex + 3));
             }
         }
