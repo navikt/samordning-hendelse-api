@@ -35,11 +35,15 @@ public class TokenResolver implements BearerTokenResolver {
     @Value("${service.user}")
     private String srvUser;
 
+    @Value("${service.user.iss}")
+    private String srvUserIss;
+
     @Override
     public String resolve(HttpServletRequest request) {
         var token = new DefaultBearerTokenResolver().resolve(request);
 
         if (token == null) {
+            logger.debug("Rejected invalid Bearer token");
             metrics.rejectRequest();
             return token;
         }
@@ -47,14 +51,16 @@ public class TokenResolver implements BearerTokenResolver {
         var claims = getClaims(token);
         var tpnr = request.getParameter("tpnr");
 
-        if (!claims.containsKey("client_id")) throw tokenError("Missing parameter: " + "client_id");
-
-        if (claims.get("client_id").toString().equals(srvUser)) {
-            metrics.acceptRequest();
-            return token;
+        if (claims.containsKey("azp") && claims.containsKey("iss")) {
+            if (claims.get("azp").toString().equals(srvUser) &&
+                claims.get("iss").toString().equals(srvUserIss)) {
+                logger.debug("Accepted valid service token from " + claims.get("azp").toString());
+                metrics.acceptRequest();
+                return token;
+            }
         }
 
-        var requiredParams = List.of("client_orgno", "iss", "scope");
+        var requiredParams = List.of("client_id", "client_orgno", "iss", "scope");
         for (var param : requiredParams) {
             if (!claims.containsKey(param)) throw tokenError("Missing parameter: " + param);
         }
@@ -64,6 +70,7 @@ public class TokenResolver implements BearerTokenResolver {
             return token;
         }
 
+        logger.debug("Rejected token claims from " + claims.get("client_id"));
         metrics.rejectRequest();
         return null;
     }
