@@ -44,6 +44,13 @@ public class TestTokenHelper {
         return "Bearer " + builder.sign(algorithm);
     }
 
+    public static String srvToken() {
+        var algorithm = Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
+        var builder = JWT.create();
+        builder.withClaim("client_id", "srvTest");
+        return "Bearer " + builder.sign(algorithm);
+    }
+
     public static String emptyToken() {
         var algorithm = Algorithm.RSA256((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
         var builder = JWT.create();
