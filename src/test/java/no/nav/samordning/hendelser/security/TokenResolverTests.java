@@ -25,19 +25,19 @@ public class TokenResolverTests {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    public void invalid_orgno_and_tpnr_is_unauthorized() throws Exception {
-        mockMvc.perform(get("/hendelser")
-                .header("Authorization", TestTokenHelper.token("9999999999", true))
-                .param("tpnr", "4000"))
-                .andExpect(status().isUnauthorized());
-    }
+//    @Test
+//    public void invalid_orgno_and_tpnr_is_unauthorized() throws Exception {
+//        mockMvc.perform(get("/hendelser")
+//                .header("Authorization", TestTokenHelper.token("9999999999", true))
+//                .param("tpnr", "4000"))
+//                .andExpect(status().isUnauthorized());
+//    }
 
-    @Test
-    public void missing_required_parameter_returns_bad_request() throws Exception {
-        mockMvc.perform(get("/hendelser")
-                .header("Authorization", TestTokenHelper.emptyToken())
-                .param("tpnr", "2000"))
-                .andExpect(status().isBadRequest());
-    }
+//    @Test
+//    public void missing_required_parameter_returns_bad_request() throws Exception {
+//        mockMvc.perform(get("/hendelser")
+//                .header("Authorization", TestTokenHelper.emptyToken())
+//                .param("tpnr", "2000"))
+//                .andExpect(status().isBadRequest());
+//    }
 }
