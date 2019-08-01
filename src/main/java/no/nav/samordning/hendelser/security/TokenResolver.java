@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.server.resource.BearerTokenError;
@@ -36,8 +37,9 @@ public class TokenResolver implements BearerTokenResolver {
 
     @Override
     public String resolve(HttpServletRequest request) {
+        logger.info("Before: " + request.getHeader(HttpHeaders.AUTHORIZATION));
         var token = new DefaultBearerTokenResolver().resolve(request);
-
+        logger.info("After: " + token);
         if (token == null) {
             return token;
         }

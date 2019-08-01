@@ -25,8 +25,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and().oauth2ResourceServer().jwt();
     }
 
-//    @Bean
-//    public TokenResolver tokenResolver() {
-//        return new TokenResolver();
-//    }
+    @Bean
+    public TokenResolver tokenResolver() {
+        return new TokenResolver();
+    }
 }
