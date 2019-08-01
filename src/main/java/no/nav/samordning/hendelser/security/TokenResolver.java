@@ -48,6 +48,7 @@ public class TokenResolver implements BearerTokenResolver {
         if (claims.containsKey("azp") && claims.containsKey("iss")) {
             if (claims.get("azp").toString().equals(srvUser) &&
                 claims.get("iss").toString().equals(srvUserIss)) {
+                logger.info("Valid srvuser token");
                 return token;
             }
         }
@@ -64,23 +65,25 @@ public class TokenResolver implements BearerTokenResolver {
             logger.info("Unvalid tpnr " + tpnr + " for client_id " + claims.get("client_id"));
         }
 
+        logger.info("Invalid token");
         return null;
     }
 
     private Map<String, Object> getClaims(String token) {
-        logger.info("Token: " + token);
+        logger.info("Decoding...");
         var decoded = JWT.decode(token);
+        logger.info("Decoded!");
         var payload = new String(Base64.getUrlDecoder().decode(decoded.getPayload()), StandardCharsets.UTF_8);
         var json = new JSONObject(payload);
 
         var map = new HashMap<String, Object>();
         var keys = json.keys();
-
+        logger.info("Getting keys...");
         while (keys.hasNext()) {
             var key = keys.next();
             map.put(key, json.get(key));
         }
-
+        logger.info("Loaded keys");
         return map;
     }
 
