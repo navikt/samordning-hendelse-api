@@ -37,9 +37,8 @@ public class TokenResolver implements BearerTokenResolver {
 
     @Override
     public String resolve(HttpServletRequest request) {
-        logger.info("Before: " + request.getHeader(HttpHeaders.AUTHORIZATION));
         var token = new DefaultBearerTokenResolver().resolve(request);
-        logger.info("After: " + token);
+
         if (token == null) {
             return token;
         }
@@ -72,20 +71,18 @@ public class TokenResolver implements BearerTokenResolver {
     }
 
     private Map<String, Object> getClaims(String token) {
-        logger.info("Decoding...");
         var decoded = JWT.decode(token);
-        logger.info("Decoded!");
         var payload = new String(Base64.getUrlDecoder().decode(decoded.getPayload()), StandardCharsets.UTF_8);
         var json = new JSONObject(payload);
 
         var map = new HashMap<String, Object>();
         var keys = json.keys();
-        logger.info("Getting keys...");
+
         while (keys.hasNext()) {
             var key = keys.next();
             map.put(key, json.get(key));
         }
-        logger.info("Loaded keys");
+
         return map;
     }
 
