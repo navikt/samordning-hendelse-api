@@ -18,9 +18,9 @@ public class Database {
     private JdbcTemplate jdbcTemplate;
 
     public List<Hendelse> fetchHendelser(String tpnr, int offset, int side, int antall) {
-        var sql = "SELECT HENDELSE_DATA #>> '{}' " +
+        var sql = "SELECT HENDELSE_DATA " +
             "FROM HENDELSER WHERE ID >= ? " +
-            "AND HENDELSE_DATA->>'tpnr' = ?" +
+            "AND TPNR = ? " +
             "ORDER BY ID " +
             "OFFSET ? LIMIT ?";
 
@@ -30,7 +30,7 @@ public class Database {
     }
 
     public int getNumberOfPages(String tpnr, int antall) {
-        var sql = "SELECT COUNT(HENDELSE_DATA) FROM HENDELSER WHERE HENDELSE_DATA->>'tpnr' = ? ";
+        var sql = "SELECT COUNT(HENDELSE_DATA) FROM HENDELSER WHERE TPNR = ? ";
         int numberOfPages = 0;
         try {
             var total = Integer.parseInt(Objects.requireNonNull(jdbcTemplate.queryForObject(sql, new Object[]{tpnr}, String.class)));
