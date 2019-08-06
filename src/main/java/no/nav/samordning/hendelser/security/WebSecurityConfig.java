@@ -14,7 +14,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/isAlive", "/isReady", "/actuator/**", "/v2/api-docs", "/swagger-ui.html");
+        web.ignoring().antMatchers("/isAlive", "/isReady", "/actuator/**", "/v2/api-docs", "/swagger*", "/springfox*");
     }
 
     @Override
