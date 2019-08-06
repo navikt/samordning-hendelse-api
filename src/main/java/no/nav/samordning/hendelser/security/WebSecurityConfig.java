@@ -14,15 +14,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/isAlive", "/isReady", "/actuator/**", "/v2/api-docs", "/swagger-ui.html", "/webjars/**");
+        web.ignoring().antMatchers(
+                "/isAlive",
+                "/isReady",
+                "/actuator/**",
+                "/v2/api-docs",
+                "/swagger-ui.html",
+                "/swagger-resources/**",
+                "/webjars/**");
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-            .anyRequest().authenticated()
-            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().oauth2ResourceServer().jwt();
+                .anyRequest().authenticated()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().oauth2ResourceServer().jwt();
     }
 
     @Bean
