@@ -66,29 +66,23 @@ node {
             error("Failed release stage")
         }
     }
-    stage('deploy dev') {
+    stage('deploy') {
         try {
-            build([
-                    job       : 'nais-deploy-pipeline',
-                    propagate : true,
-                    parameters: [
-                            string(name: 'APP', value: "${APP_NAME}"),
-                            string(name: 'REPO', value: "navikt/${APP_NAME}"),
-                            string(name: 'VERSION', value: COMMIT_HASH_SHORT),
-                            string(name: 'COMMIT_HASH', value: COMMIT_HASH_LONG),
-                            string(name: 'DEPLOY_ENV', value: 'q0')
-                    ]
-            ])
+            sh "sed -i \'s/latest/${COMMIT_HASH_SHORT}/\' nais.yaml"
+            sh "kubectl config use-context dev-fss"
+            sh "kubectl apply -f nais.yaml"
+            sh "kubectl rollout status -w deployment/${APP_NAME}"
             github.commitStatus("success", "navikt/${APP_NAME}", APP_TOKEN, COMMIT_HASH_LONG)
             slackSend([color  : 'good',
-                       message: "Successfully deployed ${APP_NAME}:<https://github.com/navikt/${APP_NAME}/commit/${COMMIT_HASH_LONG}|`${COMMIT_HASH_SHORT}`>" + " to q0 :pogchamp:"
+                       message: "Successfully deployed ${APP_NAME}:<https://github.com/navikt/${APP_NAME}/commit/${COMMIT_HASH_LONG}|`${COMMIT_HASH_SHORT}`>" + " to dev-fss :pogchamp:"
             ])
         } catch (err) {
             github.commitStatus("failure", "navikt/${APP_NAME}", APP_TOKEN, COMMIT_HASH_LONG)
             slackSend([color  : 'danger',
-                       message: "Failed to deploy ${APP_NAME}:<https://github.com/navikt/${APP_NAME}/commit/${COMMIT_HASH_LONG}|`${COMMIT_HASH_SHORT}`>" + " to q0 :angery:"
+                       message: "Failed to deploy ${APP_NAME}:<https://github.com/navikt/${APP_NAME}/commit/${COMMIT_HASH_LONG}|`${COMMIT_HASH_SHORT}`>" + " to dev-fss :angery:"
             ])
             error("Failed deploy stage")
         }
+        sh "sed -i \'s/${COMMIT_HASH_SHORT}/latest/\' nais.yaml"
     }
 }

@@ -1,16 +1,32 @@
-name: samordning-hendelse-api
-image: repo.adeo.no:5443/samordning-hendelse-api
-team: teampeon
-replicas:
-  min: 1
-  max: 1
-resources:
-  limits:
-    cpu: 1000m
-    memory: 512Mi
-  requests:
-    cpu: 500m
-    memory: 256Mi
-prometheus:
-  enabled: true
-  path: actuator/prometheus
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: samordning-hendelse-api
+  namespace: default
+  labels:
+    team: teampeon
+spec:
+  image: repo.adeo.no:5443/samordning-hendelse-api:latest
+  port: 8080
+  team: teampeon
+  ingresses:
+    - https://samordning-hendelse-api.nais.preprod.local
+  liveness:
+    path: isAlive
+  readiness:
+    path: isReady
+  vault:
+    enabled: true
+  replicas:
+    min: 1
+    max: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi
+  prometheus:
+    enabled: true
+    path: actuator/prometheus
