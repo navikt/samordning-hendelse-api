@@ -19,10 +19,18 @@ public class TestTokenHelper {
     private static final String AUTH_SCHEME = "Bearer";
     private static KeyPair keyPair;
 
+    public static void init() throws NoSuchAlgorithmException {
+        keyPair = generateKeyPair();
+    }
+
     public static String token(String orgno, boolean verifiedSignature) throws NoSuchAlgorithmException {
+        return header(pureToken(orgno, verifiedSignature));
+    }
+
+    public static String pureToken(String orgno, boolean verifiedSignature) throws NoSuchAlgorithmException {
         var signingKeys = verifiedSignature ? keyPair : generateKeyPair();
         var algorithm = Algorithm.RSA256(publicKey(signingKeys), privateKey(signingKeys));
-        return header(createJwt(orgno, algorithm));
+        return createJwt(orgno, algorithm);
     }
 
     public static String expiredToken(String orgno) {
@@ -34,7 +42,11 @@ public class TestTokenHelper {
     }
 
     public static String srvToken() {
-        return header(createSrvJwt(algorithm()));
+        return header(pureServiceToken());
+    }
+
+    public static String pureServiceToken() {
+        return createSrvJwt(algorithm());
     }
 
     public static String emptyToken() {
@@ -42,7 +54,7 @@ public class TestTokenHelper {
     }
 
     static String generateJwks() throws NoSuchAlgorithmException {
-        keyPair = generateKeyPair();
+        init();
 
         return String.format("{\n" +
                 "  \"keys\": [{\n" +

@@ -5,21 +5,16 @@ import no.nav.samordning.hendelser.consumer.TpregisteretConsumer;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.server.resource.BearerTokenError;
 import org.springframework.security.oauth2.server.resource.BearerTokenErrorCodes;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
-import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TokenResolver implements BearerTokenResolver {
 
@@ -31,18 +26,25 @@ public class TokenResolver implements BearerTokenResolver {
             ClaimKeys.ISSUER,
             ClaimKeys.SCOPE);
 
-    @Autowired
-    private TpregisteretConsumer tpregisteretConsumer;
+    private final BearerTokenResolver bearerTokenResolver;
+    private final TpregisteretConsumer tpregisteretConsumer;
+    private final String srvUser;
+    private final String srvUserIss;
 
-    @Value("${service.user}")
-    private String srvUser;
-
-    @Value("${service.user.iss}")
-    private String srvUserIss;
+    public TokenResolver(
+            BearerTokenResolver bearerTokenResolver,
+            TpregisteretConsumer tpregisteretConsumer,
+            String srvUser,
+            String srvUserIss) {
+        this.bearerTokenResolver = bearerTokenResolver;
+        this.tpregisteretConsumer = tpregisteretConsumer;
+        this.srvUser = srvUser;
+        this.srvUserIss = srvUserIss;
+    }
 
     @Override
     public String resolve(HttpServletRequest request) {
-        var token = new DefaultBearerTokenResolver().resolve(request);
+        var token = bearerTokenResolver.resolve(request);
 
         if (token == null) {
             return null;
@@ -56,9 +58,7 @@ public class TokenResolver implements BearerTokenResolver {
             return token;
         }
 
-        for (var key : REQUIRED_CLAIM_KEYS) {
-            if (!claims.containsKey(key)) throw tokenError("Missing parameter: " + key);
-        }
+        checkThatRequiredParametersAreProvided(claims);
 
         if (validOrganisation(tpnr, claims)) {
             log("Validated", tpnr, claims);
@@ -68,6 +68,17 @@ public class TokenResolver implements BearerTokenResolver {
         log("Unvalid", tpnr, claims);
         LOG.info("Invalid token");
         return null;
+    }
+
+    private void checkThatRequiredParametersAreProvided(Map<String, Object> claims) {
+        String missingKeys = REQUIRED_CLAIM_KEYS
+                .stream()
+                .filter(key -> !claims.containsKey(key))
+                .collect(Collectors.joining(", "));
+
+        if (missingKeys.length() > 0) {
+            throw tokenError("Missing parameters: " + missingKeys);
+        }
     }
 
     private Boolean validOrganisation(String tpnr, Map<String, Object> claims) {
