@@ -61,6 +61,16 @@ class TokenResolverTest {
     }
 
     @Test
+    void resolving_invalid_org_token_shall_return_null() throws NoSuchAlgorithmException {
+        when(bearerTokenResolver.resolve(any())).thenReturn(pureToken("-1", true));
+        var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test");
+
+        String result = resolver.resolve(request);
+
+        assertNull(result);
+    }
+
+    @Test
     void resolving_nonService_token_with_missing_claims_shall_give_exception_telling_which_claims() {
         when(bearerTokenResolver.resolve(any())).thenReturn(pureServiceToken());
         var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "non-service", "issuer");

@@ -27,19 +27,19 @@ public class TokenResolver implements BearerTokenResolver {
             ClaimKeys.SCOPE);
 
     private final BearerTokenResolver bearerTokenResolver;
-    private final TpregisteretConsumer tpregisteretConsumer;
-    private final String srvUser;
-    private final String srvUserIss;
+    private final TpregisteretConsumer tpRegisteretConsumer;
+    private final String serviceUser;
+    private final String serviceUserIssuer;
 
     public TokenResolver(
             BearerTokenResolver bearerTokenResolver,
-            TpregisteretConsumer tpregisteretConsumer,
-            String srvUser,
-            String srvUserIss) {
+            TpregisteretConsumer tpRegisteretConsumer,
+            String serviceUser,
+            String serviceUserIssuer) {
         this.bearerTokenResolver = bearerTokenResolver;
-        this.tpregisteretConsumer = tpregisteretConsumer;
-        this.srvUser = srvUser;
-        this.srvUserIss = srvUserIss;
+        this.tpRegisteretConsumer = tpRegisteretConsumer;
+        this.serviceUser = serviceUser;
+        this.serviceUserIssuer = serviceUserIssuer;
     }
 
     @Override
@@ -53,19 +53,19 @@ public class TokenResolver implements BearerTokenResolver {
         var claims = getClaims(token);
         var tpnr = request.getParameter("tpnr");
 
-        if (validServerUser(claims)) {
-            LOG.info("Valid srvuser token");
+        if (validServiceUser(claims)) {
+            LOG.info("Valid service user token");
             return token;
         }
 
         checkThatRequiredParametersAreProvided(claims);
 
         if (validOrganisation(tpnr, claims)) {
-            log("Validated", tpnr, claims);
+            log("Valid", tpnr, claims);
             return token;
         }
 
-        log("Unvalid", tpnr, claims);
+        log("Invalid", tpnr, claims);
         LOG.info("Invalid token");
         return null;
     }
@@ -83,14 +83,14 @@ public class TokenResolver implements BearerTokenResolver {
 
     private Boolean validOrganisation(String tpnr, Map<String, Object> claims) {
         String organisationNumber = claims.get(ClaimKeys.CLIENT_ORGANISATION_NUMBER).toString();
-        return tpregisteretConsumer.validateOrganisation(organisationNumber, tpnr);
+        return tpRegisteretConsumer.validateOrganisation(organisationNumber, tpnr);
     }
 
-    private boolean validServerUser(Map<String, Object> claims) {
+    private boolean validServiceUser(Map<String, Object> claims) {
         return claims.containsKey(ClaimKeys.AUTHORIZED_PARTY)
                 && claims.containsKey(ClaimKeys.ISSUER)
-                && claims.get(ClaimKeys.AUTHORIZED_PARTY).toString().equals(srvUser)
-                && claims.get(ClaimKeys.ISSUER).toString().equals(srvUserIss);
+                && claims.get(ClaimKeys.AUTHORIZED_PARTY).toString().equals(serviceUser)
+                && claims.get(ClaimKeys.ISSUER).toString().equals(serviceUserIssuer);
     }
 
     private static Map<String, Object> getClaims(String token) {
