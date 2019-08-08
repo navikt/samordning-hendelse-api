@@ -17,6 +17,7 @@ import java.util.GregorianCalendar;
 public class TestTokenHelper {
 
     private static final String AUTH_SCHEME = "Bearer";
+    private static final String DEFAULT_SCOPE = "nav:samordning/v1/hendelser";
     private static KeyPair keyPair;
 
     public static void init() throws NoSuchAlgorithmException {
@@ -28,9 +29,13 @@ public class TestTokenHelper {
     }
 
     public static String pureToken(String orgno, boolean verifiedSignature) throws NoSuchAlgorithmException {
+        return pureToken(DEFAULT_SCOPE, orgno, verifiedSignature);
+    }
+
+    public static String pureToken(String scope, String orgno, boolean verifiedSignature) throws NoSuchAlgorithmException {
         var signingKeys = verifiedSignature ? keyPair : generateKeyPair();
         var algorithm = Algorithm.RSA256(publicKey(signingKeys), privateKey(signingKeys));
-        return createJwt(orgno, algorithm);
+        return createJwt(scope, orgno, algorithm);
     }
 
     public static String expiredToken(String orgno) {
@@ -73,8 +78,8 @@ public class TestTokenHelper {
         return generator.generateKeyPair();
     }
 
-    private static String createJwt(String orgno, Algorithm algorithm) {
-        return addClaims(JWT.create(), orgno, algorithm);
+    private static String createJwt(String scope, String orgno, Algorithm algorithm) {
+        return addClaims(JWT.create(), scope, orgno, algorithm);
     }
 
     private static String createExpiredJwt(String orgno) {
@@ -86,10 +91,14 @@ public class TestTokenHelper {
     }
 
     private static String addClaims(JWTCreator.Builder jwt, String orgno, Algorithm algorithm) {
+        return addClaims(jwt, DEFAULT_SCOPE, orgno, algorithm);
+    }
+
+    private static String addClaims(JWTCreator.Builder jwt, String scope, String orgno, Algorithm algorithm) {
         return jwt
                 .withArrayClaim("aud", new String[]{"tp_ordning", "preprod"})
                 .withClaim("iss", "https://badserver/provider/")
-                .withClaim("scope", "nav:samordning/v1/hendelser")
+                .withClaim("scope", scope)
                 .withClaim("client_id", "tp_ordning")
                 .withClaim("client_orgno", orgno)
                 .sign(algorithm);

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class TokenResolver implements BearerTokenResolver {
 
     private static final Logger LOG = LoggerFactory.getLogger(TokenResolver.class);
+    private static final String REQUIRED_SCOPE = "nav:samordning/v1/hendelser";
 
     private static final List<String> REQUIRED_CLAIM_KEYS = List.of(
             ClaimKeys.CLIENT_ID,
@@ -60,7 +61,7 @@ public class TokenResolver implements BearerTokenResolver {
 
         checkThatRequiredParametersAreProvided(claims);
 
-        if (validOrganisation(tpnr, claims)) {
+        if (validScope(claims) && validOrganisation(tpnr, claims)) {
             log("Valid", tpnr, claims);
             return token;
         }
@@ -81,9 +82,13 @@ public class TokenResolver implements BearerTokenResolver {
         }
     }
 
-    private Boolean validOrganisation(String tpnr, Map<String, Object> claims) {
+    private boolean validOrganisation(String tpnr, Map<String, Object> claims) {
         String organisationNumber = claims.get(ClaimKeys.CLIENT_ORGANISATION_NUMBER).toString();
         return tpRegisteretConsumer.validateOrganisation(organisationNumber, tpnr);
+    }
+
+    private boolean validScope(Map<String, Object> claims) {
+        return REQUIRED_SCOPE.equals(claims.get(ClaimKeys.SCOPE).toString());
     }
 
     private boolean validServiceUser(Map<String, Object> claims) {

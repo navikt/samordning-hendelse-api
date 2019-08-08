@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
  */
 class TokenResolverTest {
 
+    private static final String GOOD_ORG_NUMBER = "987654321";
     private TpregisteretConsumer tpRegisteretConsumer;
     private BearerTokenResolver bearerTokenResolver;
     private HttpServletRequest request;
@@ -37,12 +38,12 @@ class TokenResolverTest {
         bearerTokenResolver = mock(BearerTokenResolver.class);
         tpRegisteretConsumer = mock(TpregisteretConsumer.class);
         when(request.getParameter("tpnr")).thenReturn("123");
-        when(tpRegisteretConsumer.validateOrganisation("987654321", "123")).thenReturn(true);
+        when(tpRegisteretConsumer.validateOrganisation(GOOD_ORG_NUMBER, "123")).thenReturn(true);
     }
 
     @Test
     void resolving_good_nonService_token_shall_return_token() throws NoSuchAlgorithmException {
-        when(bearerTokenResolver.resolve(any())).thenReturn(pureToken("987654321", true));
+        when(bearerTokenResolver.resolve(any())).thenReturn(pureToken(GOOD_ORG_NUMBER, true));
         var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "non-service", "issuer");
 
         String result = resolver.resolve(request);
@@ -58,6 +59,16 @@ class TokenResolverTest {
         String result = resolver.resolve(request);
 
         assertEquals("ey", result.substring(0, 2));
+    }
+
+    @Test
+    void resolving_invalid_scope_token_shall_return_null() throws NoSuchAlgorithmException {
+        when(bearerTokenResolver.resolve(any())).thenReturn(pureToken("BAD SCOPE", GOOD_ORG_NUMBER, true));
+        var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test");
+
+        String result = resolver.resolve(request);
+
+        assertNull(result);
     }
 
     @Test
