@@ -21,7 +21,9 @@ public class TestTokenHelper {
     private static KeyPair keyPair;
 
     public static void init() throws NoSuchAlgorithmException {
-        keyPair = generateKeyPair();
+        if (keyPair == null) {
+            keyPair = generateKeyPair();
+        }
     }
 
     public static String token(String orgno, boolean verifiedSignature) throws NoSuchAlgorithmException {
