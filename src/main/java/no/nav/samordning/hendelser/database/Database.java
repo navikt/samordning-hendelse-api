@@ -18,7 +18,7 @@ public class Database {
     private JdbcTemplate jdbcTemplate;
 
     public List<Hendelse> fetchHendelser(String tpnr, int offset, int side, int antall) {
-        var sql = "SELECT HENDELSE_DATA " +
+        var sql = "SELECT HENDELSE_DATA #>> '{}' " +
             "FROM HENDELSER WHERE ID >= ? " +
             "AND TPNR = ? " +
             "ORDER BY ID " +
