@@ -1,7 +1,5 @@
 package no.nav.samordning.hendelser.hendelse;
 
-import java.time.LocalDate;
-
 public class Hendelse {
 
     private String ytelsesType;
@@ -9,16 +7,6 @@ public class Hendelse {
     private String vedtakId;
     private String fom;
     private String tom;
-
-    public Hendelse(String identifikator, String ytelsesType, String vedtakId, String fom, String tom) {
-        this.identifikator = identifikator;
-        this.ytelsesType = ytelsesType;
-        this.vedtakId = vedtakId;
-        this.fom = fom;
-        this.tom = null;
-    }
-
-    public Hendelse() {}
 
     public String getYtelsesType() {
     return ytelsesType;
