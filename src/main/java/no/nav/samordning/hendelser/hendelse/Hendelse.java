@@ -7,16 +7,15 @@ public class Hendelse {
     private String ytelsesType;
     private String identifikator;
     private String vedtakId;
-    private LocalDate fom;
-    private LocalDate tom;
+    private String fom;
+    private String tom;
 
     public Hendelse(String identifikator, String ytelsesType, String vedtakId, String fom, String tom) {
         this.identifikator = identifikator;
         this.ytelsesType = ytelsesType;
         this.vedtakId = vedtakId;
-        this.fom = LocalDate.parse(fom);
+        this.fom = fom;
         this.tom = null;
-        if (tom != null) this.tom = LocalDate.parse(tom);
     }
 
     public Hendelse() {}
@@ -45,19 +44,19 @@ public class Hendelse {
     this.vedtakId = vedtakId;
     }
 
-    public LocalDate getFom() {
+    public String getFom() {
     return fom;
     }
 
-    public void setFom(LocalDate fom) {
+    public void setFom(String fom) {
     this.fom = fom;
     }
 
-    public LocalDate getTom() {
+    public String getTom() {
     return tom;
     }
 
-    public void setTom(LocalDate tom) {
+    public void setTom(String tom) {
     this.tom = tom;
     }
 }
