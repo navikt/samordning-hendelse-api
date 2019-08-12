@@ -7,11 +7,11 @@ import java.util.List;
 public class Feed {
 
     private List<Hendelse> hendelser;
-    private String next_url;
+    private String nextUrl;
 
     public Feed(List<Hendelse> hendelser, String nextUrl) {
         this.hendelser = hendelser;
-        this.next_url = nextUrl;
+        this.nextUrl = nextUrl;
     }
 
     public List<Hendelse> getHendelser() {
@@ -22,11 +22,11 @@ public class Feed {
         this.hendelser = hendelser;
     }
 
-    public String getNext_url() {
-        return next_url;
+    public String getNextUrl() {
+        return nextUrl;
     }
 
-    public void setNext_url(String next_url) {
-        this.next_url = next_url;
+    public void setNextUrl(String nextUrl) {
+        this.nextUrl = nextUrl;
     }
 }
