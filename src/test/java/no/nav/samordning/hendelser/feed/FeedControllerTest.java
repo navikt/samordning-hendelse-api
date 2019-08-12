@@ -1,6 +1,5 @@
 package no.nav.samordning.hendelser.feed;
 
-import no.nav.samordning.hendelser.TestTokenHelper;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.security.NoSuchAlgorithmException;
 
+import static no.nav.samordning.hendelser.TestAuthHelper.token;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -55,14 +55,14 @@ class FeedControllerTest {
     @Test
     void greeting_should_return_message_from_service_with_size_check() throws Exception {
         mockMvc.perform(get("/hendelser?tpnr=4000&side=0&antall=5")
-                .header("Authorization", TestTokenHelper.token("4444444444", true)))
+                .header("Authorization", token("4444444444", true)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize(3)));
     }
 
     @Test
     void bad_parameters_return_400() throws Exception {
         mockMvc.perform(get("/hendelser?tpnr=4000&side=-1")
-                .header("Authorization", TestTokenHelper.token("4444444444", true)))
+                .header("Authorization", token("4444444444", true)))
                 .andDo(print()).andExpect(status().isBadRequest());
     }
 
@@ -96,6 +96,6 @@ class FeedControllerTest {
 
     @NotNull
     private static String prepareToken() throws NoSuchAlgorithmException {
-        return TestTokenHelper.token("0000000000", true);
+        return token("0000000000", true);
     }
 }

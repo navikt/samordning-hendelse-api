@@ -43,7 +43,7 @@ class TokenResolverTest {
 
     @Test
     void resolving_good_nonService_token_shall_return_token() throws NoSuchAlgorithmException {
-        when(bearerTokenResolver.resolve(any())).thenReturn(pureToken(GOOD_ORG_NUMBER, true));
+        when(bearerTokenResolver.resolve(any())).thenReturn(token(GOOD_ORG_NUMBER, true));
         var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "non-service", "issuer");
 
         String result = resolver.resolve(request);
@@ -53,7 +53,7 @@ class TokenResolverTest {
 
     @Test
     void resolving_good_service_token_shall_return_token() {
-        when(bearerTokenResolver.resolve(any())).thenReturn(pureServiceToken());
+        when(bearerTokenResolver.resolve(any())).thenReturn(serviceToken());
         var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test");
 
         String result = resolver.resolve(request);
@@ -63,7 +63,7 @@ class TokenResolverTest {
 
     @Test
     void resolving_invalid_scope_token_shall_return_null() throws NoSuchAlgorithmException {
-        when(bearerTokenResolver.resolve(any())).thenReturn(pureToken("BAD SCOPE", GOOD_ORG_NUMBER, true));
+        when(bearerTokenResolver.resolve(any())).thenReturn(token("BAD SCOPE", GOOD_ORG_NUMBER, true));
         var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test");
 
         String result = resolver.resolve(request);
@@ -73,7 +73,7 @@ class TokenResolverTest {
 
     @Test
     void resolving_invalid_org_token_shall_return_null() throws NoSuchAlgorithmException {
-        when(bearerTokenResolver.resolve(any())).thenReturn(pureToken("-1", true));
+        when(bearerTokenResolver.resolve(any())).thenReturn(token("-1", true));
         var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test");
 
         String result = resolver.resolve(request);
@@ -83,7 +83,7 @@ class TokenResolverTest {
 
     @Test
     void resolving_nonService_token_with_missing_claims_shall_give_exception_telling_which_claims() {
-        when(bearerTokenResolver.resolve(any())).thenReturn(pureServiceToken());
+        when(bearerTokenResolver.resolve(any())).thenReturn(serviceToken());
         var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "non-service", "issuer");
 
         var exception = assertThrows(OAuth2AuthenticationException.class, () -> resolver.resolve(request));

@@ -16,7 +16,6 @@ import java.util.GregorianCalendar;
 
 public class TestTokenHelper {
 
-    private static final String AUTH_SCHEME = "Bearer";
     private static final String DEFAULT_SCOPE = "nav:samordning/v1/hendelser";
     private static KeyPair keyPair;
 
@@ -27,37 +26,21 @@ public class TestTokenHelper {
     }
 
     public static String token(String orgno, boolean verifiedSignature) throws NoSuchAlgorithmException {
-        return header(pureToken(orgno, verifiedSignature));
+        return token(DEFAULT_SCOPE, orgno, verifiedSignature);
     }
 
-    public static String pureToken(String orgno, boolean verifiedSignature) throws NoSuchAlgorithmException {
-        return pureToken(DEFAULT_SCOPE, orgno, verifiedSignature);
-    }
-
-    public static String pureToken(String scope, String orgno, boolean verifiedSignature) throws NoSuchAlgorithmException {
+    public static String token(String scope, String orgno, boolean verifiedSignature) throws NoSuchAlgorithmException {
         var signingKeys = verifiedSignature ? keyPair : generateKeyPair();
         var algorithm = Algorithm.RSA256(publicKey(signingKeys), privateKey(signingKeys));
         return createJwt(scope, orgno, algorithm);
     }
 
-    public static String expiredToken(String orgno) {
-        return header(createExpiredJwt(orgno));
+    public static String serviceToken() {
+        return createServiceJwt(algorithm());
     }
 
-    public static String futureToken(String orgno) {
-        return header(createFutureJwt(orgno));
-    }
-
-    public static String srvToken() {
-        return header(pureServiceToken());
-    }
-
-    public static String pureServiceToken() {
-        return createSrvJwt(algorithm());
-    }
-
-    public static String emptyToken() {
-        return header(JWT.create().sign(algorithm()));
+    static String emptyToken() {
+        return JWT.create().sign(algorithm());
     }
 
     static String generateJwks() throws NoSuchAlgorithmException {
@@ -74,6 +57,14 @@ public class TestTokenHelper {
                 "}", Base64.getUrlEncoder().encodeToString(getKeyModulus()));
     }
 
+    static String createExpiredJwt(String orgno) {
+        return addClaims(expiredJwt(), orgno, algorithm());
+    }
+
+    static String createFutureJwt(String orgno) {
+        return addClaims(futureJwt(), orgno, algorithm());
+    }
+
     private static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
         var generator = KeyPairGenerator.getInstance("RSA");
         generator.initialize(1024);
@@ -82,14 +73,6 @@ public class TestTokenHelper {
 
     private static String createJwt(String scope, String orgno, Algorithm algorithm) {
         return addClaims(JWT.create(), scope, orgno, algorithm);
-    }
-
-    private static String createExpiredJwt(String orgno) {
-        return addClaims(expiredJwt(), orgno, algorithm());
-    }
-
-    private static String createFutureJwt(String orgno) {
-        return addClaims(futureJwt(), orgno, algorithm());
     }
 
     private static String addClaims(JWTCreator.Builder jwt, String orgno, Algorithm algorithm) {
@@ -114,7 +97,7 @@ public class TestTokenHelper {
         return JWT.create().withNotBefore(new GregorianCalendar(2101, Calendar.JANUARY, 1).getTime());
     }
 
-    private static String createSrvJwt(Algorithm algorithm) {
+    private static String createServiceJwt(Algorithm algorithm) {
         return JWT.create()
                 .withClaim("azp", "srvTest")
                 .withClaim("iss", "test")
@@ -136,9 +119,5 @@ public class TestTokenHelper {
 
     private static byte[] getKeyModulus() {
         return publicKey(keyPair).getModulus().toByteArray();
-    }
-
-    private static String header(String token) {
-        return AUTH_SCHEME + " " + token;
     }
 }
