@@ -1,0 +1,104 @@
+openapi: 3.0.1
+info:
+  title: Pensjon Samordninghendelser
+  description: "#### Tilkobling:\nFor å kunne benytte tjenesten må konsumenten være autentisert via ID-Porten til Difi etter avtale med NAV. For å kunne bruke tjenesten må scope spesifiseres i autentiseringen mot ID-porten til å være: `nav:pensjon/v1/samordninghendelser`.\n#### Tjenesten: \nTjenesten tillater konsumenter å hente ut hendelser relatert til tjenestepensjon ved at konsumenter spesifiserer for hvilket tjenestepensjonsnummer og fra hvilket hendelsesnummer de ønsker å motta meldinger, og hvor mange de ønsker (maksimalt 10000 per forespørsel). Paginering støttes, slik at resultatet deles opp i et antall sider med et angitt antall hendelser per side."
+  version: "1.0"
+servers:
+  - url: https://api.nav.no/pensjon/v1/samordninghendelser
+tags:
+  - name: samordninghendelser
+    description: Hent samordninghendelser
+paths:
+  /hendelser:
+    get:
+      tags:
+        - samordninghendelser
+      summary: Hent hendelser.
+      description: Hent hendelser.
+      operationId: hendelserUsingGET
+      parameters:
+        - name: tpnr
+          in: query
+          description: Tjenestepensjonsnummer.
+          required: true
+          schema:
+            type: string
+        - name: sekvensnummer
+          in: query
+          description: Hendelsesnummer man ønsker å hente fra og med. Minimum 1.
+          schema:
+            type: integer
+            format: int32
+            default: 1
+        - name: antall
+          in: query
+          description: Antall hendelser per pagineringsside som man ønsker å hente ut. Maksimalt 10000.
+          schema:
+            type: integer
+            format: int32
+            default: 10000
+        - name: side
+          in: query
+          description: Hvilken pagineringsside man ønsker å hente ut. Minimum 0.
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: Authorization
+          in: header
+          description: 'Standard Authorization-header som inneholder et Base64-kodet Bearer-token (JWT-aksesstoken) utstedt av ID-Porten (Difi). Verdien må starte med "Bearer ", deretter følger tokenstrengen.'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Feed'
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: Forbidden
+          content: {}
+        404:
+          description: Not Found
+          content: {}
+      deprecated: false
+components:
+  schemas:
+    Hendelse:
+      title: Hendelse
+      type: object
+      properties:
+        identifikator:
+          type: string
+          description: Identifiserer hvilken hendelse.
+        fom:
+          type: string
+          format: date
+          description: Dato fra og med.
+        tom:
+          type: string
+          format: date
+          description: Dato til og med.
+        vedtakId:
+          type: string
+          description: Identifiserer hvilket vedtak.
+        ytelsesType:
+          type: string
+          description: Type ytelse.
+    Feed:
+      title: Feed
+      type: object
+      properties:
+        hendelser:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hendelse'
+          description: Liste av hendelser.
+        nextUrl:
+          type: string
+          description: URL for å hente neste pagineringsside.
