@@ -27,12 +27,12 @@ class PaginationTests {
                 mockMvc.perform(get("/hendelser?tpnr=4000&antall=2")
                         .header("Authorization", token("4444444444", true)))
                         .andDo(print()).andReturn().getResponse().getContentAsString())
-                .getString("next_url");
+                .getString("nextUrl");
 
         assertEquals("http://localhost/hendelser?tpnr=4000&side=1&antall=2", nextUrl);
 
         mockMvc.perform(get(nextUrl)
                 .header("Authorization", token("4444444444", true)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.next_url", isEmptyOrNullString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nextUrl", isEmptyOrNullString()));
     }
 }
