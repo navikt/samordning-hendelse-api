@@ -1,45 +1,47 @@
 openapi: 3.0.1
 info:
-  title: Pensjon Samordninghendelser
-  description: "#### Tilkobling:\nFor å kunne benytte tjenesten må konsumenten være autentisert via ID-Porten til Difi etter avtale med NAV. For å kunne bruke tjenesten må scope spesifiseres i autentiseringen mot ID-porten til å være: `nav:pensjon/v1/samordninghendelser`.\n#### Tjenesten: \nTjenesten tillater konsumenter å hente ut hendelser relatert til tjenestepensjon ved at konsumenter spesifiserer for hvilket tjenestepensjonsnummer og fra hvilket hendelsesnummer de ønsker å motta meldinger, og hvor mange de ønsker (maksimalt 10000 per forespørsel). Paginering støttes, slik at resultatet deles opp i et antall sider med et angitt antall hendelser per side."
+  title: Samordningspliktige Hendelser
+  description: "### API for oversendelse av samordningsdata for eksterne samhandlere.\nTilkobling:\nFor å kunne benytte tjenesten må konsumenten være autentisert via ID-Porten til Difi etter avtale med NAV. I autentiseringen mot ID-porten må _scope<_ spesifiseres til å være `nav:pensjon/v1/samordning/hendelser`."
   version: "1.0"
 servers:
-  - url: https://api.nav.no/pensjon/v1/samordninghendelser
-tags:
-  - name: samordninghendelser
-    description: Hent samordninghendelser
+  - url: https://api-preprod.nav.no/pensjon/v1/samordning/hendelser
 paths:
   /hendelser:
     get:
       tags:
-        - samordninghendelser
+        - Hendelser
       summary: Hent hendelser.
-      description: Hent hendelser.
+      description: "Endepunktet returnerer en feed som inneholder hendelser tilhørende det angitte tjenestepensjonsnummeret.\n\n
+        Feeden benytter paginering, som deler opp feeden i sider basert på angitt antall hendelser per side.
+        Hver side inneholder en liste med __hendelser__, samt en __nextUrl__ som peker til neste side av feeden.\n\n
+        Siste side er nådd når __nextUrl__ er _null_.\n\n
+        Hver hendelse har et sekvensnummer som inkrementeres for hver ny hendelse.
+        Sekvensnummer kan angis for å kun hente nye hendelser fra og med dette sekvensnummeret."
       operationId: hendelserUsingGET
       parameters:
         - name: tpnr
           in: query
-          description: Tjenestepensjonsnummer.
+          description: Tjenestepensjonsnummer som vedtaket tilhører.
           required: true
           schema:
             type: string
         - name: sekvensnummer
           in: query
-          description: Hendelsesnummer man ønsker å hente fra og med. Minimum 1.
+          description: Start innlesningen fra dette sekvensnummeret.
           schema:
             type: integer
             format: int32
             default: 1
         - name: antall
           in: query
-          description: Antall hendelser per pagineringsside som man ønsker å hente ut. Maksimalt 10000.
+          description: Antall hendelser per side (maksimalt 10000).
           schema:
             type: integer
             format: int32
             default: 10000
         - name: side
           in: query
-          description: Hvilken pagineringsside man ønsker å hente ut. Minimum 0.
+          description: Sidenummer.
           schema:
             type: integer
             format: int32
@@ -54,7 +56,7 @@ paths:
         200:
           description: OK
           content:
-            '*/*':
+            application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/Feed'
         401:
@@ -66,9 +68,23 @@ paths:
         404:
           description: Not Found
           content: {}
+        500:
+          description: Internal Server Error
       deprecated: false
 components:
   schemas:
+    Feed:
+      title: Feed
+      type: object
+      properties:
+        hendelser:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hendelse'
+          description: Liste av hendelser.
+        nextUrl:
+          type: string
+          description: URL for å hente neste pagineringsside.
     Hendelse:
       title: Hendelse
       type: object
@@ -90,15 +106,15 @@ components:
         ytelsesType:
           type: string
           description: Type ytelse.
-    Feed:
-      title: Feed
-      type: object
-      properties:
-        hendelser:
-          type: array
-          items:
-            $ref: '#/components/schemas/Hendelse'
-          description: Liste av hendelser.
-        nextUrl:
-          type: string
-          description: URL for å hente neste pagineringsside.
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      name: Ocp-Apim-Subscription-Key
+      in: header
+    apiKeyQuery:
+      type: apiKey
+      name: subscription-key
+      in: query
+security:
+  - apiKeyHeader: [ ]
+  - apiKeyQuery: [ ]
