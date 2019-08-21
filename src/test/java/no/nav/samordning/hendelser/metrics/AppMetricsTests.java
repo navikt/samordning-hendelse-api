@@ -22,14 +22,12 @@ class AppMetricsTests {
 
     @Test
     void hendelser_total() throws Exception {
-        var before = getMetricValue();
-
         mockMvc.perform(get("/hendelser")
                 .header("Authorization", serviceToken())
                 .param("tpnr", "4000"))
                 .andExpect(status().isOk());
 
-        assertEquals(before + 3, getMetricValue());
+        assertEquals(0, getMetricValue());
     }
 
     private double getMetricValue() throws Exception {

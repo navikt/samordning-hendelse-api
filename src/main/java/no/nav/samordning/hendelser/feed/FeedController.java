@@ -36,8 +36,6 @@ public class FeedController {
 
         var hendelser = new ArrayList<>(database.fetchHendelser(tpnr, sekvensnummer, side, antall));
 
-        metrics.hendelserTotal(hendelser.size());
-
         String nextUrl = null;
         if (side < database.getNumberOfPages(tpnr, antall) - 1)
             nextUrl = request.getRequestURL().toString() + String.format("?tpnr=%s&side=%d&antall=%d", tpnr, side + 1, antall);

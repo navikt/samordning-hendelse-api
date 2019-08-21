@@ -38,4 +38,8 @@ public class Database {
         } catch (Exception ignored) { }
         return numberOfPages;
     }
+
+    public String getTotalHendelser() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM HENDELSER", String.class);
+    }
 }
