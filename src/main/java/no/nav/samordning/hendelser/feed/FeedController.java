@@ -4,6 +4,7 @@ import io.micrometer.core.annotation.Timed;
 import no.nav.samordning.hendelser.database.Database;
 import no.nav.samordning.hendelser.metrics.AppMetrics;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +26,9 @@ public class FeedController {
     @Autowired
     private AppMetrics metrics;
 
+    @Value("${next.base.url}")
+    private String nextBaseUrl;
+
     @Timed
     @GetMapping(path = "/hendelser")
     public Feed hendelser(
@@ -38,7 +42,7 @@ public class FeedController {
 
         String nextUrl = null;
         if (side < database.getNumberOfPages(tpnr, antall) - 1)
-            nextUrl = request.getRequestURL().toString() + String.format("?tpnr=%s&side=%d&antall=%d", tpnr, side + 1, antall);
+            nextUrl = nextBaseUrl + String.format("/hendelser?tpnr=%s&side=%d&antall=%d", tpnr, side + 1, antall);
 
         return new Feed(hendelser, nextUrl);
     }
