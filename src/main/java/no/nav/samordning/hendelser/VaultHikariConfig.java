@@ -33,7 +33,6 @@ public class VaultHikariConfig implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        container.setLeaseEndpoints(LeaseEndpoints.SysLeases); // TODO: Remove
         RequestedSecret secret = RequestedSecret.rotating(this.vaultPostgresBackend + "/creds/" + this.vaultPostgresRole);
         container.addLeaseListener(leaseEvent -> {
             if (leaseEvent.getSource() == secret && leaseEvent instanceof SecretLeaseCreatedEvent) {
