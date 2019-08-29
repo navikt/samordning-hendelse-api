@@ -2,15 +2,15 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: samordning-hendelse-api
-  namespace: default
+  namespace: {{namespace}}
   labels:
     team: teampeon
 spec:
-  image: repo.adeo.no:5443/samordning-hendelse-api:latest
+  image: repo.adeo.no:5443/samordning-hendelse-api:{{version}}
   port: 8080
   team: teampeon
   ingresses:
-    - https://samordning-hendelse-api.nais.preprod.local
+    - {{ingress}}
   liveness:
     path: isAlive
   readiness:
