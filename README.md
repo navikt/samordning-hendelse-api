@@ -1,11 +1,24 @@
 # Samordning-Hendelse-API
 
-Samordning-hendelse-api gir en liste med samordningspliktige hendelser på json format. 
+Samordning-hendelse-api gir en liste med samordningspliktige hendelser for et gitt tpnummer på json format. 
 Denne listen hentes via /hendelser endepunktet. Se konkrete eksempler under.
 
-Request/response eksempler:
+#### API Portal
+
+API'et er eksponert via NAVs API Portal:
+
+`preprod`:
+
+https://api-portal-preprod.nav.no/docs/services/pensjon-samordning/operations/hendelserUsingGET
+
+`prod`:
+
+TBA
+
+
+#### Eksempel:
 ```bash
-curl -k -X GET https://samordning-hendelse-api.nais.preprod.local/hendelser \
+curl -k -X GET https://samordning-hendelse-api.nais.preprod.local/hendelser?tpnr=<tpnr> \
     -H 'Accept: application/json' \
     -H "Authorization: Bearer ${TOKEN}"
 # Output:
@@ -34,11 +47,10 @@ Parametere:
 
 | Parameter                   | Beskrivelse                       |
 |:----------------------------|:----------------------------------|
-| `side`                      | Side nummer. |
+| `tpnr`                      | Tjenestepensjonsnummer som vedtaket tilhører. |              
+| `side`                      | Sidenummer. |              
 | `antall`                    | Antall hendelser per side.        |
-| `ytelsesType`               | Ytelsestype. |
-| `fom`                       | Fra-og-med dato. |
-| `tom`                       | Til-og-med dato. |
+| `sekvensnummer`               | Start innlesningen fra dette sekvensnummeret. |
 
 #### Metrikker
 Grafana dashboards brukes for å f.eks. monitorere minne, cpu-bruk og andre metrikker.
