@@ -84,6 +84,7 @@ public class TokenResolver implements BearerTokenResolver {
 
     private boolean validOrganisation(String tpnr, Map<String, Object> claims) {
         String organisationNumber = claims.get(ClaimKeys.CLIENT_ORGANISATION_NUMBER).toString();
+        LOG.info("ORGNR: " + organisationNumber);
         return tpRegisteretConsumer.validateOrganisation(organisationNumber, tpnr);
     }
 
