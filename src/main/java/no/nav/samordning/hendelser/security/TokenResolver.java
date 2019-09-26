@@ -93,7 +93,11 @@ public class TokenResolver implements BearerTokenResolver {
     }
 
     private boolean validScope(Map<String, Object> claims) {
-        return REQUIRED_SCOPE.equals(claims.get(ClaimKeys.SCOPE).toString());
+        var validScope = REQUIRED_SCOPE.equals(claims.get(ClaimKeys.SCOPE).toString());
+        if (!validScope) {
+            LOG.info("Invalid scope: " + claims.get(ClaimKeys.SCOPE).toString());
+        }
+        return validScope;
     }
 
     private boolean validServiceUser(Map<String, Object> claims) {
