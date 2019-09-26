@@ -26,7 +26,7 @@ public class FeedController {
     @Autowired
     private AppMetrics metrics;
 
-    @Value("${next.base.url}")
+    @Value("${NEXT_BASE_URL}")
     private String nextBaseUrl;
 
     @Timed
@@ -40,10 +40,13 @@ public class FeedController {
 
         var hendelser = new ArrayList<>(database.fetchHendelser(tpnr, sekvensnummer, side, antall));
 
-        String nextUrl = null;
-        if (side < database.getNumberOfPages(tpnr, antall) - 1)
-            nextUrl = nextBaseUrl + String.format("/hendelser?tpnr=%s&side=%d&antall=%d", tpnr, side + 1, antall);
+        metrics.incHendelserLest(tpnr, hendelser.size());
 
-        return new Feed(hendelser, nextUrl);
+        return new Feed(hendelser, nextUrl(side, antall, tpnr));
+    }
+
+    private String nextUrl(Integer side, Integer antall, String tpnr) {
+        if (side >= database.getNumberOfPages(tpnr, antall) - 1) return null;
+        return nextBaseUrl + String.format("/hendelser?tpnr=%s&side=%d&antall=%d", tpnr, side + 1, antall);
     }
 }
