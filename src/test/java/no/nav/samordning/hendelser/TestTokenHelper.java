@@ -16,7 +16,7 @@ import java.util.GregorianCalendar;
 
 public class TestTokenHelper {
 
-    private static final String DEFAULT_SCOPE = "nav:samordning/v1/hendelser";
+    private static final String DEFAULT_SCOPE = "nav:pensjon/v1/samordning";
     private static KeyPair keyPair;
 
     public static void init() throws NoSuchAlgorithmException {

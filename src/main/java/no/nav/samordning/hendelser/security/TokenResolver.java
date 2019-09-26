@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class TokenResolver implements BearerTokenResolver {
 
     private static final Logger LOG = LoggerFactory.getLogger(TokenResolver.class);
-    private static final String REQUIRED_SCOPE = "nav:samordning/v1/hendelser";
+    private static final String REQUIRED_SCOPE = "nav:pensjon/v1/samordning";
 
     private static final List<String> REQUIRED_CLAIM_KEYS = List.of(
             ClaimKeys.CLIENT_ID,
@@ -79,12 +79,16 @@ public class TokenResolver implements BearerTokenResolver {
 
         if (missingKeys.length() > 0) {
             throw tokenError("Missing parameters: " + missingKeys);
+        } else {
+            LOG.info("Client_ID: " + claims.get(ClaimKeys.CLIENT_ID).toString());
+            LOG.info("ORNGNR: " + claims.get(ClaimKeys.CLIENT_ORGANISATION_NUMBER).toString());
+            LOG.info("SCOPE: " + claims.get(ClaimKeys.SCOPE).toString());
+            LOG.info("ISSUER: " + claims.get(ClaimKeys.ISSUER).toString());
         }
     }
 
     private boolean validOrganisation(String tpnr, Map<String, Object> claims) {
         String organisationNumber = claims.get(ClaimKeys.CLIENT_ORGANISATION_NUMBER).toString();
-        LOG.info("ORGNR: " + organisationNumber);
         return tpRegisteretConsumer.validateOrganisation(organisationNumber, tpnr);
     }
 
