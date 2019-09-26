@@ -52,7 +52,7 @@ public class TokenResolver implements BearerTokenResolver {
         }
 
         var claims = getClaims(token);
-        var tpnr = request.getParameter("tpnr");
+        var tpnr = request.getParameter("tpnr").split("\\?")[0];
 
         if (validServiceUser(claims)) {
             LOG.info("Valid service user token");

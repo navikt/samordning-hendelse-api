@@ -37,7 +37,7 @@ class TokenResolverTest {
         request = mock(HttpServletRequest.class);
         bearerTokenResolver = mock(BearerTokenResolver.class);
         tpRegisteretConsumer = mock(TpregisteretConsumer.class);
-        when(request.getParameter("tpnr")).thenReturn("123");
+        when(request.getParameter("tpnr")).thenReturn("123?antall=1");
         when(tpRegisteretConsumer.validateOrganisation(GOOD_ORG_NUMBER, "123")).thenReturn(true);
     }
 

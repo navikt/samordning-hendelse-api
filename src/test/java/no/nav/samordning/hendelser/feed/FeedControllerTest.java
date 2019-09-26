@@ -40,6 +40,7 @@ class FeedControllerTest {
     void service_shouldnt_accept_too_large_requests() throws Exception {
         mockMvc.perform(get("/hendelser")
                 .header("Authorization", prepareToken())
+                .param("tpnr", "1000")
                 .param("antall", "10001"))
                 .andDo(print()).andExpect(status().is4xxClientError());
     }
