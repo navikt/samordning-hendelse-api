@@ -56,6 +56,11 @@ public class TokenResolver implements BearerTokenResolver {
 
         if (validServiceUser(claims)) {
             LOG.info("Valid service user token");
+            if (validOrganisation(tpnr, claims)) {
+                LOG.info("Valid orgnr mapping");
+            } else {
+                LOG.info("Invalid orgnr mapping");
+            }
             return token;
         }
 

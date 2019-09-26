@@ -88,6 +88,6 @@ class TokenResolverTest {
 
         var exception = assertThrows(OAuth2AuthenticationException.class, () -> resolver.resolve(request));
 
-        assertEquals("Missing parameters: client_id, client_orgno, scope", exception.getMessage());
+        assertEquals("Missing parameters: client_id, scope", exception.getMessage());
     }
 }
