@@ -101,7 +101,6 @@ public class TestTokenHelper {
         return JWT.create()
                 .withClaim("azp", "srvTest")
                 .withClaim("iss", "test")
-                .withClaim("client_orgno", "00000000")
                 .sign(algorithm);
     }
 
