@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest
@@ -16,8 +17,11 @@ class AppMetricsTests {
     private MockMvc mockMvc;
 
     @Test
-    void leste_hendelser() throws Exception {
-
+    void hendelser_lest_metrics_are_incremented() throws Exception {
+        var metricName = "samordning_hendelser_lest";
+        assertEquals(0.0, getMetricValue(metricName));
+        mockMvc.perform(get("/hendelser?tpnr=0000"));
+        assertNotNull(getMetricValue(metricName));
     }
 
     private Double getMetricValue(String metric) throws Exception {

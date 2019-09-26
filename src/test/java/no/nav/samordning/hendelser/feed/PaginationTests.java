@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.feed;
 
+import org.hamcrest.core.IsNull;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static no.nav.samordning.hendelser.TestAuthHelper.token;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @AutoConfigureMockMvc
 class PaginationTests {
 
-    @Value("${next.base.url}")
+    @Value("${NEXT_BASE_URL}")
     private String nextBaseUrl;
 
     @Autowired
@@ -37,6 +37,6 @@ class PaginationTests {
 
         mockMvc.perform(get(nextUrl)
                 .header("Authorization", token("4444444444", true)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.nextUrl", isEmptyOrNullString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nextUrl").value(IsNull.nullValue()));
     }
 }
