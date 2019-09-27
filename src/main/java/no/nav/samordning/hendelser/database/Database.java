@@ -29,11 +29,13 @@ public class Database {
             .collect(Collectors.toList());
     }
 
-    public int getNumberOfPages(String tpnr, int antall) {
-        var sql = "SELECT COUNT(HENDELSE_DATA) FROM HENDELSER WHERE TPNR = ? ";
+    public int getNumberOfPages(String tpnr, int sekvensnummer, int antall) {
+        var sql = "SELECT COUNT(HENDELSE_DATA) " +
+                "FROM HENDELSER WHERE TPNR = ? " +
+                "AND ID >= ?";
         int numberOfPages = 0;
         try {
-            var total = Integer.parseInt(Objects.requireNonNull(jdbcTemplate.queryForObject(sql, new Object[]{tpnr}, String.class)));
+            var total = Integer.parseInt(Objects.requireNonNull(jdbcTemplate.queryForObject(sql, new Object[]{tpnr, sekvensnummer}, String.class)));
             numberOfPages = (total + antall - 1) / antall;
         } catch (Exception ignored) { }
         return numberOfPages;

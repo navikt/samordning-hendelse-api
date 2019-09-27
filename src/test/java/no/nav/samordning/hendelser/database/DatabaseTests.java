@@ -54,9 +54,11 @@ public class DatabaseTests {
 
     @Test
     public void page_counting() {
-        assertEquals(1, db.getNumberOfPages("2000", 1));
-        assertEquals(3, db.getNumberOfPages("4000", 1));
-        assertEquals(2, db.getNumberOfPages("4000", 2));
+        assertEquals(1, db.getNumberOfPages("2000", 1, 1));
+        assertEquals(3, db.getNumberOfPages("4000", 1, 1));
+        assertEquals(2, db.getNumberOfPages("4000", 1, 2));
+        assertEquals(1, db.getNumberOfPages("4000", 5, 2));
+        assertEquals(0, db.getNumberOfPages("4000", 7, 1));
     }
 
     @Test

@@ -33,7 +33,22 @@ class PaginationTests {
                         .andDo(print()).andReturn().getResponse().getContentAsString())
                 .getString("nextUrl");
 
-        assertEquals(nextBaseUrl + "/hendelser?tpnr=4000&side=1&antall=2", nextUrl);
+        assertEquals(nextBaseUrl + "/hendelser?tpnr=4000&sekvensnummer=1&antall=2&side=1", nextUrl);
+
+        mockMvc.perform(get(nextUrl)
+                .header("Authorization", token("4444444444", true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nextUrl").value(IsNull.nullValue()));
+    }
+
+    @Test
+    void iterate_feed_with_next_url_from_sekvensnummer() throws Exception {
+        String nextUrl = new JSONObject(
+                mockMvc.perform(get("/hendelser?tpnr=4000&sekvensnummer=5&antall=1")
+                        .header("Authorization", token("4444444444", true)))
+                        .andDo(print()).andReturn().getResponse().getContentAsString())
+                .getString("nextUrl");
+
+        assertEquals(nextBaseUrl + "/hendelser?tpnr=4000&sekvensnummer=5&antall=1&side=1", nextUrl);
 
         mockMvc.perform(get(nextUrl)
                 .header("Authorization", token("4444444444", true)))
