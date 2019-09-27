@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 
 @RestController
@@ -33,7 +31,7 @@ public class FeedController {
     @GetMapping(path = "/hendelser")
     public Feed hendelser(
         HttpServletRequest request,
-        @RequestParam(value = "tpnr") String tpnr,
+        @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) String tpnr,
         @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero Integer side,
         @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) Integer antall,
         @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) Integer sekvensnummer) {
@@ -42,11 +40,12 @@ public class FeedController {
 
         metrics.incHendelserLest(tpnr, hendelser.size());
 
-        return new Feed(hendelser, nextUrl(side, antall, tpnr));
+        return new Feed(hendelser, nextUrl(tpnr, sekvensnummer, antall, side));
     }
 
-    private String nextUrl(Integer side, Integer antall, String tpnr) {
-        if (side >= database.getNumberOfPages(tpnr, antall) - 1) return null;
-        return nextBaseUrl + String.format("/hendelser?tpnr=%s&side=%d&antall=%d", tpnr, side + 1, antall);
+    private String nextUrl(String tpnr, Integer sekvensnummer, Integer antall, Integer side) {
+        if (side >= database.getNumberOfPages(tpnr, sekvensnummer, antall) - 1) return null;
+        return nextBaseUrl + String.format("/hendelser?tpnr=%s&sekvensnummer=%d&antall=%d&side=%d",
+                tpnr, sekvensnummer, antall, side + 1);
     }
 }
