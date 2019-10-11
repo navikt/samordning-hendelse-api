@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Component
 public class AppMetrics {
@@ -20,13 +23,15 @@ public class AppMetrics {
     @Autowired
     private Database database;
 
+    private MeterRegistry registry;
+
     private Number totalAntallHendelser = 0;
 
     private Map<String, Counter> hendelserLestCounterList = new HashMap<>();
 
     public AppMetrics(MeterRegistry registry) {
+        this.registry = registry;
         Gauge.builder("samordning_hendelser_total", () -> totalAntallHendelser).register(registry);
-        hendelserLestCounterList.put("3010", Counter.builder("samordning_hendelser_lest").tag("tpnr", "3010").register(registry));
     }
 
     @Bean
@@ -44,6 +49,11 @@ public class AppMetrics {
     }
 
     public void incHendelserLest(String tpnr, double antall) {
+        if (!hendelserLestCounterList.containsKey(tpnr)) {
+            hendelserLestCounterList.put(tpnr, Counter.builder("samordning_hendelser_lest")
+                    .tag("tpnr", tpnr).register(registry));
+        }
+
         try {
             hendelserLestCounterList.get(tpnr).increment(antall);
         } catch (NullPointerException e) {
