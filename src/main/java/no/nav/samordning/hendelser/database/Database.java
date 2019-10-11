@@ -44,4 +44,15 @@ public class Database {
     public String getTotalHendelser() {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM HENDELSER", String.class);
     }
+
+    public Integer latestSekvensnummer(String tpnr) {
+        var sql = "SELECT MAX(ID) " +
+                "FROM HENDELSER WHERE TPNR = ?";
+
+        int sekvensnummer = 1;
+        try {
+            sekvensnummer = Integer.parseInt(Objects.requireNonNull(jdbcTemplate.queryForObject(sql, new Object[]{tpnr}, String.class)));
+        } catch (Exception ignored) { }
+        return sekvensnummer;
+    }
 }

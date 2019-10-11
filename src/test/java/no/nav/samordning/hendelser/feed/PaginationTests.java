@@ -45,6 +45,7 @@ class PaginationTests {
         String nextUrl = new JSONObject(
                 mockMvc.perform(get("/hendelser?tpnr=4000&sekvensnummer=5&antall=1")
                         .header("Authorization", token("4444444444", true)))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.sisteSekvensnummer").value(6))
                         .andDo(print()).andReturn().getResponse().getContentAsString())
                 .getString("nextUrl");
 
@@ -52,6 +53,7 @@ class PaginationTests {
 
         mockMvc.perform(get(nextUrl)
                 .header("Authorization", token("4444444444", true)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.nextUrl").value(IsNull.nullValue()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nextUrl").value(IsNull.nullValue()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sisteSekvensnummer").value(6));
     }
 }

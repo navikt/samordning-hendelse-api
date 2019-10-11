@@ -40,7 +40,7 @@ public class FeedController {
 
         metrics.incHendelserLest(tpnr, hendelser.size());
 
-        return new Feed(hendelser, nextUrl(tpnr, sekvensnummer, antall, side));
+        return new Feed(hendelser, database.latestSekvensnummer(tpnr), nextUrl(tpnr, sekvensnummer, antall, side));
     }
 
     private String nextUrl(String tpnr, Integer sekvensnummer, Integer antall, Integer side) {

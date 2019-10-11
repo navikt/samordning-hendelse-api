@@ -82,4 +82,20 @@ public class DatabaseTests {
         assertEquals(1, hendelser.size());
         assertThat(hendelser.get(0), samePropertyValuesAs(expectedHendelse));
     }
+
+    @Test
+    public void latest_sekvensnummer_for_tpnr() {
+        var expectedSekvensnummer = Integer.valueOf(6);
+        var latestSekvensnummer = db.latestSekvensnummer("4000");
+
+        assertEquals(expectedSekvensnummer, latestSekvensnummer);
+    }
+
+    @Test
+    public void latest_sekvensnummer_for_tpnr_when_no_hendelser() {
+        var expectedSekvensnummer = Integer.valueOf(1);
+        var latestSekvensnummer = db.latestSekvensnummer("1234");
+
+        assertEquals(expectedSekvensnummer, latestSekvensnummer);
+    }
 }

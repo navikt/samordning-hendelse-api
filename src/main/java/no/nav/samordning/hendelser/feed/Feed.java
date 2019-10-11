@@ -7,10 +7,12 @@ import java.util.List;
 public class Feed {
 
     private List<Hendelse> hendelser;
+    private Integer sisteSekvensnummer;
     private String nextUrl;
 
-    public Feed(List<Hendelse> hendelser, String nextUrl) {
+    public Feed(List<Hendelse> hendelser, Integer sisteSekvensnummer, String nextUrl) {
         this.hendelser = hendelser;
+        this.sisteSekvensnummer = sisteSekvensnummer;
         this.nextUrl = nextUrl;
     }
 
@@ -28,5 +30,13 @@ public class Feed {
 
     public void setNextUrl(String nextUrl) {
         this.nextUrl = nextUrl;
+    }
+
+    public Integer getSisteSekvensnummer() {
+        return sisteSekvensnummer;
+    }
+
+    public void setSisteSekvensnummer(Integer sisteSekvensnummer) {
+        this.sisteSekvensnummer = sisteSekvensnummer;
     }
 }
