@@ -66,13 +66,17 @@ public class DatabaseConfig {
 
         mockClient.when(HttpRequest.request()
                 .withMethod("GET")
-                .withPath("/organisation/0000000000/tpnr/1000"))
+                .withPath("/organisation")
+                .withHeader("orgnr", "0000000000")
+                .withHeader("tpnr", "1000"))
                 .respond(HttpResponse.response()
                 .withStatusCode(200));
 
         mockClient.when(HttpRequest.request()
                 .withMethod("GET")
-                .withPath("/organisation/4444444444/tpnr/4000"))
+                .withPath("/organisation")
+                .withHeader("orgnr", "4444444444")
+                .withHeader("tpnr", "4000"))
                 .respond(HttpResponse.response()
                 .withStatusCode(200));
     }

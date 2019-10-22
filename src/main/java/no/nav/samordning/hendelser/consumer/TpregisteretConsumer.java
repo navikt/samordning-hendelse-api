@@ -32,7 +32,9 @@ public class TpregisteretConsumer {
     }
 
     public Boolean validateOrganisation(String orgno, String tpnr) {
-        var httpStatus = webClient.get().uri(tpregisteretUri + "/organisation/{orgno}/tpnr/{tpnr}", orgno, tpnr)
+        var httpStatus = webClient.get().uri(tpregisteretUri + "/organisation")
+                .header("orgnr", orgno)
+                .header("tpnr", tpnr)
                 .exchange().block().statusCode();
 
         LOG.info("validateOrganisation status [" + orgno + ", " + tpnr + "]: " + (httpStatus == HttpStatus.OK));
