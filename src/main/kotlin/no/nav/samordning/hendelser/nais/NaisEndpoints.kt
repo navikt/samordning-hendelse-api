@@ -1,19 +1,16 @@
-package no.nav.samordning.hendelser.nais;
+package no.nav.samordning.hendelser.nais
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
-public class NaisEndpoints {
+class NaisEndpoints {
 
     @GetMapping("/isAlive")
-    public HttpStatus isAlive() {
-        return HttpStatus.OK;
+    fun isAlive() {
     }
 
     @GetMapping("/isReady")
-    public HttpStatus isReady() {
-        return HttpStatus.OK;
+    fun isReady() {
     }
 }

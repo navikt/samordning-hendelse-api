@@ -1,34 +1,35 @@
-package no.nav.samordning.hendelser;
+package no.nav.samordning.hendelser
 
-import java.security.NoSuchAlgorithmException;
+import no.nav.samordning.hendelser.TestTokenHelper.createExpiredJwt
+import no.nav.samordning.hendelser.TestTokenHelper.createFutureJwt
+import java.security.NoSuchAlgorithmException
 
-import static no.nav.samordning.hendelser.TestTokenHelper.*;
+object TestAuthHelper {
 
-public class TestAuthHelper {
+    private const val AUTH_SCHEME = "Bearer"
 
-    private static final String AUTH_SCHEME = "Bearer";
-
-    public static String token(String orgno, boolean verifiedSignature) throws NoSuchAlgorithmException {
-        return header(TestTokenHelper.token(orgno, verifiedSignature));
+    @Throws(NoSuchAlgorithmException::class)
+    fun token(orgno: String, verifiedSignature: Boolean): String {
+        return header(TestTokenHelper.token(orgno, verifiedSignature))
     }
 
-    public static String expiredToken(String orgno) {
-        return header(createExpiredJwt(orgno));
+    fun expiredToken(orgno: String): String {
+        return header(createExpiredJwt(orgno))
     }
 
-    public static String futureToken(String orgno) {
-        return header(createFutureJwt(orgno));
+    fun futureToken(orgno: String): String {
+        return header(createFutureJwt(orgno))
     }
 
-    public static String serviceToken() {
-        return header(TestTokenHelper.serviceToken());
+    fun serviceToken(): String {
+        return header(TestTokenHelper.serviceToken())
     }
 
-    public static String emptyToken() {
-        return header(TestTokenHelper.emptyToken());
+    fun emptyToken(): String {
+        return header(TestTokenHelper.emptyToken())
     }
 
-    private static String header(String token) {
-        return AUTH_SCHEME + " " + token;
+    private fun header(token: String): String {
+        return "$AUTH_SCHEME $token"
     }
 }

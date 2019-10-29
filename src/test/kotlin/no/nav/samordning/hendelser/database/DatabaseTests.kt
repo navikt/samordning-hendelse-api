@@ -1,101 +1,99 @@
-package no.nav.samordning.hendelser.database;
+package no.nav.samordning.hendelser.database
 
-import no.nav.samordning.hendelser.TestDataHelper;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Collections;
-
-import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import no.nav.samordning.hendelser.TestDataHelper
+import no.nav.samordning.hendelser.hendelse.Hendelse
+import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThat
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-public class DatabaseTests {
+class DatabaseTests {
 
     @Autowired
-    private Database db;
+    private lateinit var db: Database
 
     @Autowired
-    private TestDataHelper testData;
+    private lateinit var testData: TestDataHelper
 
     @Test
-    public void expected_hendelse_is_fetched() {
-        var expectedHendelse = testData.hendelse("01016600000");
-        var hendelse = db.fetchHendelser("1000", 0, 0 ,1).get(0);
+    fun expected_hendelse_is_fetched() {
+        val expectedHendelse = testData.hendelse("01016600000")
+        val hendelse = db.fetchHendelser("1000", 0, 0, 1)[0]
 
-        assertThat(expectedHendelse, samePropertyValuesAs(hendelse));
+        assertThat<Hendelse>(expectedHendelse, samePropertyValuesAs<Hendelse>(hendelse))
     }
 
     @Test
-    public void expected_hendelse_from_multiple_tpnr_is_fetched() {
-        var expectedHendelse = testData.hendelse("01016700000");
-        var hendelse1 = db.fetchHendelser("2000", 0, 0 ,2).get(0);
-        var hendelse2 = db.fetchHendelser("3000", 0, 0, 2).get(0);
+    fun expected_hendelse_from_multiple_tpnr_is_fetched() {
+        val expectedHendelse = testData.hendelse("01016700000")
+        val hendelse1 = db.fetchHendelser("2000", 0, 0, 2)[0]
+        val hendelse2 = db.fetchHendelser("3000", 0, 0, 2)[0]
 
-        assertThat(expectedHendelse, samePropertyValuesAs(hendelse1));
-        assertThat(expectedHendelse, samePropertyValuesAs(hendelse2));
+        assertThat<Hendelse>(expectedHendelse, samePropertyValuesAs<Hendelse>(hendelse1))
+        assertThat<Hendelse>(expectedHendelse, samePropertyValuesAs<Hendelse>(hendelse2))
     }
 
     @Test
-    public void multiple_expected_hendelser_are_fetched() {
-        var expectedHendelser = testData.hendelser("01016800000", "01016900000", "01017000000");
-        var hendelser = db.fetchHendelser("4000", 0, 0, 3);
+    fun multiple_expected_hendelser_are_fetched() {
+        val expectedHendelser = testData.hendelser("01016800000", "01016900000", "01017000000")
+        val hendelser = db.fetchHendelser("4000", 0, 0, 3)
 
-        for (int i = 0; i < hendelser.size(); i++)
-            assertThat(hendelser.get(i), samePropertyValuesAs(expectedHendelser.get(i)));
+        for (i in hendelser.indices)
+            assertThat<Hendelse>(hendelser[i], samePropertyValuesAs<Hendelse>(expectedHendelser[i]))
     }
 
     @Test
-    public void unknown_hendelse_returns_empty_list() {
-        assertEquals(Collections.emptyList(), db.fetchHendelser("1234", 1, 0, 9999));
+    fun unknown_hendelse_returns_empty_list() {
+        assertEquals(emptyList<Any>(), db.fetchHendelser("1234", 1, 0, 9999))
     }
 
     @Test
-    public void page_counting() {
-        assertEquals(1, db.getNumberOfPages("2000", 1, 1));
-        assertEquals(3, db.getNumberOfPages("4000", 1, 1));
-        assertEquals(2, db.getNumberOfPages("4000", 1, 2));
-        assertEquals(1, db.getNumberOfPages("4000", 5, 2));
-        assertEquals(0, db.getNumberOfPages("4000", 7, 1));
+    fun page_counting() {
+        assertEquals(1, db.getNumberOfPages("2000", 1, 1).toLong())
+        assertEquals(3, db.getNumberOfPages("4000", 1, 1).toLong())
+        assertEquals(2, db.getNumberOfPages("4000", 1, 2).toLong())
+        assertEquals(1, db.getNumberOfPages("4000", 5, 2).toLong())
+        assertEquals(0, db.getNumberOfPages("4000", 7, 1).toLong())
     }
 
     @Test
-    public void hendelser_split_with_pagination() {
-        var expectedPageOne = testData.hendelser("01016800000", "01016900000");
-        var expectedPageTwo = testData.hendelser("01017000000");
+    fun hendelser_split_with_pagination() {
+        val expectedPageOne = testData.hendelser("01016800000", "01016900000")
+        val expectedPageTwo = testData.hendelser("01017000000")
 
-        var pageOne = db.fetchHendelser("4000", 0, 0, 2);
-        var pageTwo = db.fetchHendelser("4000", 0, 1, 2);
+        val pageOne = db.fetchHendelser("4000", 0, 0, 2)
+        val pageTwo = db.fetchHendelser("4000", 0, 1, 2)
 
-        for (int i = 0; i < pageOne.size(); i++)
-            assertThat(pageOne.get(i), samePropertyValuesAs(expectedPageOne.get(i)));
-        assertThat(pageTwo.get(0), samePropertyValuesAs(expectedPageTwo.get(0)));
+        for (i in pageOne.indices)
+            assertThat<Hendelse>(pageOne[i], samePropertyValuesAs<Hendelse>(expectedPageOne[i]))
+        assertThat<Hendelse>(pageTwo[0], samePropertyValuesAs<Hendelse>(expectedPageTwo[0]))
     }
 
     @Test
-    public void skip_hendelser_with_offset() {
-        var expectedHendelse = testData.hendelse("01017000000");
-        var hendelser = db.fetchHendelser("4000",6, 0, 3);
+    fun skip_hendelser_with_offset() {
+        val expectedHendelse = testData.hendelse("01017000000")
+        val hendelser = db.fetchHendelser("4000", 6, 0, 3)
 
-        assertEquals(1, hendelser.size());
-        assertThat(hendelser.get(0), samePropertyValuesAs(expectedHendelse));
+        assertEquals(1, hendelser.size.toLong())
+        assertThat<Hendelse>(hendelser[0], samePropertyValuesAs<Hendelse>(expectedHendelse!!))
     }
 
     @Test
-    public void latest_sekvensnummer_for_tpnr() {
-        var expectedSekvensnummer = Integer.valueOf(6);
-        var latestSekvensnummer = db.latestSekvensnummer("4000");
+    fun latest_sekvensnummer_for_tpnr() {
+        val expectedSekvensnummer = 6
+        val latestSekvensnummer = db.latestSekvensnummer("4000")
 
-        assertEquals(expectedSekvensnummer, latestSekvensnummer);
+        assertEquals(expectedSekvensnummer.toLong(), latestSekvensnummer.toLong())
     }
 
     @Test
-    public void latest_sekvensnummer_for_tpnr_when_no_hendelser() {
-        var expectedSekvensnummer = Integer.valueOf(1);
-        var latestSekvensnummer = db.latestSekvensnummer("1234");
+    fun latest_sekvensnummer_for_tpnr_when_no_hendelser() {
+        val expectedSekvensnummer = 1
+        val latestSekvensnummer = db.latestSekvensnummer("1234")
 
-        assertEquals(expectedSekvensnummer, latestSekvensnummer);
+        assertEquals(expectedSekvensnummer.toLong(), latestSekvensnummer.toLong())
     }
 }

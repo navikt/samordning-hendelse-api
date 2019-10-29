@@ -1,54 +1,49 @@
-package no.nav.samordning.hendelser.database;
+package no.nav.samordning.hendelser.database
 
-import com.jayway.jsonpath.JsonPath;
-import no.nav.samordning.hendelser.hendelse.Hendelse;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
+import com.jayway.jsonpath.JsonPath
+import no.nav.samordning.hendelser.hendelse.Hendelse
+import org.hamcrest.Matchers
+import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
+import org.junit.Assert.assertThat
+import org.junit.jupiter.api.Test
+import javax.json.bind.JsonbBuilder
 
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
-import static org.junit.Assert.assertThat;
-
-public class HendelseJSONTest {
+class HendelseJSONTest {
 
     @Test
-    public void jsonToObject() {
-        Hendelse hendelse = new Hendelse();
-        hendelse.setYtelsesType("AAP");
-        hendelse.setIdentifikator("12345678901");
-        hendelse.setVedtakId("ABC123");
-        hendelse.setFom("2020-01-01");
-        hendelse.setTom("2025-01-01");
+    fun jsonToObject() {
+        val hendelse = Hendelse()
+        hendelse.ytelsesType = "AAP"
+        hendelse.identifikator = "12345678901"
+        hendelse.vedtakId = "ABC123"
+        hendelse.fom = "2020-01-01"
+        hendelse.tom = "2025-01-01"
 
-        Jsonb jsonb = JsonbBuilder.create();
-        String json = "{\"ytelsesType\":\"AAP\",\"identifikator\":\"12345678901\",\"vedtakId\":\"ABC123\",\"fom\":\"2020-01-01\",\"tom\":\"2025-01-01\"}";
+        val jsonb = JsonbBuilder.create()
+        val json = "{\"ytelsesType\":\"AAP\",\"identifikator\":\"12345678901\",\"vedtakId\":\"ABC123\",\"fom\":\"2020-01-01\",\"tom\":\"2025-01-01\"}"
 
-        Hendelse hendelse2 = jsonb.fromJson(json, Hendelse.class);
-        assertThat(hendelse, samePropertyValuesAs(hendelse2));
+        val hendelse2 = jsonb.fromJson(json, Hendelse::class.java)
+        assertThat(hendelse, samePropertyValuesAs(hendelse2))
     }
 
     @Test
-    public void objectToJSON() {
-        Hendelse hendelse = new Hendelse();
-        hendelse.setYtelsesType("AAP");
-        hendelse.setIdentifikator("12345678901");
-        hendelse.setVedtakId("ABC123");
-        hendelse.setFom("2020-01-01");
-        hendelse.setTom("2025-01-01");
+    fun objectToJSON() {
+        val hendelse = Hendelse()
+        hendelse.ytelsesType = "AAP"
+        hendelse.identifikator = "12345678901"
+        hendelse.vedtakId = "ABC123"
+        hendelse.fom = "2020-01-01"
+        hendelse.tom = "2025-01-01"
 
-        Jsonb jsonb = JsonbBuilder.create();
-        String result = jsonb.toJson(hendelse);
+        val jsonb = JsonbBuilder.create()
+        val result = jsonb.toJson(hendelse)
 
-        String excpected = "{\"ytelsesType\":\"AAP\",\"identifikator\":\"12345678901\",\"vedtakId\":\"ABC123\",\"fom\":\"2020-01-01\",\"tom\":\"2025-01-01\"}";
+        val excpected = "{\"ytelsesType\":\"AAP\",\"identifikator\":\"12345678901\",\"vedtakId\":\"ABC123\",\"fom\":\"2020-01-01\",\"tom\":\"2025-01-01\"}"
 
-        List<String> excpectedList = JsonPath.read(excpected, "$.*");
-        List<String> resultList = JsonPath.read(result, "$.*");
+        val excpectedList = JsonPath.read<List<String>>(excpected, "$.*")
+        val resultList = JsonPath.read<List<String>>(result, "$.*")
 
-        assertThat((excpectedList),
-                Matchers.containsInAnyOrder(resultList.toArray()));
+        assertThat(excpectedList,
+                Matchers.containsInAnyOrder<Any>(*resultList.toTypedArray()))
     }
 }

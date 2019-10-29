@@ -1,19 +1,15 @@
-package no.nav.samordning.hendelser.feed;
+package no.nav.samordning.hendelser.feed
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import javax.validation.ConstraintViolationException;
+import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.web.bind.annotation.ControllerAdvice
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseStatus
+import javax.validation.ConstraintViolationException
 
 @ControllerAdvice
-public class FeedExceptionHandler {
+class FeedExceptionHandler {
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleException(ConstraintViolationException e) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(e.getMessage());
-    }
+    @ExceptionHandler(ConstraintViolationException::class)
+    @ResponseStatus(BAD_REQUEST)
+    fun handleException(e: ConstraintViolationException) = e.message
 }

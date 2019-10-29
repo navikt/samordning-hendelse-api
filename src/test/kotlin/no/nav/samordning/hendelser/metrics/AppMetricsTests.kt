@@ -1,53 +1,47 @@
-package no.nav.samordning.hendelser.metrics;
+package no.nav.samordning.hendelser.metrics
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static no.nav.samordning.hendelser.TestAuthHelper.token;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import no.nav.samordning.hendelser.TestAuthHelper.token
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class AppMetricsTests {
+internal class AppMetricsTests {
 
     @Autowired
-    private MockMvc mockMvc;
+    private lateinit var mockMvc: MockMvc
 
     @Test
-    void hendelser_lest_metrics_are_incremented() throws Exception {
+    @Throws(Exception::class)
+    fun hendelser_lest_metrics_are_incremented() {
         mockMvc.perform(get("/hendelser?tpnr=1000")
-                .header("Authorization", token("0000000000",true)))
-                .andExpect(status().isOk());
+                .header("Authorization", token("0000000000", true)))
+                .andExpect(status().isOk)
 
-        var metricName = "samordning_hendelser_lest_total{tpnr=\"1000\",}";
-        assertNotNull(getMetricValue(metricName));
-        var count = getMetricValue(metricName);
+        val metricName = "samordning_hendelser_lest_total{tpnr=\"1000\",}"
+        assertNotNull(getMetricValue(metricName))
+        val count = getMetricValue(metricName)
 
         mockMvc.perform(get("/hendelser?tpnr=1000")
-                .header("Authorization", token("0000000000",true)))
-                .andExpect(status().isOk());
+                .header("Authorization", token("0000000000", true)))
+                .andExpect(status().isOk)
 
-        assertEquals(count + 1, getMetricValue(metricName));
+        assertEquals(count!! + 1, getMetricValue(metricName))
     }
 
-    private Double getMetricValue(String metric) throws Exception {
-        var response = mockMvc.perform(get("/actuator/prometheus"))
-                .andReturn().getResponse().getContentAsString().split("\n");
-
-        for (var line : response) {
-            if (line.contains("#"))
-                continue;
-
-            if (line.startsWith(metric)) {
-                return Double.parseDouble(line.split(" ")[1]);
-            }
-        }
-
-        return null;
-    }
+    @Throws(Exception::class)
+    private fun getMetricValue(metric: String) = mockMvc.perform(get("/actuator/prometheus"))
+            .andReturn().response.contentAsString.split('\n')
+            .firstOrNull { it.startsWith(metric) && '#' !in it }
+            ?.split(' ')
+            ?.filter(String::isNotEmpty)
+            ?.getOrNull(1)
+            ?.toDouble()
 }

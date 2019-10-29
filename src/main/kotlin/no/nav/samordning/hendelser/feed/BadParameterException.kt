@@ -1,7 +1,3 @@
-package no.nav.samordning.hendelser.feed;
+package no.nav.samordning.hendelser.feed
 
-class BadParameterException extends Exception {
-    BadParameterException(String message) {
-        super(message);
-    }
-}
+internal class BadParameterException(message: String) : Exception(message)

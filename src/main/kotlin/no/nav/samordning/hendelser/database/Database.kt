@@ -1,58 +1,45 @@
-package no.nav.samordning.hendelser.database;
+package no.nav.samordning.hendelser.database
 
-import no.nav.samordning.hendelser.hendelse.Hendelse;
-import org.postgresql.util.PGobject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-
-import javax.json.bind.JsonbBuilder;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import no.nav.samordning.hendelser.hendelse.Hendelse
+import org.postgresql.util.PGobject
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.stereotype.Repository
+import javax.json.bind.JsonbBuilder
 
 @Repository
-public class Database {
+class Database {
+    companion object {
+        private const val LATEST_SNR_SQL = "SELECT MAX(ID) FROM HENDELSER WHERE TPNR = ?"
+        private const val PAGE_COUNT_SQL = "SELECT COUNT(HENDELSE_DATA) FROM HENDELSER WHERE TPNR = ? AND ID >= ?"
+        private const val HENDELSER_SQL = "SELECT HENDELSE_DATA #>> '{}' FROM HENDELSER WHERE ID >= ? AND TPNR = ? ORDER BY ID OFFSET ? LIMIT ?"
+    }
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private lateinit var jdbcTemplate: JdbcTemplate
 
-    public List<Hendelse> fetchHendelser(String tpnr, int offset, int side, int antall) {
-        var sql = "SELECT HENDELSE_DATA #>> '{}' " +
-            "FROM HENDELSER WHERE ID >= ? " +
-            "AND TPNR = ? " +
-            "ORDER BY ID " +
-            "OFFSET ? LIMIT ?";
+    val totalHendelser: String?
+        get() = jdbcTemplate.queryForObject<String>("SELECT COUNT(*) FROM HENDELSER", String::class.java)
 
-        return jdbcTemplate.queryForList(sql, PGobject.class, offset, tpnr, side * antall, antall)
-            .stream().map(hendelse -> JsonbBuilder.create().fromJson(hendelse.getValue(), Hendelse.class))
-            .collect(Collectors.toList());
-    }
+    fun fetchHendelser(tpnr: String, offset: Int, side: Int, antall: Int) =
+            jdbcTemplate.queryForList<PGobject>(HENDELSER_SQL, PGobject::class.java, offset, tpnr, side * antall, antall)
+                    .map { JsonbBuilder.create().fromJson<Hendelse>(it.value, Hendelse::class.java) }
 
-    public int getNumberOfPages(String tpnr, int sekvensnummer, int antall) {
-        var sql = "SELECT COUNT(HENDELSE_DATA) " +
-                "FROM HENDELSER WHERE TPNR = ? " +
-                "AND ID >= ?";
-        int numberOfPages = 0;
-        try {
-            var total = Integer.parseInt(Objects.requireNonNull(jdbcTemplate.queryForObject(sql, new Object[]{tpnr, sekvensnummer}, String.class)));
-            numberOfPages = (total + antall - 1) / antall;
-        } catch (Exception ignored) { }
-        return numberOfPages;
-    }
+    fun getNumberOfPages(tpnr: String, sekvensnummer: Int, antall: Int) =
+            try {
+                jdbcTemplate.queryForObject<String>(PAGE_COUNT_SQL, arrayOf(tpnr, sekvensnummer), String::class.java)
+                        .toIntOrNull()
+                        ?.let { (it + antall - 1) / antall }
+                        ?: 0
+            } catch (_: Exception) {
+                0
+            }
 
-    public String getTotalHendelser() {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM HENDELSER", String.class);
-    }
-
-    public Integer latestSekvensnummer(String tpnr) {
-        var sql = "SELECT MAX(ID) " +
-                "FROM HENDELSER WHERE TPNR = ?";
-
-        int sekvensnummer = 1;
-        try {
-            sekvensnummer = Integer.parseInt(Objects.requireNonNull(jdbcTemplate.queryForObject(sql, new Object[]{tpnr}, String.class)));
-        } catch (Exception ignored) { }
-        return sekvensnummer;
-    }
+    fun latestSekvensnummer(tpnr: String): Int =
+            try {
+                jdbcTemplate.queryForObject<String>(LATEST_SNR_SQL, arrayOf<Any>(tpnr), String::class.java)
+                        .toIntOrNull() ?: 1
+            } catch (_: Exception) {
+                1
+            }
 }

@@ -1,98 +1,106 @@
-package no.nav.samordning.hendelser;
+package no.nav.samordning.hendelser
 
-import org.mockserver.client.server.MockServerClient;
-import org.mockserver.model.HttpRequest;
-import org.mockserver.model.HttpResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.testcontainers.containers.MockServerContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.utility.MountableFile;
-
-import java.security.NoSuchAlgorithmException;
+import org.mockserver.client.server.MockServerClient
+import org.mockserver.model.HttpRequest
+import org.mockserver.model.HttpResponse
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
+import org.testcontainers.containers.MockServerContainer
+import org.testcontainers.containers.Network
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.utility.MountableFile
+import java.security.NoSuchAlgorithmException
 
 /**
  * Creates and manages shared testcontainers for all tests
  */
 @Component
-public class DatabaseConfig {
-
-    private static PostgreSQLContainer postgres;
-    private static MockServerContainer mockServer;
+class DatabaseConfig {
 
     @Autowired
-    public void init() throws Exception {
+    @Throws(Exception::class)
+    fun init() {
         if (postgres == null && mockServer == null) {
-            initPostgresContainer();
-            initMockServerContainer();
+            initPostgresContainer()
+            initMockServerContainer()
 
-            System.setProperty("spring.datasource.url", postgres.getJdbcUrl());
-            System.setProperty("spring.datasource.username", postgres.getUsername());
-            System.setProperty("spring.datasource.password", postgres.getPassword());
-            System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.getEndpoint() + "/jwks");
-            System.setProperty("TPREGISTERET_URL", mockServer.getEndpoint());
+            System.setProperty("spring.datasource.url", postgres!!.jdbcUrl)
+            System.setProperty("spring.datasource.username", postgres!!.username)
+            System.setProperty("spring.datasource.password", postgres!!.password)
+            System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer!!.endpoint + "/jwks")
+            System.setProperty("TPREGISTERET_URL", mockServer!!.endpoint)
         }
     }
 
-    private void initPostgresContainer() {
-        postgres = new PostgreSQLContainer()
-            .withDatabaseName("samordning-hendelser")
-            .withUsername("user")
-            .withPassword("pass");
-        postgres
-            .withNetwork(Network.SHARED)
-            .withNetworkAliases("samordning-hendelser")
-            .withExposedPorts(5432)
-            .withCopyFileToContainer(MountableFile.forClasspathResource("schema.sql"),
-                "/docker-entrypoint-initdb.d/schema.sql");
-        postgres.start();
+    private class KPostgreSQLContainer : PostgreSQLContainer<KPostgreSQLContainer>()
+
+    private fun initPostgresContainer() {
+        postgres = KPostgreSQLContainer()
+                .withDatabaseName("samordning-hendelser")
+                .withUsername("user")
+                .withPassword("pass")
+        postgres!!
+                .withNetwork(Network.SHARED)
+                .withNetworkAliases("samordning-hendelser")
+                .withExposedPorts(5432)
+                .withCopyFileToContainer(MountableFile.forClasspathResource("schema.sql"),
+                        "/docker-entrypoint-initdb.d/schema.sql")
+        postgres!!.start()
     }
 
-    private void initMockServerContainer() throws NoSuchAlgorithmException {
-        mockServer = new MockServerContainer();
-        mockServer.start();
+    @Throws(NoSuchAlgorithmException::class)
+    private fun initMockServerContainer() {
+        mockServer = MockServerContainer()
+        mockServer!!.start()
 
-        var mockClient = new MockServerClient(mockServer.getContainerIpAddress(), mockServer.getServerPort());
+        val mockClient = MockServerClient(mockServer!!.containerIpAddress, mockServer!!.serverPort!!)
 
-        mockClient.when(HttpRequest.request()
+        mockClient.`when`(HttpRequest.request()
                 .withMethod("GET")
                 .withPath("/jwks"))
-            .respond(HttpResponse.response()
-                .withStatusCode(200)
-                .withHeader("\"Content-type\", \"application/json\"")
-                .withBody(TestTokenHelper.generateJwks())
-            );
+                .respond(HttpResponse.response()
+                        .withStatusCode(200)
+                        .withHeader("\"Content-type\", \"application/json\"")
+                        .withBody(TestTokenHelper.generateJwks())
+                )
 
-        mockClient.when(HttpRequest.request()
+        mockClient.`when`(HttpRequest.request()
                 .withMethod("GET")
                 .withPath("/organisation")
                 .withHeader("orgnr", "0000000000")
                 .withHeader("tpnr", "1000"))
                 .respond(HttpResponse.response()
-                .withStatusCode(200));
+                        .withStatusCode(200))
 
-        mockClient.when(HttpRequest.request()
+        mockClient.`when`(HttpRequest.request()
                 .withMethod("GET")
                 .withPath("/organisation")
                 .withHeader("orgnr", "4444444444")
                 .withHeader("tpnr", "4000"))
                 .respond(HttpResponse.response()
-                .withStatusCode(200));
+                        .withStatusCode(200))
     }
 
-    public void emptyDatabase() throws Exception {
-        postgres.execInContainer("psql",
-            "-U", postgres.getUsername(),
-            "-d", postgres.getDatabaseName(),
-            "-c", "TRUNCATE TABLE HENDELSER",
-            "-c", "ALTER SEQUENCE HENDELSER_ID_SEQ RESTART WITH 1");
+    @Throws(Exception::class)
+    fun emptyDatabase() {
+        postgres!!.execInContainer("psql",
+                "-U", postgres!!.username,
+                "-d", postgres!!.databaseName,
+                "-c", "TRUNCATE TABLE HENDELSER",
+                "-c", "ALTER SEQUENCE HENDELSER_ID_SEQ RESTART WITH 1")
     }
 
-    public void refillDatabase() throws Exception {
-        postgres.execInContainer("psql",
-            "-U", postgres.getUsername(),
-            "-d", postgres.getDatabaseName(),
-            "-a", "-f", "/docker-entrypoint-initdb.d/schema.sql");
+    @Throws(Exception::class)
+    fun refillDatabase() {
+        postgres!!.execInContainer("psql",
+                "-U", postgres!!.username,
+                "-d", postgres!!.databaseName,
+                "-a", "-f", "/docker-entrypoint-initdb.d/schema.sql")
+    }
+
+    companion object {
+
+        private var postgres: KPostgreSQLContainer? = null
+        private var mockServer: MockServerContainer? = null
     }
 }

@@ -1,51 +1,42 @@
-package no.nav.samordning.hendelser;
+package no.nav.samordning.hendelser
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.vault.core.lease.LeaseEndpoints;
-import org.springframework.vault.core.lease.SecretLeaseContainer;
-import org.springframework.vault.core.lease.domain.RequestedSecret;
-import org.springframework.vault.core.lease.event.SecretLeaseCreatedEvent;
+import com.zaxxer.hikari.HikariDataSource
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
+import org.springframework.vault.core.lease.SecretLeaseContainer
+import org.springframework.vault.core.lease.domain.RequestedSecret
+import org.springframework.vault.core.lease.event.SecretLeaseCreatedEvent
 
 @Configuration
 @Profile("!test")
-public class VaultHikariConfig implements InitializingBean {
+class VaultHikariConfig(private val container: SecretLeaseContainer, private val hikariDataSource: HikariDataSource) : InitializingBean {
 
-    private SecretLeaseContainer container;
-    private HikariDataSource hikariDataSource;
+    @Value("\${VAULT_POSTGRES_BACKEND}")
+    private lateinit var vaultPostgresBackend: String
+    @Value("\${VAULT_POSTGRES_ROLE}")
+    private lateinit var vaultPostgresRole: String
 
-    @Value("${VAULT_POSTGRES_BACKEND}")
-    private String vaultPostgresBackend;
-    @Value("${VAULT_POSTGRES_ROLE}")
-    private String vaultPostgresRole;
-
-    private static Logger LOGGER = LoggerFactory.getLogger(VaultHikariConfig.class.getName());
-
-    public VaultHikariConfig(SecretLeaseContainer container, HikariDataSource hikariDataSource) {
-        this.container = container;
-        this.hikariDataSource = hikariDataSource;
+    override fun afterPropertiesSet() {
+        val secret = RequestedSecret.rotating("$vaultPostgresBackend/creds/$vaultPostgresRole")
+        container.addLeaseListener { leaseEvent ->
+            if (leaseEvent.source === secret && leaseEvent is SecretLeaseCreatedEvent) {
+                LOGGER.info("Rotating creds for path: ${leaseEvent.getSource().path}")
+                val username = leaseEvent.secrets["username"].toString()
+                val password = leaseEvent.secrets["password"].toString()
+                hikariDataSource.username = username
+                hikariDataSource.password = password
+                hikariDataSource.hikariConfigMXBean.setUsername(username)
+                hikariDataSource.hikariConfigMXBean.setPassword(password)
+            }
+        }
+        container.addRequestedSecret(secret)
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        RequestedSecret secret = RequestedSecret.rotating(this.vaultPostgresBackend + "/creds/" + this.vaultPostgresRole);
-        container.addLeaseListener(leaseEvent -> {
-            if (leaseEvent.getSource() == secret && leaseEvent instanceof SecretLeaseCreatedEvent) {
-                LOGGER.info("Rotating creds for path: " + leaseEvent.getSource().getPath());
-                SecretLeaseCreatedEvent slce = (SecretLeaseCreatedEvent) leaseEvent;
-                String username = slce.getSecrets().get("username").toString();
-                String password = slce.getSecrets().get("password").toString();
-                hikariDataSource.setUsername(username);
-                hikariDataSource.setPassword(password);
-                hikariDataSource.getHikariConfigMXBean().setUsername(username);
-                hikariDataSource.getHikariConfigMXBean().setPassword(password);
-            }
-        });
-        container.addRequestedSecret(secret);
+    companion object {
+
+        private val LOGGER = LoggerFactory.getLogger(VaultHikariConfig::class.java.name)
     }
 }

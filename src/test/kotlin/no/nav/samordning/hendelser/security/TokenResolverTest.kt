@@ -1,93 +1,90 @@
-package no.nav.samordning.hendelser.security;
+package no.nav.samordning.hendelser.security
 
-import no.nav.samordning.hendelser.TestTokenHelper;
-import no.nav.samordning.hendelser.consumer.TpregisteretConsumer;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
-
-import javax.servlet.http.HttpServletRequest;
-import java.security.NoSuchAlgorithmException;
-
-import static no.nav.samordning.hendelser.TestTokenHelper.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import no.nav.samordning.hendelser.TestTokenHelper.serviceToken
+import no.nav.samordning.hendelser.TestTokenHelper.token
+import no.nav.samordning.hendelser.consumer.TpregisteretConsumer
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver
+import java.security.NoSuchAlgorithmException
+import javax.servlet.http.HttpServletRequest
 
 /**
  * Tests TokenResolver in isolation.
  */
-class TokenResolverTest {
-
-    private static final String GOOD_ORG_NUMBER = "987654321";
-    private TpregisteretConsumer tpRegisteretConsumer;
-    private BearerTokenResolver bearerTokenResolver;
-    private HttpServletRequest request;
-
-    @BeforeAll
-    static void setUpOnce() throws NoSuchAlgorithmException {
-        TestTokenHelper.init();
-    }
+internal class TokenResolverTest {
+    private var tpRegisteretConsumer: TpregisteretConsumer? = null
+    private var bearerTokenResolver: BearerTokenResolver? = null
+    private var request: HttpServletRequest? = null
 
     @BeforeEach
-    void setUp() {
-        request = mock(HttpServletRequest.class);
-        bearerTokenResolver = mock(BearerTokenResolver.class);
-        tpRegisteretConsumer = mock(TpregisteretConsumer.class);
-        when(request.getParameter("tpnr")).thenReturn("123?antall=1");
-        when(tpRegisteretConsumer.validateOrganisation(GOOD_ORG_NUMBER, "123")).thenReturn(true);
+    fun setUp() {
+        request = mock(HttpServletRequest::class.java)
+        bearerTokenResolver = mock(BearerTokenResolver::class.java)
+        tpRegisteretConsumer = mock(TpregisteretConsumer::class.java)
+        `when`(request!!.getParameter("tpnr")).thenReturn("123?antall=1")
+        `when`<Boolean>(tpRegisteretConsumer!!.validateOrganisation(GOOD_ORG_NUMBER, "123")).thenReturn(true)
     }
 
     @Test
-    void resolving_good_nonService_token_shall_return_token() throws NoSuchAlgorithmException {
-        when(bearerTokenResolver.resolve(any())).thenReturn(token(GOOD_ORG_NUMBER, true));
-        var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "non-service", "issuer");
+    @Throws(NoSuchAlgorithmException::class)
+    fun resolving_good_nonService_token_shall_return_token() {
+        `when`(bearerTokenResolver!!.resolve(any())).thenReturn(token(GOOD_ORG_NUMBER, true))
+        val resolver = TokenResolver(bearerTokenResolver!!, tpRegisteretConsumer!!, "non-service", "issuer")
 
-        String result = resolver.resolve(request);
+        val result = resolver.resolve(request!!)
 
-        assertEquals("ey", result.substring(0, 2));
+        assertEquals("ey", result!!.substring(0, 2))
     }
 
     @Test
-    void resolving_good_service_token_shall_return_token() {
-        when(bearerTokenResolver.resolve(any())).thenReturn(serviceToken());
-        var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test");
+    fun resolving_good_service_token_shall_return_token() {
+        `when`(bearerTokenResolver!!.resolve(any())).thenReturn(serviceToken())
+        val resolver = TokenResolver(bearerTokenResolver!!, tpRegisteretConsumer!!, "srvTest", "test")
 
-        String result = resolver.resolve(request);
+        val result = resolver.resolve(request!!)
 
-        assertEquals("ey", result.substring(0, 2));
+        assertEquals("ey", result!!.substring(0, 2))
     }
 
     @Test
-    void resolving_invalid_scope_token_shall_return_null() throws NoSuchAlgorithmException {
-        when(bearerTokenResolver.resolve(any())).thenReturn(token("BAD SCOPE", GOOD_ORG_NUMBER, true));
-        var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test");
+    @Throws(NoSuchAlgorithmException::class)
+    fun resolving_invalid_scope_token_shall_return_null() {
+        `when`(bearerTokenResolver!!.resolve(any())).thenReturn(token("BAD SCOPE", GOOD_ORG_NUMBER, true))
+        val resolver = TokenResolver(bearerTokenResolver!!, tpRegisteretConsumer!!, "srvTest", "test")
 
-        String result = resolver.resolve(request);
+        val result = resolver.resolve(request!!)
 
-        assertNull(result);
+        assertNull(result)
     }
 
     @Test
-    void resolving_invalid_org_token_shall_return_null() throws NoSuchAlgorithmException {
-        when(bearerTokenResolver.resolve(any())).thenReturn(token("-1", true));
-        var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test");
+    @Throws(NoSuchAlgorithmException::class)
+    fun resolving_invalid_org_token_shall_return_null() {
+        `when`(bearerTokenResolver!!.resolve(any())).thenReturn(token("-1", true))
+        val resolver = TokenResolver(bearerTokenResolver!!, tpRegisteretConsumer!!, "srvTest", "test")
 
-        String result = resolver.resolve(request);
+        val result = resolver.resolve(request!!)
 
-        assertNull(result);
+        assertNull(result)
     }
 
     @Test
-    void resolving_nonService_token_with_missing_claims_shall_give_exception_telling_which_claims() {
-        when(bearerTokenResolver.resolve(any())).thenReturn(serviceToken());
-        var resolver = new TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "non-service", "issuer");
+    fun resolving_nonService_token_with_missing_claims_shall_give_exception_telling_which_claims() {
+        `when`(bearerTokenResolver!!.resolve(any())).thenReturn(serviceToken())
+        val resolver = TokenResolver(bearerTokenResolver!!, tpRegisteretConsumer!!, "non-service", "issuer")
 
-        var exception = assertThrows(OAuth2AuthenticationException.class, () -> resolver.resolve(request));
+        val exception = assertThrows(OAuth2AuthenticationException::class.java) { resolver.resolve(request!!) }
 
-        assertEquals("Missing parameters: client_id, client_orgno, scope", exception.getMessage());
+        assertEquals("Missing parameters: client_id, client_orgno, scope", exception.message)
+    }
+
+    companion object {
+        private const val GOOD_ORG_NUMBER = "987654321"
     }
 }

@@ -1,22 +1,21 @@
-package no.nav.samordning.hendelser.security;
+package no.nav.samordning.hendelser.security
 
-import no.nav.samordning.hendelser.consumer.TpregisteretConsumer;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
+import no.nav.samordning.hendelser.consumer.TpregisteretConsumer
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
-    @Override
-    public void configure(WebSecurity web) {
+    override fun configure(web: WebSecurity) {
         web.ignoring().antMatchers(
                 "/isAlive",
                 "/isReady",
@@ -24,25 +23,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/v2/api-docs",
                 "/swagger-ui.html",
                 "/swagger-resources/**",
-                "/webjars/**");
+                "/webjars/**")
     }
 
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
+    @Throws(Exception::class)
+    public override fun configure(http: HttpSecurity) {
         http.authorizeRequests()
                 .anyRequest().authenticated()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().oauth2ResourceServer().jwt();
+                .and().sessionManagement().sessionCreationPolicy(STATELESS)
+                .and().oauth2ResourceServer().jwt()
     }
 
     @Bean
-    public TokenResolver tokenResolver(TpregisteretConsumer tpRegisteretConsumer,
-                                       @Value("${service.user}") String serviceUser,
-                                       @Value("${service.user.iss}") String serviceUserIssuer) {
-        return new TokenResolver(
-                new DefaultBearerTokenResolver(),
+    fun tokenResolver(tpRegisteretConsumer: TpregisteretConsumer,
+                      @Value("\${service.user}") serviceUser: String,
+                      @Value("\${service.user.iss}") serviceUserIssuer: String): TokenResolver {
+        return TokenResolver(
+                DefaultBearerTokenResolver(),
                 tpRegisteretConsumer,
                 serviceUser,
-                serviceUserIssuer);
+                serviceUserIssuer)
     }
 }

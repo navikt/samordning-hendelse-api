@@ -1,36 +1,21 @@
-package no.nav.samordning.hendelser;
+package no.nav.samordning.hendelser
 
-import no.nav.samordning.hendelser.hendelse.Hendelse;
-import org.postgresql.util.PGobject;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import javax.json.bind.JsonbBuilder;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import no.nav.samordning.hendelser.hendelse.Hendelse
+import org.postgresql.util.PGobject
+import org.springframework.context.annotation.Configuration
+import org.springframework.jdbc.core.JdbcTemplate
+import javax.json.bind.JsonbBuilder
 
 @Configuration
-public class TestDataHelper {
+class TestDataHelper(database: JdbcTemplate) {
 
-    private final List<Hendelse> hendelser;
+    private val hendelser: List<Hendelse> = database.queryForList("SELECT HENDELSE_DATA FROM HENDELSER", PGobject::class.java)
+            .map { JsonbBuilder.create().fromJson(it.value, Hendelse::class.java) }
+            .toList()
 
-    public TestDataHelper(JdbcTemplate database) {
-        hendelser = database.queryForList("SELECT HENDELSE_DATA FROM HENDELSER", PGobject.class)
-            .stream().map(hendelse -> JsonbBuilder.create().fromJson(hendelse.getValue(), Hendelse.class))
-            .collect(Collectors.toList());
-    }
+    fun hendelse(identifikator: String) =
+            hendelser.firstOrNull { it.identifikator == identifikator }
 
-    public Hendelse hendelse(String identifikator) {
-        for (Hendelse hendelse : hendelser)
-            if (hendelse.getIdentifikator().equals(identifikator))
-                return hendelse;
-        return null;
-    }
-
-    public List<Hendelse> hendelser(String... identifikator) {
-        return hendelser.stream()
-            .filter(hendelse -> Arrays.asList(identifikator).contains(hendelse.getIdentifikator()))
-            .collect(Collectors.toList());
-    }
+    fun hendelser(vararg identifikator: String) = hendelser
+            .filter { identifikator.contains(it.identifikator) }
 }

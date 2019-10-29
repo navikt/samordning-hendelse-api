@@ -1,109 +1,124 @@
-package no.nav.samordning.hendelser.feed;
+package no.nav.samordning.hendelser.feed
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static no.nav.samordning.hendelser.TestAuthHelper.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import no.nav.samordning.hendelser.TestAuthHelper.emptyToken
+import no.nav.samordning.hendelser.TestAuthHelper.expiredToken
+import no.nav.samordning.hendelser.TestAuthHelper.futureToken
+import no.nav.samordning.hendelser.TestAuthHelper.token
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 /**
  * Tests authentication/authorization (token validation) of the feed controller API.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-class FeedControllerAuthTest {
-
-    private static final String ENDPOINT = "/hendelser";
-    private static final String AUTH_HEADER_NAME = "Authorization";
-    private static final String TPNR_PARAM_NAME = "tpnr";
-    private static final String ORG_NUMBER_1 = "0000000000";
-    private static final String ORG_NUMBER_2 = "4444444444";
-    private static final String TPNR_1 = "1000";
-    private static final String TPNR_2 = "4000";
+internal class FeedControllerAuthTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private lateinit var mockMvc: MockMvc
 
     @Test
-    void valid_token_issuer_is_authorized() throws Exception {
+    @Throws(Exception::class)
+    fun valid_token_issuer_is_authorized() {
         mockMvc.perform(get(ENDPOINT)
                 .header(AUTH_HEADER_NAME, token(ORG_NUMBER_1, true))
                 .param(TPNR_PARAM_NAME, TPNR_1))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk)
     }
 
     @Test
-    void valid_orgno_and_tpnr_is_authorized() throws Exception {
+    @Throws(Exception::class)
+    fun valid_orgno_and_tpnr_is_authorized() {
         mockMvc.perform(get(ENDPOINT)
                 .header(AUTH_HEADER_NAME, token(ORG_NUMBER_2, true))
                 .param(TPNR_PARAM_NAME, TPNR_2))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk)
     }
 
     @Test
-    void expired_token_is_unauthorized() throws Exception {
+    @Throws(Exception::class)
+    fun expired_token_is_unauthorized() {
         mockMvc.perform(get(ENDPOINT)
                 .header(AUTH_HEADER_NAME, expiredToken(ORG_NUMBER_2))
                 .param(TPNR_PARAM_NAME, TPNR_2))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized)
     }
 
     @Test
-    void future_token_is_unauthorized() throws Exception {
+    @Throws(Exception::class)
+    fun future_token_is_unauthorized() {
         mockMvc.perform(get(ENDPOINT)
                 .header(AUTH_HEADER_NAME, futureToken(ORG_NUMBER_2))
                 .param(TPNR_PARAM_NAME, TPNR_2))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized)
     }
 
     @Test
-    void invalid_token_issuer_is_unauthorized() throws Exception {
+    @Throws(Exception::class)
+    fun invalid_token_issuer_is_unauthorized() {
         mockMvc.perform(get(ENDPOINT)
                 .header(AUTH_HEADER_NAME, token(ORG_NUMBER_1, false))
                 .param(TPNR_PARAM_NAME, TPNR_1))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized)
     }
 
     @Test
-    void invalid_orgno_is_unauthorized() throws Exception {
+    @Throws(Exception::class)
+    fun invalid_orgno_is_unauthorized() {
         mockMvc.perform(get(ENDPOINT)
                 .header(AUTH_HEADER_NAME, token("1111111111", false))
                 .param(TPNR_PARAM_NAME, TPNR_1))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized)
     }
 
     @Test
-    void invalid_tpnr_is_unauthorized() throws Exception {
+    @Throws(Exception::class)
+    fun invalid_tpnr_is_unauthorized() {
         mockMvc.perform(get(ENDPOINT)
                 .header(AUTH_HEADER_NAME, token(ORG_NUMBER_1, false))
                 .param(TPNR_PARAM_NAME, "1235"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized)
     }
 
     @Test
-    void invalid_orgno_and_tpnr_is_unauthorized() throws Exception {
+    @Throws(Exception::class)
+    fun invalid_orgno_and_tpnr_is_unauthorized() {
         mockMvc.perform(get(ENDPOINT)
                 .header(AUTH_HEADER_NAME, token("9999999999", true))
                 .param(TPNR_PARAM_NAME, "2000"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized)
     }
 
     @Test
-    void no_token_is_unauthorized() throws Exception {
+    @Throws(Exception::class)
+    fun no_token_is_unauthorized() {
         mockMvc.perform(get(ENDPOINT)
                 .param(TPNR_PARAM_NAME, TPNR_2))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized)
     }
 
     @Test
-    void missing_required_parameter_returns_bad_request() throws Exception {
+    @Throws(Exception::class)
+    fun missing_required_parameter_returns_bad_request() {
         mockMvc.perform(get(ENDPOINT)
                 .header(AUTH_HEADER_NAME, emptyToken())
                 .param(TPNR_PARAM_NAME, TPNR_2))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest)
+    }
+
+    companion object {
+
+        private const val ENDPOINT = "/hendelser"
+        private const val AUTH_HEADER_NAME = "Authorization"
+        private const val TPNR_PARAM_NAME = "tpnr"
+        private const val ORG_NUMBER_1 = "0000000000"
+        private const val ORG_NUMBER_2 = "4444444444"
+        private const val TPNR_1 = "1000"
+        private const val TPNR_2 = "4000"
     }
 }

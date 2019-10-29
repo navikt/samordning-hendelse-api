@@ -1,11 +1,11 @@
-package no.nav.samordning.hendelser;
+package no.nav.samordning.hendelser
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
 @SpringBootApplication
-public class Application {
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+class Application
+
+fun main(args: Array<String>) {
+    runApplication<Application>(*args)
 }

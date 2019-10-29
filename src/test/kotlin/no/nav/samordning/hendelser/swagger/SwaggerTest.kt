@@ -1,68 +1,69 @@
-package no.nav.samordning.hendelser.swagger;
+package no.nav.samordning.hendelser.swagger
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.hamcrest.BaseMatcher
+import org.hamcrest.Description
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.web.servlet.MockMvc
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class SwaggerTest {
+internal class SwaggerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private lateinit var mockMvc: MockMvc
 
     @Test
-    void swagger_shall_include_hendelser_but_not_basicErrorController() throws Exception {
+    @Throws(Exception::class)
+    fun swagger_shall_include_hendelser_but_not_basicErrorController() {
         mockMvc.perform(get("/v2/api-docs"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(new SwaggerMatcher()));
+                .andExpect(status().isOk)
+                .andExpect(content().string(SwaggerMatcher()))
     }
 
     @Test
-    void swaggerUi() throws Exception {
+    @Throws(Exception::class)
+    fun swaggerUi() {
         mockMvc.perform(get("/swagger-ui.html"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk)
     }
 
     @Test
-    void swaggerUi_webjars() throws Exception {
+    @Throws(Exception::class)
+    fun swaggerUi_webjars() {
         mockMvc.perform(get("/webjars/springfox-swagger-ui/springfox.css?v=2.9.2"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk)
     }
 
     @Test
-    void swaggerUi_config() throws Exception {
+    @Throws(Exception::class)
+    fun swaggerUi_config() {
         mockMvc.perform(get("/swagger-resources/configuration/ui"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk)
     }
 
-    private class SwaggerMatcher extends BaseMatcher<String> {
+    private inner class SwaggerMatcher : BaseMatcher<String>() {
 
-        @Override
-        public boolean matches(Object o) {
-            return validate((String) o);
+        override fun matches(o: Any): Boolean {
+            return validate(o as String)
         }
 
-        @Override
-        public void describeMismatch(Object o, Description description) {
-            description.appendText(o.toString());
+        override fun describeMismatch(o: Any, description: Description) {
+            description.appendText(o.toString())
         }
 
-        @Override
-        public void describeTo(Description description) {
-            description.appendText("Should contain 'hendelser', but not 'basic-error-controller'");
+        override fun describeTo(description: Description) {
+            description.appendText("Should contain 'hendelser', but not 'basic-error-controller'")
         }
 
-        private boolean validate(String swagger) {
-            return swagger.contains("hendelser") && !swagger.contains("basic-error-controller");
+        private fun validate(swagger: String): Boolean {
+            return swagger.contains("hendelser") && !swagger.contains("basic-error-controller")
         }
     }
 }
