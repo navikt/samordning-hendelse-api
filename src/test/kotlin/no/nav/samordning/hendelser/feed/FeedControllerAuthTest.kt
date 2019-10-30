@@ -112,7 +112,6 @@ internal class FeedControllerAuthTest {
     }
 
     companion object {
-
         private const val ENDPOINT = "/hendelser"
         private const val AUTH_HEADER_NAME = "Authorization"
         private const val TPNR_PARAM_NAME = "tpnr"

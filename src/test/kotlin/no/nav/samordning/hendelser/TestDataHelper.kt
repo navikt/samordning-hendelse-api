@@ -11,11 +11,10 @@ class TestDataHelper(database: JdbcTemplate) {
 
     private val hendelser: List<Hendelse> = database.queryForList("SELECT HENDELSE_DATA FROM HENDELSER", PGobject::class.java)
             .map { JsonbBuilder.create().fromJson(it.value, Hendelse::class.java) }
-            .toList()
 
     fun hendelse(identifikator: String) =
             hendelser.firstOrNull { it.identifikator == identifikator }
 
     fun hendelser(vararg identifikator: String) = hendelser
-            .filter { identifikator.contains(it.identifikator) }
+            .filter { it.identifikator in identifikator }
 }

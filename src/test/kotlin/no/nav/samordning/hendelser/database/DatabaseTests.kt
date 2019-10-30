@@ -41,8 +41,9 @@ class DatabaseTests {
         val expectedHendelser = testData.hendelser("01016800000", "01016900000", "01017000000")
         val hendelser = db.fetchHendelser("4000", 0, 0, 3)
 
-        for (i in hendelser.indices)
-            assertThat<Hendelse>(hendelser[i], samePropertyValuesAs<Hendelse>(expectedHendelser[i]))
+        hendelser.forEachIndexed { i, hendelse ->
+            assertThat<Hendelse>(hendelse, samePropertyValuesAs<Hendelse>(expectedHendelser[i]))
+        }
     }
 
     @Test
@@ -52,11 +53,11 @@ class DatabaseTests {
 
     @Test
     fun page_counting() {
-        assertEquals(1, db.getNumberOfPages("2000", 1, 1).toLong())
-        assertEquals(3, db.getNumberOfPages("4000", 1, 1).toLong())
-        assertEquals(2, db.getNumberOfPages("4000", 1, 2).toLong())
-        assertEquals(1, db.getNumberOfPages("4000", 5, 2).toLong())
-        assertEquals(0, db.getNumberOfPages("4000", 7, 1).toLong())
+        assertEquals(1, db.getNumberOfPages("2000", 1, 1))
+        assertEquals(3, db.getNumberOfPages("4000", 1, 1))
+        assertEquals(2, db.getNumberOfPages("4000", 1, 2))
+        assertEquals(1, db.getNumberOfPages("4000", 5, 2))
+        assertEquals(0, db.getNumberOfPages("4000", 7, 1))
     }
 
     @Test
@@ -67,8 +68,9 @@ class DatabaseTests {
         val pageOne = db.fetchHendelser("4000", 0, 0, 2)
         val pageTwo = db.fetchHendelser("4000", 0, 1, 2)
 
-        for (i in pageOne.indices)
-            assertThat<Hendelse>(pageOne[i], samePropertyValuesAs<Hendelse>(expectedPageOne[i]))
+        pageOne.forEachIndexed { i, hendelse ->
+            assertThat<Hendelse>(hendelse, samePropertyValuesAs<Hendelse>(expectedPageOne[i]))
+        }
         assertThat<Hendelse>(pageTwo[0], samePropertyValuesAs<Hendelse>(expectedPageTwo[0]))
     }
 
@@ -77,7 +79,7 @@ class DatabaseTests {
         val expectedHendelse = testData.hendelse("01017000000")
         val hendelser = db.fetchHendelser("4000", 6, 0, 3)
 
-        assertEquals(1, hendelser.size.toLong())
+        assertEquals(1, hendelser.size)
         assertThat<Hendelse>(hendelser[0], samePropertyValuesAs<Hendelse>(expectedHendelse!!))
     }
 
@@ -86,7 +88,7 @@ class DatabaseTests {
         val expectedSekvensnummer = 6
         val latestSekvensnummer = db.latestSekvensnummer("4000")
 
-        assertEquals(expectedSekvensnummer.toLong(), latestSekvensnummer.toLong())
+        assertEquals(expectedSekvensnummer, latestSekvensnummer)
     }
 
     @Test
@@ -94,6 +96,6 @@ class DatabaseTests {
         val expectedSekvensnummer = 1
         val latestSekvensnummer = db.latestSekvensnummer("1234")
 
-        assertEquals(expectedSekvensnummer.toLong(), latestSekvensnummer.toLong())
+        assertEquals(expectedSekvensnummer, latestSekvensnummer)
     }
 }

@@ -12,33 +12,33 @@ class HendelseJSONTest {
 
     @Test
     fun jsonToObject() {
-        val hendelse = Hendelse()
-        hendelse.ytelsesType = "AAP"
-        hendelse.identifikator = "12345678901"
-        hendelse.vedtakId = "ABC123"
-        hendelse.fom = "2020-01-01"
-        hendelse.tom = "2025-01-01"
+        val hendelse = Hendelse().apply {
+            ytelsesType = "AAP"
+            identifikator = "12345678901"
+            vedtakId = "ABC123"
+            fom = "2020-01-01"
+            tom = "2025-01-01"
+        }
 
-        val jsonb = JsonbBuilder.create()
-        val json = "{\"ytelsesType\":\"AAP\",\"identifikator\":\"12345678901\",\"vedtakId\":\"ABC123\",\"fom\":\"2020-01-01\",\"tom\":\"2025-01-01\"}"
+        val json = """{"ytelsesType":"AAP","identifikator":"12345678901","vedtakId":"ABC123","fom":"2020-01-01","tom":"2025-01-01"}"""
 
-        val hendelse2 = jsonb.fromJson(json, Hendelse::class.java)
+        val hendelse2 = JsonbBuilder.create().fromJson(json, Hendelse::class.java)
         assertThat(hendelse, samePropertyValuesAs(hendelse2))
     }
 
     @Test
     fun objectToJSON() {
-        val hendelse = Hendelse()
-        hendelse.ytelsesType = "AAP"
-        hendelse.identifikator = "12345678901"
-        hendelse.vedtakId = "ABC123"
-        hendelse.fom = "2020-01-01"
-        hendelse.tom = "2025-01-01"
+        val hendelse = Hendelse().apply {
+            ytelsesType = "AAP"
+            identifikator = "12345678901"
+            vedtakId = "ABC123"
+            fom = "2020-01-01"
+            tom = "2025-01-01"
+        }
 
-        val jsonb = JsonbBuilder.create()
-        val result = jsonb.toJson(hendelse)
+        val result = JsonbBuilder.create().toJson(hendelse)
 
-        val excpected = "{\"ytelsesType\":\"AAP\",\"identifikator\":\"12345678901\",\"vedtakId\":\"ABC123\",\"fom\":\"2020-01-01\",\"tom\":\"2025-01-01\"}"
+        val excpected = """{"ytelsesType":"AAP","identifikator":"12345678901","vedtakId":"ABC123","fom":"2020-01-01","tom":"2025-01-01"}"""
 
         val excpectedList = JsonPath.read<List<String>>(excpected, "$.*")
         val resultList = JsonPath.read<List<String>>(result, "$.*")

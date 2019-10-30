@@ -63,7 +63,7 @@ internal class SwaggerTest {
         }
 
         private fun validate(swagger: String): Boolean {
-            return swagger.contains("hendelser") && !swagger.contains("basic-error-controller")
+            return "hendelser" in swagger && "basic-error-controller" !in swagger
         }
     }
 }

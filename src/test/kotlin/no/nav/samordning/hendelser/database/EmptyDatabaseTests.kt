@@ -19,18 +19,12 @@ class EmptyDatabaseTests {
 
     @BeforeEach
     @Throws
-    fun clear() {
-        conf.emptyDatabase()
-    }
+    fun clear() = conf.emptyDatabase()
 
     @AfterEach
     @Throws
-    fun refill() {
-        conf.refillDatabase()
-    }
+    fun refill() = conf.refillDatabase()
 
     @Test
-    fun null_count_returns_0() {
-        assertEquals(0, db.getNumberOfPages("1000", 1, 0))
-    }
+    fun null_count_returns_0() = assertEquals(0, db.getNumberOfPages("1000", 1, 0))
 }

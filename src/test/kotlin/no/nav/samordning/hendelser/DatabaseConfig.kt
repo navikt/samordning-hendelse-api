@@ -20,15 +20,15 @@ class DatabaseConfig {
     @Autowired
     @Throws(Exception::class)
     fun init() {
-        if (postgres == null && mockServer == null) {
+        if (uninitialized) {
             initPostgresContainer()
             initMockServerContainer()
 
-            System.setProperty("spring.datasource.url", postgres!!.jdbcUrl)
-            System.setProperty("spring.datasource.username", postgres!!.username)
-            System.setProperty("spring.datasource.password", postgres!!.password)
-            System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer!!.endpoint + "/jwks")
-            System.setProperty("TPREGISTERET_URL", mockServer!!.endpoint)
+            System.setProperty("spring.datasource.url", postgres.jdbcUrl)
+            System.setProperty("spring.datasource.username", postgres.username)
+            System.setProperty("spring.datasource.password", postgres.password)
+            System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.endpoint + "/jwks")
+            System.setProperty("TPREGISTERET_URL", mockServer.endpoint)
         }
     }
 
@@ -39,21 +39,21 @@ class DatabaseConfig {
                 .withDatabaseName("samordning-hendelser")
                 .withUsername("user")
                 .withPassword("pass")
-        postgres!!
+        postgres
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases("samordning-hendelser")
                 .withExposedPorts(5432)
                 .withCopyFileToContainer(MountableFile.forClasspathResource("schema.sql"),
                         "/docker-entrypoint-initdb.d/schema.sql")
-        postgres!!.start()
+        postgres.start()
     }
 
     @Throws(NoSuchAlgorithmException::class)
     private fun initMockServerContainer() {
         mockServer = MockServerContainer()
-        mockServer!!.start()
+        mockServer.start()
 
-        val mockClient = MockServerClient(mockServer!!.containerIpAddress, mockServer!!.serverPort!!)
+        val mockClient = MockServerClient(mockServer.containerIpAddress, mockServer.serverPort!!)
 
         mockClient.`when`(HttpRequest.request()
                 .withMethod("GET")
@@ -83,24 +83,25 @@ class DatabaseConfig {
 
     @Throws(Exception::class)
     fun emptyDatabase() {
-        postgres!!.execInContainer("psql",
-                "-U", postgres!!.username,
-                "-d", postgres!!.databaseName,
+        postgres.execInContainer("psql",
+                "-U", postgres.username,
+                "-d", postgres.databaseName,
                 "-c", "TRUNCATE TABLE HENDELSER",
                 "-c", "ALTER SEQUENCE HENDELSER_ID_SEQ RESTART WITH 1")
     }
 
     @Throws(Exception::class)
     fun refillDatabase() {
-        postgres!!.execInContainer("psql",
-                "-U", postgres!!.username,
-                "-d", postgres!!.databaseName,
+        postgres.execInContainer("psql",
+                "-U", postgres.username,
+                "-d", postgres.databaseName,
                 "-a", "-f", "/docker-entrypoint-initdb.d/schema.sql")
     }
 
     companion object {
-
-        private var postgres: KPostgreSQLContainer? = null
-        private var mockServer: MockServerContainer? = null
+        private lateinit var postgres: KPostgreSQLContainer
+        private lateinit var mockServer: MockServerContainer
+        private val uninitialized: Boolean
+            get() = !::postgres.isInitialized && !::mockServer.isInitialized
     }
 }

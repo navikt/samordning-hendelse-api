@@ -27,7 +27,7 @@ internal class FeedControllerTest {
     @Throws(Exception::class)
     fun greeting_should_return_message_from_service() {
         mockMvc.perform(get(GOOD_URL)
-                .header("Authorization", prepareToken()))
+                .header("Authorization", prepareToken))
                 .andDo(print()).andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
     }
@@ -36,7 +36,7 @@ internal class FeedControllerTest {
     @Throws(Exception::class)
     fun service_shouldnt_accept_too_large_requests() {
         mockMvc.perform(get("/hendelser")
-                .header("Authorization", prepareToken())
+                .header("Authorization", prepareToken)
                 .param("tpnr", "1000")
                 .param("antall", "10001"))
                 .andDo(print()).andExpect(status().is4xxClientError)
@@ -46,7 +46,7 @@ internal class FeedControllerTest {
     @Throws(Exception::class)
     fun greeting_should_return_message_from_service_with_first_record() {
         mockMvc.perform(get("/hendelser?tpnr=1000&antall=1")
-                .header("Authorization", prepareToken()))
+                .header("Authorization", prepareToken))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].identifikator", hasToString<Any>("01016600000")))
                 .andDo(print())
     }
@@ -71,7 +71,7 @@ internal class FeedControllerTest {
     @Throws(Exception::class)
     fun delete_method_is_not_allowed() {
         mockMvc.perform(delete(GOOD_URL)
-                .header("Authorization", prepareToken()))
+                .header("Authorization", prepareToken))
                 .andExpect(status().isMethodNotAllowed)
     }
 
@@ -79,7 +79,7 @@ internal class FeedControllerTest {
     @Throws(Exception::class)
     fun patch_method_is_not_allowed() {
         mockMvc.perform(patch(GOOD_URL)
-                .header("Authorization", prepareToken()))
+                .header("Authorization", prepareToken))
                 .andExpect(status().isMethodNotAllowed)
     }
 
@@ -87,7 +87,7 @@ internal class FeedControllerTest {
     @Throws(Exception::class)
     fun post_method_is_not_allowed() {
         mockMvc.perform(post(GOOD_URL)
-                .header("Authorization", prepareToken()))
+                .header("Authorization", prepareToken))
                 .andExpect(status().isMethodNotAllowed)
     }
 
@@ -95,7 +95,7 @@ internal class FeedControllerTest {
     @Throws(Exception::class)
     fun put_method_is_not_allowed() {
         mockMvc.perform(put(GOOD_URL)
-                .header("Authorization", prepareToken()))
+                .header("Authorization", prepareToken))
                 .andExpect(status().isMethodNotAllowed)
     }
 
@@ -103,9 +103,8 @@ internal class FeedControllerTest {
 
         private const val GOOD_URL = "/hendelser?tpnr=1000"
 
-        @Throws(NoSuchAlgorithmException::class)
-        private fun prepareToken(): String {
-            return token("0000000000", true)
-        }
+        private val prepareToken
+            @Throws(NoSuchAlgorithmException::class)
+            get() = token("0000000000", true)
     }
 }
