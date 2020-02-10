@@ -59,12 +59,27 @@ pipeline {
                 }
             }
         }
-        stage("deploy") {
+        stage("deploy dev") {
             steps {
                 script {
                     latestStage = env.STAGE_NAME
                     deployments = [
                             ["dev-fss", "default"]
+                    ]
+                    for (deployment in deployments) {
+                        latestDeploy = [deployment]
+                        (context, namespace, manifest) = deployment
+                        deploy.naiserator(context, namespace)
+                    }
+                }
+            }
+        }
+        stage("deploy prod") {
+            steps {
+                script {
+                    latestStage = env.STAGE_NAME
+                    deployments = [
+                            ["prod-fss", "default"]
                     ]
                     for (deployment in deployments) {
                         latestDeploy = [deployment]
