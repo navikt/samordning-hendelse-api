@@ -5,6 +5,7 @@ class Hendelse {
     var ytelsesType: String? = null
     var identifikator: String? = null
     var vedtakId: String? = null
+    var samId: String? = null
     var fom: String? = null
     var tom: String? = null
 }

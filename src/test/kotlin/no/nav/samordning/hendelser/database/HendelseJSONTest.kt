@@ -16,11 +16,12 @@ class HendelseJSONTest {
             ytelsesType = "AAP"
             identifikator = "12345678901"
             vedtakId = "ABC123"
+            samId = "BOGUS"
             fom = "2020-01-01"
             tom = "2025-01-01"
         }
 
-        val json = """{"ytelsesType":"AAP","identifikator":"12345678901","vedtakId":"ABC123","fom":"2020-01-01","tom":"2025-01-01"}"""
+        val json = """{"ytelsesType":"AAP","identifikator":"12345678901","vedtakId":"ABC123","samId":"BOGUS","fom":"2020-01-01","tom":"2025-01-01"}"""
 
         val hendelse2 = JsonbBuilder.create().fromJson(json, Hendelse::class.java)
         assertThat(hendelse, samePropertyValuesAs(hendelse2))
@@ -32,13 +33,14 @@ class HendelseJSONTest {
             ytelsesType = "AAP"
             identifikator = "12345678901"
             vedtakId = "ABC123"
+            samId = "BOGUS"
             fom = "2020-01-01"
             tom = "2025-01-01"
         }
 
         val result = JsonbBuilder.create().toJson(hendelse)
 
-        val excpected = """{"ytelsesType":"AAP","identifikator":"12345678901","vedtakId":"ABC123","fom":"2020-01-01","tom":"2025-01-01"}"""
+        val excpected = """{"ytelsesType":"AAP","identifikator":"12345678901","vedtakId":"ABC123","samId":"BOGUS","fom":"2020-01-01","tom":"2025-01-01"}"""
 
         val excpectedList = JsonPath.read<List<String>>(excpected, "$.*")
         val resultList = JsonPath.read<List<String>>(result, "$.*")
