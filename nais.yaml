@@ -2,7 +2,7 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: samordning-hendelse-api
-  namespace: {{namespace}}
+  namespace: default
   labels:
     team: {{team}}
 spec:
@@ -10,7 +10,7 @@ spec:
   port: 8080
   team: {{team}}
   ingresses:
-    - {{ingress}}
+    - https://samordning-hendelse-api.nais.preprod.local
   liveness:
     path: isAlive
   readiness:
