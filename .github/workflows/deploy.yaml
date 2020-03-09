@@ -1,0 +1,51 @@
+name: Release to GitHub Package Registry
+
+on:
+  push:
+    branches: master
+
+jobs:
+  build_and_release:
+    name: Build and release
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+
+      # Build
+      - name: Build
+        run: mvn clean install
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+
+      # Build image
+      - name: Login to Github Package Registry
+        env:
+          DOCKER_USERNAME: token
+          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
+      - name: Create Docker tag
+        run: |
+          echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"samordning-hendelse-api" > .docker_image
+          echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
+      - name: Build Docker image
+        run: |
+          docker build -t $(cat .docker_image):$(cat .docker_tag) .
+          echo "::set-env name=IMAGE::$(cat .docker_image):$(cat .docker_tag)"
+      - name: Push Docker image
+        run: "docker push $(cat .docker_image):$(cat .docker_tag)"
+
+      # Deploy
+      - name: Deploy to dev-fss
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais.yaml
+          IMAGE: ${{ env.IMAGE }}
+          TEAM: pensjonsamhandling
+          VARS: nais-vars.yaml

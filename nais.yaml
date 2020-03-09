@@ -4,11 +4,11 @@ metadata:
   name: samordning-hendelse-api
   namespace: {{namespace}}
   labels:
-    team: teampeon
+    team: {{team}}
 spec:
-  image: repo.adeo.no:5443/samordning-hendelse-api:{{version}}
+  image: {{image}}
   port: 8080
-  team: teampeon
+  team: {{team}}
   ingresses:
     - {{ingress}}
   liveness:
