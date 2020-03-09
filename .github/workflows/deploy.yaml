@@ -18,8 +18,6 @@ jobs:
       # Build
       - name: Build
         run: mvn clean install
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
 
       # Build image
       - name: Login to Github Package Registry
