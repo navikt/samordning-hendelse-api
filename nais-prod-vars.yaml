@@ -1,3 +1,2 @@
 team: pensjonsamhandling
-ingresses:
-  - https://samordning-hendelse-api.nais.adeo.no
+ingress: https://samordning-hendelse-api.nais.adeo.no

@@ -9,7 +9,8 @@ spec:
   image: {{image}}
   port: 8080
   team: {{team}}
-  ingresses: {{ingresses}}
+  ingresses:
+    - {{ingress}}
   liveness:
     path: isAlive
   readiness:
