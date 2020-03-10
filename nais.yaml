@@ -9,8 +9,7 @@ spec:
   image: {{image}}
   port: 8080
   team: {{team}}
-  ingresses:
-    - https://samordning-hendelse-api.nais.preprod.local
+  ingresses: {{ingresses}}
   liveness:
     path: isAlive
   readiness:

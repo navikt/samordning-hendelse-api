@@ -1,0 +1,3 @@
+team: pensjonsamhandling
+ingresses:
+  - https://samordning-hendelse-api.nais.preprod.local
