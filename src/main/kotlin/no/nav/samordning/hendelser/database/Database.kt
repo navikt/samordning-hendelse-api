@@ -10,20 +10,26 @@ import javax.json.bind.JsonbBuilder
 @Repository
 class Database {
     companion object {
+        private const val TOTAL_HENDELSER_SQL = "SELECT COUNT(*) FROM HENDELSER"
         private const val LATEST_SNR_SQL = "SELECT MAX(ID) FROM HENDELSER WHERE TPNR = ?"
         private const val PAGE_COUNT_SQL = "SELECT COUNT(HENDELSE_DATA) FROM HENDELSER WHERE TPNR = ? AND ID >= ?"
         private const val HENDELSER_SQL = "SELECT HENDELSE_DATA #>> '{}' FROM HENDELSER WHERE ID >= ? AND TPNR = ? ORDER BY ID OFFSET ? LIMIT ?"
+        private const val READ_SNRS_SQL = "SELECT ID FROM HENDELSER WHERE ID >= ? AND TPNR = ? ORDER BY ID OFFSET ? LIMIT ?"
     }
 
     @Autowired
     private lateinit var jdbcTemplate: JdbcTemplate
 
     val totalHendelser: String?
-        get() = jdbcTemplate.queryForObject<String>("SELECT COUNT(*) FROM HENDELSER", String::class.java)
+        get() = jdbcTemplate.queryForObject<String>(TOTAL_HENDELSER_SQL, String::class.java)
 
     fun fetchHendelser(tpnr: String, offset: Int, side: Int, antall: Int) =
             jdbcTemplate.queryForList<PGobject>(HENDELSER_SQL, PGobject::class.java, offset, tpnr, side * antall, antall)
                     .map { JsonbBuilder.create().fromJson<Hendelse>(it.value, Hendelse::class.java) }
+
+    fun fetchLatestReadSekvensnummer(tpnr: String, offset: Int, side: Int, antall: Int) =
+            jdbcTemplate.queryForList<String>(READ_SNRS_SQL, String::class.java, offset, tpnr, side * antall, antall)
+                    .mapNotNull(String::toIntOrNull).max() ?: 1
 
     fun getNumberOfPages(tpnr: String, sekvensnummer: Int, antall: Int) =
             try {

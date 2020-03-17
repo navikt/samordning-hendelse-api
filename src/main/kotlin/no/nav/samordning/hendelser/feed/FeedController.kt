@@ -36,10 +36,11 @@ class FeedController {
             @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Int): Feed {
 
         val hendelser = database.fetchHendelser(tpnr, sekvensnummer, side, antall).toMutableList()
+        val latestReadSNR = database.fetchLatestReadSekvensnummer(tpnr, sekvensnummer, side, antall)
 
         metrics.incHendelserLest(tpnr, hendelser.size.toDouble())
 
-        return Feed(hendelser, database.latestSekvensnummer(tpnr), nextUrl(tpnr, sekvensnummer, antall, side))
+        return Feed(hendelser, database.latestSekvensnummer(tpnr), latestReadSNR, nextUrl(tpnr, sekvensnummer, antall, side))
     }
 
     private fun nextUrl(tpnr: String, sekvensnummer: Int, antall: Int, side: Int) =
