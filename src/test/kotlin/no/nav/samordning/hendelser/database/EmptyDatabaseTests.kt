@@ -1,6 +1,6 @@
 package no.nav.samordning.hendelser.database
 
-import no.nav.samordning.hendelser.DatabaseConfig
+import no.nav.samordning.hendelser.DatabaseTestConfig
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -15,7 +15,7 @@ class EmptyDatabaseTests {
     private lateinit var db: Database
 
     @Autowired
-    private lateinit var conf: DatabaseConfig
+    private lateinit var conf: DatabaseTestConfig
 
     @BeforeEach
     @Throws

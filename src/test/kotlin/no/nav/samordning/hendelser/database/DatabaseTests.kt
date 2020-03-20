@@ -100,6 +100,13 @@ class DatabaseTests {
     }
 
     @Test
+    fun filter_ytelsestyper_from_databaseconfig() {
+        val expectedHendelser = emptyList<Hendelse>()
+
+        assertEquals(expectedHendelser, db.fetchHendelser("5000", 0, 0, 1))
+    }
+
+    @Test
     fun latest_sekvensnummer_read() {
         val expectedSekvensnummer = 4
         val latestSekvensnummer = db.fetchLatestReadSekvensnummer("4000", 0, 0, 1)
