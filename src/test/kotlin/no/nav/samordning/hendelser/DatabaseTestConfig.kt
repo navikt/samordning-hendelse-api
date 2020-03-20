@@ -15,7 +15,7 @@ import java.security.NoSuchAlgorithmException
  * Creates and manages shared testcontainers for all tests
  */
 @Component
-class DatabaseConfig {
+class DatabaseTestConfig {
 
     @Autowired
     @Throws(Exception::class)
