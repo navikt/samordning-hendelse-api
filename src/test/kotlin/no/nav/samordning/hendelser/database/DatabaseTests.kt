@@ -105,4 +105,17 @@ class DatabaseTests {
 
         assertEquals(expectedHendelser, db.fetchHendelser("5000", 0, 0, 1))
     }
+
+    @Test
+    fun latest_sekvensnummer_read() {
+        val expectedSekvensnummer = 4
+        val latestSekvensnummer = db.fetchLatestReadSekvensnummer("4000", 0, 0, 1)
+
+        assertEquals(expectedSekvensnummer, latestSekvensnummer)
+
+        val nextExpectedSekvensnummer = 5
+        val nextLatestSekvensnummer = db.fetchLatestReadSekvensnummer("4000", 0, 1, 1)
+
+        assertEquals(nextExpectedSekvensnummer, nextLatestSekvensnummer)
+    }
 }
