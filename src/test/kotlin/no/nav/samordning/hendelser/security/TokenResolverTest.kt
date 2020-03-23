@@ -33,19 +33,9 @@ internal class TokenResolverTest {
 
     @Test
     @Throws(NoSuchAlgorithmException::class)
-    fun resolving_good_nonService_token_shall_return_token() {
+    fun resolving_good_token_shall_return_token() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(token(GOOD_ORG_NUMBER, true))
-        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "non-service", "issuer")
-
-        val result = resolver.resolve(request)
-
-        assertEquals("ey", result!!.substring(0, 2))
-    }
-
-    @Test
-    fun resolving_good_service_token_shall_return_token() {
-        `when`(bearerTokenResolver.resolve(any())).thenReturn(serviceToken())
-        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test")
+        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer)
 
         val result = resolver.resolve(request)
 
@@ -56,7 +46,7 @@ internal class TokenResolverTest {
     @Throws(NoSuchAlgorithmException::class)
     fun resolving_invalid_scope_token_shall_return_null() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(token("BAD SCOPE", GOOD_ORG_NUMBER, true))
-        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test")
+        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer)
 
         val result = resolver.resolve(request)
 
@@ -67,7 +57,7 @@ internal class TokenResolverTest {
     @Throws(NoSuchAlgorithmException::class)
     fun resolving_invalid_org_token_shall_return_null() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(token("-1", true))
-        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "srvTest", "test")
+        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer)
 
         val result = resolver.resolve(request)
 
@@ -75,9 +65,9 @@ internal class TokenResolverTest {
     }
 
     @Test
-    fun resolving_nonService_token_with_missing_claims_shall_give_exception_telling_which_claims() {
+    fun resolving_token_with_missing_claims_shall_give_exception_telling_which_claims() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(serviceToken())
-        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer, "non-service", "issuer")
+        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer)
 
         val exception = assertThrows(OAuth2AuthenticationException::class.java) { resolver.resolve(request) }
 
