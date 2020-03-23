@@ -1,7 +1,6 @@
 package no.nav.samordning.hendelser.security
 
 import no.nav.samordning.hendelser.consumer.TpregisteretConsumer
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -35,13 +34,5 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     }
 
     @Bean
-    fun tokenResolver(tpRegisteretConsumer: TpregisteretConsumer,
-                      @Value("\${service.user}") serviceUser: String,
-                      @Value("\${service.user.iss}") serviceUserIssuer: String): TokenResolver {
-        return TokenResolver(
-                DefaultBearerTokenResolver(),
-                tpRegisteretConsumer,
-                serviceUser,
-                serviceUserIssuer)
-    }
+    fun tokenResolver(tpRegisteretConsumer: TpregisteretConsumer) = TokenResolver(DefaultBearerTokenResolver(), tpRegisteretConsumer)
 }

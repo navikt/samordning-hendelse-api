@@ -19,12 +19,10 @@ import javax.servlet.http.HttpServletRequest
 
 class TokenResolver(
         private val bearerTokenResolver: BearerTokenResolver,
-        private val tpRegisteretConsumer: TpregisteretConsumer,
-        private val serviceUser: String,
-        private val serviceUserIssuer: String) : BearerTokenResolver {
+        private val tpRegisteretConsumer: TpregisteretConsumer
+) : BearerTokenResolver {
 
     private object ClaimKeys {
-        internal const val AUTHORIZED_PARTY = "azp"
         const val CLIENT_ID = "client_id"
         const val CLIENT_ORGANISATION_NUMBER = "client_orgno"
         const val ISSUER = "iss"
@@ -36,16 +34,6 @@ class TokenResolver(
 
         val claims = getClaims(token)
         val tpnr = request.getParameter("tpnr").split('?').dropLastWhile(String::isEmpty).first()
-
-        if (validServiceUser(claims)) {
-            LOG.info("Valid service user token")
-            claims[CLIENT_ORGANISATION_NUMBER] = "00000000"
-            LOG.info(
-                    if (validOrganisation(tpnr, claims)) "Valid orgnr mapping"
-                    else "Invalid orgnr mapping"
-            )
-            return token
-        }
 
         checkThatRequiredParametersAreProvided(claims)
 
@@ -81,13 +69,6 @@ class TokenResolver(
         val validScope = REQUIRED_SCOPE == claims[SCOPE].toString()
         if (!validScope) LOG.info("Invalid scope: " + claims[SCOPE].toString())
         return validScope
-    }
-
-    private fun validServiceUser(claims: Map<String, Any>): Boolean {
-        return (claims.containsKey(ClaimKeys.AUTHORIZED_PARTY)
-                && claims.containsKey(ISSUER)
-                && claims[ClaimKeys.AUTHORIZED_PARTY].toString() == serviceUser
-                && claims[ISSUER].toString() == serviceUserIssuer)
     }
 
 
