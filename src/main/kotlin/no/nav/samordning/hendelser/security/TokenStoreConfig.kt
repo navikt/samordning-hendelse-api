@@ -8,7 +8,8 @@ import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStor
 @Configuration
 class TokenStoreConfig(@Value("\${JWK_SET_URI}") jwkSetUris: String) {
 
-    @get:Bean
-    val jwkTokenStore = JwkTokenStore(jwkSetUris.split("[,\\s]*".toRegex()))
+    private val jwkSetUriList = jwkSetUris.split("[,\\s]+".toRegex())
 
+    @get:Bean
+    val jwkTokenStore = JwkTokenStore(jwkSetUriList)
 }
