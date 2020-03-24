@@ -6,11 +6,9 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStore
 
 @Configuration
-class TokenStoreConfig {
+class TokenStoreConfig(@Value("\${JWK_SET_URI}") jwkSetUris: String) {
 
-    @Value("\${JWK_SET_URI}")
-    private lateinit var jwkSetUris: String
+    @get:Bean
+    val jwkTokenStore = JwkTokenStore(jwkSetUris.split("[,\\s]*".toRegex()))
 
-    @Bean
-    fun jwkTokenStore() = JwkTokenStore(jwkSetUris.split("[,\\s]*".toRegex()))
 }
