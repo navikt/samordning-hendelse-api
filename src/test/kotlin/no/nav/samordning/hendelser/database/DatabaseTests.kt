@@ -71,7 +71,7 @@ class DatabaseTests {
         pageOne.forEachIndexed { i, hendelse ->
             assertThat<Hendelse>(hendelse, samePropertyValuesAs<Hendelse>(expectedPageOne[i]))
         }
-        assertThat<Hendelse>(pageTwo[0], samePropertyValuesAs<Hendelse>(expectedPageTwo[0]))
+        assertThat<Hendelse>(pageTwo.values.first(), samePropertyValuesAs<Hendelse>(expectedPageTwo.first()))
     }
 
     @Test
@@ -80,7 +80,7 @@ class DatabaseTests {
         val hendelser = db.fetchHendelser("4000", 6, 0, 3)
 
         assertEquals(1, hendelser.size)
-        assertThat<Hendelse>(hendelser[0], samePropertyValuesAs<Hendelse>(expectedHendelse!!))
+        assertThat<Hendelse>(hendelser.values.first(), samePropertyValuesAs<Hendelse>(expectedHendelse!!))
     }
 
     @Test
