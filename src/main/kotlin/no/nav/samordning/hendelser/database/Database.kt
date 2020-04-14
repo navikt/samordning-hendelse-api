@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.database
 
+import com.google.gson.Gson
 import no.nav.samordning.hendelser.hendelse.Hendelse
 import org.postgresql.util.PGobject
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,6 +20,10 @@ class Database (databaseConfig: DatabaseConfig) {
     private val pageCountSql = "SELECT COUNT(HENDELSE_DATA) FROM HENDELSER WHERE $hendelseFilterSql"
     private val hendelserSql = "SELECT HENDELSE_DATA #>> '{}' FROM HENDELSER WHERE $hendelseFilterSql AND ${databaseConfig.ytelsesFilter} ORDER BY ID OFFSET ? LIMIT ?"
     private val readSnrsSql = "SELECT ID FROM HENDELSER WHERE $hendelseFilterSql AND ${databaseConfig.ytelsesFilter} ORDER BY ID OFFSET ? LIMIT ?"
+
+    private val seqAndHendelseSql =
+            "SELECT ROW_NUMBER() OVER(PARTITION BY TPNR = ? ORDER BY ID) AS SEQ," +
+                    "HENDELSE_DATA #>> '{}' AS DATA FROM HENDELSER WHERE TPNR = ? OFFSET ? LIMIT ?"
 
     val totalHendelser: String?
         get() = jdbcTemplate.queryForObject<String>(totalHendelserSql, String::class.java)
@@ -48,4 +53,10 @@ class Database (databaseConfig: DatabaseConfig) {
             } catch (_: Exception) {
                 1
             }
+
+    fun fetchSeqAndHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Int) =
+            jdbcTemplate.queryForList(hendelserSql, tpnr, tpnr, sekvensnummer, antall)
+                    .map {
+                        it.getValue("seq") to Gson().fromJson(it.getValue("data") as String, Hendelse::class.java)
+                    }.toMap()
 }
