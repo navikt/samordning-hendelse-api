@@ -21,7 +21,7 @@ class DatabaseTests {
     @Test
     fun expected_hendelse_is_fetched() {
         val expectedHendelse = testData.hendelse("01016600000")
-        val hendelse = db.fetchHendelser("1000", 0, 0, 1)[0]
+        val hendelse = db.fetchSeqAndHendelser("1000", 0, 0, 1).values.first()
 
         assertThat<Hendelse>(expectedHendelse, samePropertyValuesAs<Hendelse>(hendelse))
     }
@@ -29,8 +29,8 @@ class DatabaseTests {
     @Test
     fun expected_hendelse_from_multiple_tpnr_is_fetched() {
         val expectedHendelse = testData.hendelse("01016700000")
-        val hendelse1 = db.fetchHendelser("2000", 0, 0, 2)[0]
-        val hendelse2 = db.fetchHendelser("3000", 0, 0, 2)[0]
+        val hendelse1 = db.fetchSeqAndHendelser("2000", 0, 0, 2).values.first()
+        val hendelse2 = db.fetchSeqAndHendelser("3000", 0, 0, 2).values.first()
 
         assertThat<Hendelse>(expectedHendelse, samePropertyValuesAs<Hendelse>(hendelse1))
         assertThat<Hendelse>(expectedHendelse, samePropertyValuesAs<Hendelse>(hendelse2))
@@ -39,16 +39,16 @@ class DatabaseTests {
     @Test
     fun multiple_expected_hendelser_are_fetched() {
         val expectedHendelser = testData.hendelser("01016800000", "01016900000", "01017000000")
-        val hendelser = db.fetchHendelser("4000", 0, 0, 3)
+        val hendelser = db.fetchSeqAndHendelser("4000", 0, 0, 3)
 
-        hendelser.forEachIndexed { i, hendelse ->
+        hendelser.values.forEachIndexed { i, hendelse ->
             assertThat<Hendelse>(hendelse, samePropertyValuesAs<Hendelse>(expectedHendelser[i]))
         }
     }
 
     @Test
     fun unknown_hendelse_returns_empty_list() {
-        assertEquals(emptyList<Any>(), db.fetchHendelser("1234", 1, 0, 9999))
+        assertEquals(emptyMap<Long, Hendelse>(), db.fetchSeqAndHendelser("1234", 1, 0, 9999))
     }
 
     @Test
@@ -65,10 +65,10 @@ class DatabaseTests {
         val expectedPageOne = testData.hendelser("01016800000", "01016900000")
         val expectedPageTwo = testData.hendelser("01017000000")
 
-        val pageOne = db.fetchHendelser("4000", 0, 0, 2)
-        val pageTwo = db.fetchHendelser("4000", 0, 1, 2)
+        val pageOne = db.fetchSeqAndHendelser("4000", 0, 0, 2)
+        val pageTwo = db.fetchSeqAndHendelser("4000", 0, 1, 2)
 
-        pageOne.forEachIndexed { i, hendelse ->
+        pageOne.values.forEachIndexed { i, hendelse ->
             assertThat<Hendelse>(hendelse, samePropertyValuesAs<Hendelse>(expectedPageOne[i]))
         }
         assertThat<Hendelse>(pageTwo.values.first(), samePropertyValuesAs<Hendelse>(expectedPageTwo.first()))
@@ -77,7 +77,7 @@ class DatabaseTests {
     @Test
     fun skip_hendelser_with_offset() {
         val expectedHendelse = testData.hendelse("01017000000")
-        val hendelser = db.fetchHendelser("4000", 6, 0, 3)
+        val hendelser = db.fetchSeqAndHendelser("4000", 2, 0, 3)
 
         assertEquals(1, hendelser.size)
         assertThat<Hendelse>(hendelser.values.first(), samePropertyValuesAs<Hendelse>(expectedHendelse!!))
@@ -103,7 +103,7 @@ class DatabaseTests {
     fun filter_ytelsestyper_from_databaseconfig() {
         val expectedHendelser = emptyList<Hendelse>()
 
-        assertEquals(expectedHendelser, db.fetchHendelser("5000", 0, 0, 1))
+        assertEquals(expectedHendelser, db.fetchSeqAndHendelser("5000", 0, 0, 1).values)
     }
 
     @Test

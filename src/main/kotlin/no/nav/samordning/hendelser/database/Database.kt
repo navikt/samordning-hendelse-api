@@ -55,6 +55,6 @@ class Database (databaseConfig: DatabaseConfig) {
     fun fetchSeqAndHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Int) =
             jdbcTemplate.queryForList(seqAndHendelseSql, tpnr, tpnr, sekvensnummer+(side*antall), antall)
                     .map {
-                        it.getValue("seq") to Gson().fromJson(it.getValue("data") as String, Hendelse::class.java)
+                        it.getValue("seq") as Long to Gson().fromJson(it.getValue("data") as String, Hendelse::class.java)
                     }.toMap()
 }
