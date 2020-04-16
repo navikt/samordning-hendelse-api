@@ -44,17 +44,17 @@ internal class PaginationTests {
     @Throws(Exception::class)
     fun iterate_feed_with_next_url_from_sekvensnummer() {
         val nextUrl = JSONObject(
-                mockMvc.perform(get("/hendelser?tpnr=4000&sekvensnummer=5&antall=1")
+                mockMvc.perform(get("/hendelser?tpnr=4000&sekvensnummer=2&antall=1")
                         .header("Authorization", token("4444444444", true)))
-                        .andExpect(MockMvcResultMatchers.jsonPath("$.sisteSekvensnummer").value(6))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.sisteLesteSekvensnummer").value(2))
                         .andDo(print()).andReturn().response.contentAsString)
                 .getString("nextUrl")
 
-        assertEquals("$nextBaseUrl/hendelser?tpnr=4000&sekvensnummer=5&antall=1&side=1", nextUrl)
+        assertEquals("$nextBaseUrl/hendelser?tpnr=4000&sekvensnummer=2&antall=1&side=1", nextUrl)
 
         mockMvc.perform(get(nextUrl)
                 .header("Authorization", token("4444444444", true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sisteLesteSekvensnummer").value(3))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nextUrl").value(IsNull.nullValue()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.sisteSekvensnummer").value(6))
     }
 }

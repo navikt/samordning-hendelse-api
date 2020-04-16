@@ -3,8 +3,7 @@ package no.nav.samordning.hendelser.database
 import no.nav.samordning.hendelser.TestDataHelper
 import no.nav.samordning.hendelser.hendelse.Hendelse
 import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThat
+import org.junit.Assert.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -56,8 +55,8 @@ class DatabaseTests {
         assertEquals(1, db.getNumberOfPages("2000", 1, 1))
         assertEquals(3, db.getNumberOfPages("4000", 1, 1))
         assertEquals(2, db.getNumberOfPages("4000", 1, 2))
-        assertEquals(1, db.getNumberOfPages("4000", 5, 2))
-        assertEquals(0, db.getNumberOfPages("4000", 7, 1))
+        assertEquals(1, db.getNumberOfPages("4000", 2, 2))
+        assertEquals(0, db.getNumberOfPages("4000", 4, 1))
     }
 
     @Test
@@ -77,7 +76,7 @@ class DatabaseTests {
     @Test
     fun skip_hendelser_with_offset() {
         val expectedHendelse = testData.hendelse("01017000000")
-        val hendelser = db.fetchSeqAndHendelser("4000", 2, 0, 3)
+        val hendelser = db.fetchSeqAndHendelser("4000", 3, 0, 3)
 
         assertEquals(1, hendelser.size)
         assertThat<Hendelse>(hendelser.values.first(), samePropertyValuesAs<Hendelse>(expectedHendelse!!))
@@ -85,7 +84,7 @@ class DatabaseTests {
 
     @Test
     fun latest_sekvensnummer_for_tpnr() {
-        val expectedSekvensnummer = 6
+        val expectedSekvensnummer = 3L
         val latestSekvensnummer = db.latestSekvensnummer("4000")
 
         assertEquals(expectedSekvensnummer, latestSekvensnummer)
@@ -93,7 +92,7 @@ class DatabaseTests {
 
     @Test
     fun latest_sekvensnummer_for_tpnr_when_no_hendelser() {
-        val expectedSekvensnummer = 1
+        val expectedSekvensnummer = 0L
         val latestSekvensnummer = db.latestSekvensnummer("1234")
 
         assertEquals(expectedSekvensnummer, latestSekvensnummer)
@@ -101,21 +100,6 @@ class DatabaseTests {
 
     @Test
     fun filter_ytelsestyper_from_databaseconfig() {
-        val expectedHendelser = emptyList<Hendelse>()
-
-        assertEquals(expectedHendelser, db.fetchSeqAndHendelser("5000", 0, 0, 1).values)
-    }
-
-    @Test
-    fun latest_sekvensnummer_read() {
-        val expectedSekvensnummer = 4
-        val latestSekvensnummer = db.fetchLatestReadSekvensnummer("4000", 0, 0, 1)
-
-        assertEquals(expectedSekvensnummer, latestSekvensnummer)
-
-        val nextExpectedSekvensnummer = 5
-        val nextLatestSekvensnummer = db.fetchLatestReadSekvensnummer("4000", 0, 1, 1)
-
-        assertEquals(nextExpectedSekvensnummer, nextLatestSekvensnummer)
+        assertTrue(db.fetchSeqAndHendelser("5000", 0, 0, 1).isEmpty())
     }
 }

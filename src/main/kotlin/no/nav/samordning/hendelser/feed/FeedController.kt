@@ -35,15 +35,15 @@ class FeedController {
             @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Int,
             @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Int): Feed {
 
-        val hendelser = database.fetchHendelser(tpnr, sekvensnummer, side, antall).toMutableList()
-        val latestReadSNR = database.fetchLatestReadSekvensnummer(tpnr, sekvensnummer, side, antall)
+        val hendelseMap = database.fetchSeqAndHendelser(tpnr, sekvensnummer, side, antall)
+        val latestReadSNR = hendelseMap.keys.lastOrNull() ?: 1
 
-        metrics.incHendelserLest(tpnr, hendelser.size.toDouble())
+        metrics.incHendelserLest(tpnr, hendelseMap.size.toDouble())
 
-        return Feed(hendelser, database.latestSekvensnummer(tpnr), latestReadSNR, nextUrl(tpnr, sekvensnummer, antall, side))
+        return Feed(hendelseMap.values.toList(), database.latestSekvensnummer(tpnr), latestReadSNR, nextUrl(tpnr, sekvensnummer, antall, side))
     }
 
     private fun nextUrl(tpnr: String, sekvensnummer: Int, antall: Int, side: Int) =
-            "$nextBaseUrl/hendelser?tpnr=$tpnr&sekvensnummer=$sekvensnummer&antall=$antall&side=${side + 1}"
-                    .takeIf { side < database.getNumberOfPages(tpnr, sekvensnummer, antall) - 1 }
+            if (database.getNumberOfPages(tpnr, sekvensnummer, antall) > side + 1) "$nextBaseUrl/hendelser?tpnr=$tpnr&sekvensnummer=$sekvensnummer&antall=$antall&side=${side + 1}"
+            else null
 }
