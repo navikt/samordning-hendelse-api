@@ -7,13 +7,13 @@ import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.CLIENT_ORGAN
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.ISSUER
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.SCOPE
 import org.json.JSONObject
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.server.resource.BearerTokenError
 import org.springframework.security.oauth2.server.resource.BearerTokenErrorCodes.INVALID_REQUEST
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver
-import java.nio.charset.StandardCharsets.UTF_8
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 
@@ -29,47 +29,25 @@ class TokenResolver(
         const val SCOPE = "scope"
     }
 
-    override fun resolve(request: HttpServletRequest): String? {
-        val token = bearerTokenResolver.resolve(request) ?: return null
+    override fun resolve(request: HttpServletRequest) = bearerTokenResolver
+            .resolve(request)?.takeIf {
+                validateClaims(
+                        getClaims(it),
+                        request.getParameter("tpnr").substringBefore('?')
+                )
+            }
 
-        val claims = getClaims(token)
-        val tpnr = request.getParameter("tpnr").split('?').dropLastWhile(String::isEmpty).first()
+    private fun validateClaims(claims: JSONObject, tpnr: String) =
+            claims.validScope().and(claims.validOrganisation(tpnr)).also {
+                log(if (it) "Valid" else "Invalid", tpnr, claims)
+                if (!it) LOG.info("Invalid token")
+            }
 
-        checkThatRequiredParametersAreProvided(claims)
-
-        if (validScope(claims) && validOrganisation(tpnr, claims)) {
-            log("Valid", tpnr, claims)
-            return token
-        }
-
-        log("Invalid", tpnr, claims)
-        LOG.info("Invalid token")
-        return null
-    }
-
-    private fun checkThatRequiredParametersAreProvided(claims: Map<String, Any>) {
-        REQUIRED_CLAIM_KEYS
-                .filterNot(claims::containsKey)
-                .joinToString(", ")
-                .takeUnless(String::isEmpty)
-                ?.let { throw tokenError("Missing parameters: $it") }
-
-        LOG.info("Client_ID: ${claims[CLIENT_ID]}")
-        LOG.info("ORNGNR: ${claims[CLIENT_ORGANISATION_NUMBER]}")
-        LOG.info("SCOPE: ${claims[SCOPE]}")
-        LOG.info("ISSUER: ${claims[ISSUER]}")
-    }
-
-    private fun validOrganisation(tpnr: String, claims: Map<String, Any>): Boolean {
-        val organisationNumber = claims[CLIENT_ORGANISATION_NUMBER].toString()
-        return tpRegisteretConsumer.validateOrganisation(organisationNumber, tpnr)!!
-    }
-
-    private fun validScope(claims: Map<String, Any>): Boolean {
-        val validScope = REQUIRED_SCOPE == claims[SCOPE].toString()
-        if (!validScope) LOG.info("Invalid scope: " + claims[SCOPE].toString())
-        return validScope
-    }
+    private fun JSONObject.validOrganisation(tpnr: String) =
+            tpRegisteretConsumer.validateOrganisation(
+                    getString(CLIENT_ORGANISATION_NUMBER),
+                    tpnr
+            )!!
 
 
     companion object {
@@ -83,19 +61,39 @@ class TokenResolver(
                 ISSUER,
                 SCOPE)
 
-        private fun getClaims(token: String): MutableMap<String, Any> {
-            val base64Payload = JWT.decode(token).payload
-            val payload = String(Base64.getUrlDecoder().decode(base64Payload), UTF_8)
-            return JSONObject(payload).toMap()
+        private fun getClaims(token: String) = JSONObject(decode(token))
+                .also(::checkThatRequiredParametersAreProvided)
+
+        private fun decode(token: String) = String(
+                Base64.getUrlDecoder().decode(
+                        JWT.decode(token).payload
+                ))
+
+        private fun checkThatRequiredParametersAreProvided(claims: JSONObject) = REQUIRED_CLAIM_KEYS
+                .filterNot(claims::has)
+                .joinToString(", ")
+                .takeUnless(String::isEmpty)
+                ?.let { throw tokenError("Missing parameters: $it") }
+                ?: LOG.logClaims(claims)
+
+        private fun Logger.logClaims(claims: JSONObject) {
+            info("Client_ID: ${claims[CLIENT_ID]}")
+            info("ORNGNR: ${claims[CLIENT_ORGANISATION_NUMBER]}")
+            info("SCOPE: ${claims[SCOPE]}")
+            info("ISSUER: ${claims[ISSUER]}")
         }
 
-        private fun tokenError(message: String): OAuth2AuthenticationException {
-            val error = BearerTokenError(INVALID_REQUEST, BAD_REQUEST, message,
-                    "https://tools.ietf.org/html/rfc6750#section-3.1")
-            return OAuth2AuthenticationException(error)
+        private fun JSONObject.validScope() = getString(SCOPE).let { scope ->
+            (scope == REQUIRED_SCOPE)
+                    .also { if (!it) LOG.info("Invalid scope: $scope") }
         }
 
-        private fun log(status: String, tpnr: String, claims: Map<String, Any>) =
+        private fun tokenError(message: String) = OAuth2AuthenticationException(
+                BearerTokenError(INVALID_REQUEST, BAD_REQUEST, message,
+                        "https://tools.ietf.org/html/rfc6750#section-3.1"
+                ))
+
+        private fun log(status: String, tpnr: String, claims: JSONObject) =
                 LOG.info("$status tpnr $tpnr for client_id ${claims[CLIENT_ID]}")
     }
 }
