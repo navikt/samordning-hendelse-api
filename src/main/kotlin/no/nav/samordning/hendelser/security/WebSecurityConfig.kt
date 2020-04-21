@@ -18,11 +18,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
         web.ignoring().antMatchers(
                 "/isAlive",
                 "/isReady",
-                "/actuator/**",
-                "/v2/api-docs",
-                "/swagger-ui.html",
-                "/swagger-resources/**",
-                "/webjars/**")
+                "/actuator/**")
     }
 
     @Throws(Exception::class)
