@@ -2,7 +2,7 @@ name: Release to GitHub Package Registry
 
 on:
   push:
-    branches: master
+    branches: feature/reduce-connections
 
 jobs:
   build_and_release:
