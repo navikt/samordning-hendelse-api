@@ -15,10 +15,16 @@ import java.util.Calendar.JANUARY
 object TestTokenHelper {
 
     private const val DEFAULT_SCOPE = "nav:pensjon/v1/samordning"
-    private var keyPair = generatedKeyPair
+    private var keyPair: KeyPair
+    var issuer = "localhost"
+
+    init {
+        keyPair = generatedKeyPair
+    }
 
     private val keyModulus: ByteArray
         get() = publicKey(keyPair).modulus.toByteArray()
+
 
     @Throws(NoSuchAlgorithmException::class)
     fun token(orgno: String, verifiedSignature: Boolean) = token(DEFAULT_SCOPE, orgno, verifiedSignature)
@@ -27,6 +33,7 @@ object TestTokenHelper {
     fun token(scope: String, orgno: String, verifiedSignature: Boolean): String {
         val signingKeys = if (verifiedSignature) keyPair else generatedKeyPair
         val algorithm = Algorithm.RSA256(publicKey(signingKeys), privateKey(signingKeys))
+        println("Generated token with issuer: ${issuer}")
         return createJwt(scope, orgno, algorithm)
     }
 
@@ -59,7 +66,7 @@ object TestTokenHelper {
 
     private fun addClaims(jwt: JWTCreator.Builder, scope: String, orgno: String, algorithm: Algorithm) = jwt
             .withArrayClaim("aud", arrayOf("tp_ordning", "preprod"))
-            .withClaim("iss", "https://badserver/provider/")
+            .withClaim("iss", issuer)
             .withClaim("scope", scope)
             .withClaim("client_id", "tp_ordning")
             .withClaim("client_orgno", orgno)
@@ -67,7 +74,7 @@ object TestTokenHelper {
 
     private fun createServiceJwt(algorithm: Algorithm) = JWT.create()
             .withClaim("azp", "srvTest")
-            .withClaim("iss", "test")
+            .withClaim("iss", issuer)
             .sign(algorithm)
 
     private val expiredJwt: JWTCreator.Builder

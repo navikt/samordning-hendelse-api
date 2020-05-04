@@ -27,7 +27,7 @@ class DatabaseTestConfig {
             System.setProperty("spring.datasource.url", postgres.jdbcUrl)
             System.setProperty("spring.datasource.username", postgres.username)
             System.setProperty("spring.datasource.password", postgres.password)
-            System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.endpoint + "/jwks")
+            System.setProperty("ISSUER_URI", mockServer.endpoint)
             System.setProperty("TPREGISTERET_URL", mockServer.endpoint)
         }
     }
@@ -54,14 +54,26 @@ class DatabaseTestConfig {
         mockServer.start()
 
         val mockClient = MockServerClient(mockServer.containerIpAddress, mockServer.serverPort!!)
+        val issuer = mockServer.endpoint
+
+        TestTokenHelper.issuer = issuer
 
         mockClient.`when`(HttpRequest.request()
                 .withMethod("GET")
                 .withPath("/jwks"))
                 .respond(HttpResponse.response()
                         .withStatusCode(200)
-                        .withHeader("\"Content-type\", \"application/json\"")
+                        .withHeader("Content-type", "application/json")
                         .withBody(TestTokenHelper.generateJwks())
+                )
+
+        mockClient.`when`(HttpRequest.request()
+                .withMethod("GET")
+                .withPath("/.well-known/openid-configuration"))
+                .respond(HttpResponse.response()
+                        .withStatusCode(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"issuer\":\"${mockServer.endpoint}\",\"token_endpoint\":\"${mockServer.endpoint}/token\",\"exchange_token_endpoint\":\"${mockServer.endpoint}/token/exchange\",\"jwks_uri\":\"${mockServer.endpoint}/jwks\",\"subject_types_supported\":[\"public\"]}")
                 )
 
         mockClient.`when`(HttpRequest.request()

@@ -1,18 +1,22 @@
 package no.nav.samordning.hendelser.security
 
 import no.nav.samordning.hendelser.consumer.TpregisteretConsumer
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
+import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver
 
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfig : WebSecurityConfigurerAdapter() {
+
+    @Value("\${ISSUER_URI}")
+    lateinit var issuerUri: String
 
     override fun configure(web: WebSecurity) {
         web.ignoring().antMatchers(
@@ -23,10 +27,11 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Throws(Exception::class)
     public override fun configure(http: HttpSecurity) {
+        var issuerResolver = JwtIssuerAuthenticationManagerResolver(issuerUri)
+
         http.authorizeRequests()
                 .anyRequest().authenticated()
-                .and().sessionManagement().sessionCreationPolicy(STATELESS)
-                .and().oauth2ResourceServer().jwt()
+                .and().oauth2ResourceServer().authenticationManagerResolver(issuerResolver)
     }
 
     @Bean
