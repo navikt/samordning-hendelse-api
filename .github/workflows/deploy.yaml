@@ -2,7 +2,7 @@ name: Release to GitHub Package Registry
 
 on:
   push:
-    branches: feature/reduce-connections
+    branches: master
 
 jobs:
   build_and_release:
@@ -49,12 +49,12 @@ jobs:
           VARS: nais-dev-vars.yaml
 
       # Deploy to prod-fss
-#      - name: Deploy to prod-fss
-#        uses: nais/deploy/actions/deploy@v1
-#        env:
-#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-#          CLUSTER: prod-fss
-#          RESOURCE: nais.yaml
-#          IMAGE: ${{ env.IMAGE }}
-#          TEAM: pensjonsamhandling
-#          VARS: nais-prod-vars.yaml
+      - name: Deploy to prod-fss
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: prod-fss
+          RESOURCE: nais.yaml
+          IMAGE: ${{ env.IMAGE }}
+          TEAM: pensjonsamhandling
+          VARS: nais-prod-vars.yaml
