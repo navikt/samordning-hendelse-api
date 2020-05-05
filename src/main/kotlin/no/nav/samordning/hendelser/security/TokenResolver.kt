@@ -33,7 +33,7 @@ class TokenResolver(
     override fun resolve(request: HttpServletRequest): String? {
 
         val token = bearerTokenResolver.resolve(request) ?: return null
-        val claims = getClaims(token)
+        val claims = JSONObject(decode(token))
 
         if (validServiceUser(claims)) {
             LOG.info("Valid service user token")
