@@ -6,6 +6,7 @@ import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.CLIENT_ID
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.CLIENT_ORGANISATION_NUMBER
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.ISSUER
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.SCOPE
+import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -29,13 +30,33 @@ class TokenResolver(
         const val SCOPE = "scope"
     }
 
-    override fun resolve(request: HttpServletRequest) = bearerTokenResolver
-            .resolve(request)?.takeIf {
-                validateClaims(
-                        getClaims(it),
-                        request.getParameter("tpnr").substringBefore('?')
-                )
-            }
+    override fun resolve(request: HttpServletRequest): String? {
+
+        val token = bearerTokenResolver.resolve(request) ?: return null
+        val claims = getClaims(token)
+
+        if (validServiceUser(claims)) {
+            LOG.info("Valid service user token")
+            claims.put(CLIENT_ORGANISATION_NUMBER, "00000000")
+            return token
+        }
+
+        return bearerTokenResolver
+                .resolve(request)?.takeIf {
+                    validateClaims(
+                            getClaims(it),
+                            request.getParameter("tpnr").substringBefore('?')
+                    )
+                }
+    }
+
+    private fun validServiceUser(claims: JSONObject): Boolean {
+        try {
+            return claims["sub"] == "srvpensjon"
+        } catch (e: JSONException) {
+            return false
+        }
+    }
 
     private fun validateClaims(claims: JSONObject, tpnr: String) =
             claims.validScope().and(claims.validOrganisation(tpnr)).also {
