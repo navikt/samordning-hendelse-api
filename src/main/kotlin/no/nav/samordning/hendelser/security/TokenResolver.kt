@@ -52,8 +52,10 @@ class TokenResolver(
 
     private fun validServiceUser(claims: JSONObject): Boolean {
         try {
-            return claims["sub"] == "srvpensjon"
+            LOG.info("Checking sub: ${claims.get("sub")}")
+            return claims.get("sub") == "srvpensjon"
         } catch (e: JSONException) {
+            LOG.info("Failed to validate sub claim")
             return false
         }
     }
