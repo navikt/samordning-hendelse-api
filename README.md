@@ -1,65 +1,20 @@
-# Samordning-Hendelse-API
+Samordning Hendelse API
+=======================
 
-Samordning-hendelse-api gir en liste med samordningspliktige hendelser for et gitt tpnummer på json format. 
-Denne listen hentes via /hendelser endepunktet. Se konkrete eksempler under.
+[![Actions Status](https://github.com/navikt/samordning-hendelse-api/workflows/master/badge.svg)](https://github.com/navikt/samordning-hendelse-api/actions)
 
-#### API Portal
+Hendelseskø for samordningspliktige hendelser 
 
-API'et er eksponert via NAVs API Portal:
+## API Portal
 
-`preprod`:
+Dokumentasjon: [Preprod](https://api-portal-preprod.nav.no/docs/services/pensjon-samordning/operations/hendelserUsingGET)
 
-https://api-portal-preprod.nav.no/docs/services/pensjon-samordning/operations/hendelserUsingGET
+Dokumentasjon: [Prod](https://api-portal.nav.no/docs/services/nav-pensjon-v1-samordning/operations/HendelserGet) 
 
-`prod`:
+# Henvendelser
 
-TBA
+Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på GitHub.
 
+## For NAV-ansatte
 
-#### Eksempel:
-```bash
-curl -k -X GET https://samordning-hendelse-api.nais.preprod.local/hendelser?tpnr=<tpnr> \
-    -H 'Accept: application/json' \
-    -H "Authorization: Bearer ${TOKEN}"
-# Output:
-# {
-#   "hendelser":[
-#       {
-#       "vedtakId": "...",
-#       "ytelsesType": "...",
-#       "identifikator": "...",
-#       "fom": "...",
-#       "tom": "..."
-#       },
-#       {
-#       "vedtakId": "...",
-#       "ytelsesType": "...",
-#       "identifikator": "...",
-#       "fom": "...",
-#       "tom": "..."
-#       }
-#   ],
-#   "nextUrl": ...
-# }
-```
-
-Parametere:
-
-| Parameter                   | Beskrivelse                       |
-|:----------------------------|:----------------------------------|
-| `tpnr`                      | Tjenestepensjonsnummer som vedtaket tilhører. |              
-| `side`                      | Sidenummer. |              
-| `antall`                    | Antall hendelser per side.        |
-| `sekvensnummer`               | Start innlesningen fra dette sekvensnummeret. |
-
-#### Metrikker
-Grafana dashboards brukes for å f.eks. monitorere minne, cpu-bruk og andre metrikker.
-Se [samordning-hendelse-api grafana dasboard](https://grafana.adeo.no/d/ZxmTPP-mk/samordning-hendelse-api?orgId=1)
-
-#### Logging
-[Kibana](https://logs.adeo.no/app/kibana) benyttes til logging. Søk på f.eks. ```application:samordning-hendelse-api AND environment:q``` for logginnslag fra preprod.
-
-#### Bygging
-Jenkins benyttes til bygging. Status på bygg finner du her: [samordning-hendelse-api jenkins](https://jenkins-peon.adeo.no/job/samordning-hendelse-api/)
-
-Kontakt Team Peon dersom du har noen spørsmål. Vi finnes blant annet på Slack, i kanalen [#peon](https://nav-it.slack.com/messages/C6M80587R/)
+Interne henvendelser kan sendes via Slack til #samhandling_pensjonsområdet.
