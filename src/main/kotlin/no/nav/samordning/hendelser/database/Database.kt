@@ -13,8 +13,8 @@ class Database (databaseConfig: DatabaseConfig) {
     @Autowired
     private lateinit var jdbcTemplate: JdbcTemplate
 
-    private val totalHendelserSql = "SELECT COUNT(*) FROM HENDELSER"
-    private val tpnrHendelserSql = "$totalHendelserSql WHERE TPNR = ?"
+    private val totalHendelserSql = "SELECT COUNT(*) FROM HENDELSER H"
+    private val tpnrHendelserSql = "$totalHendelserSql WHERE H.TPNR = ? AND ${databaseConfig.ytelsesFilter}"
     private val seqAndHendelseSql = "SELECT ROW_NUMBER() OVER(PARTITION BY H.TPNR = ? ORDER BY H.ID) AS SEQ, H.HENDELSE_DATA #>> '{}' AS DATA FROM HENDELSER H WHERE H.TPNR = ? AND ${databaseConfig.ytelsesFilter} OFFSET ? LIMIT ?"
 
     val totalHendelser: String?
