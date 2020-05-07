@@ -15,7 +15,7 @@ class Database (databaseConfig: DatabaseConfig) {
 
     private val totalHendelserSql = "SELECT COUNT(*) FROM HENDELSER"
     private val tpnrHendelserSql = "$totalHendelserSql WHERE TPNR = ?"
-    private val seqAndHendelseSql = "SELECT ROW_NUMBER() OVER(PARTITION BY TPNR = ? ORDER BY ID) AS SEQ, HENDELSE_DATA #>> '{}' AS DATA FROM HENDELSER WHERE TPNR = ? AND ${databaseConfig.ytelsesFilter} OFFSET ? LIMIT ?"
+    private val seqAndHendelseSql = "SELECT ROW_NUMBER() OVER(PARTITION BY H.TPNR = ? ORDER BY H.ID) AS SEQ, H.HENDELSE_DATA #>> '{}' AS DATA FROM HENDELSER H WHERE H.TPNR = ? AND ${databaseConfig.ytelsesFilter} OFFSET ? LIMIT ?"
 
     val totalHendelser: String?
         get() = jdbcTemplate.queryForObject<String>(totalHendelserSql, String::class.java)

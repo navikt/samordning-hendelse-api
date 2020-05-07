@@ -10,5 +10,5 @@ class DatabaseConfig {
     private lateinit var ytelsesTyper: String
 
     val ytelsesFilter: String
-        get() = ytelsesTyper.split(',').joinToString(prefix = "HENDELSE_DATA ->> 'ytelsesType' IN ('", separator = "', '", postfix = "')")
+        get() = ytelsesTyper.split(',').joinToString(prefix = "(SELECT(SELECT H2.HENDELSE_DATA #>> '{}' FROM HENDELSER H2 WHERE H2.ID = H.ID)::json->>'ytelsesType') IN ('", separator = "', '", postfix = "')")
 }
