@@ -17,6 +17,8 @@ jobs:
 
       # Build
       - name: Build
+        env:
+          TESTCONTAINERS_RYUK_DISABLED: true
         run: mvn clean install
 
       # Build image
