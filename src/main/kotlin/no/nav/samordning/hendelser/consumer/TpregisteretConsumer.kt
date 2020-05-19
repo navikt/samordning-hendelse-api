@@ -4,6 +4,7 @@ import io.netty.channel.ChannelOption
 import io.netty.handler.timeout.ReadTimeoutHandler
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus.NO_CONTENT
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Service
@@ -29,10 +30,10 @@ class TpregisteretConsumer(webClientBuilder: WebClient.Builder) {
 
     fun validateOrganisation(orgno: String, tpnr: String): Boolean? =
             (webClient.get().uri("$tpregisteretUri/organisation")
-                    .header("orgnr", orgno)
-                    .header("tpnr", tpnr)
+                    .header("orgNr", orgno)
+                    .header("tpId", tpnr)
                     .exchange().block()!!
-                    .statusCode() == OK).also { LOG.info("validateOrganisation status [$orgno, $tpnr]: $it") }
+                    .statusCode() == NO_CONTENT).also { LOG.info("validateOrganisation status [$orgno, $tpnr]: $it") }
 
     private fun tcpClient(): TcpClient =
             TcpClient.create()
