@@ -2,11 +2,13 @@ package no.nav.samordning.hendelser.database
 
 import no.nav.samordning.hendelser.TestDataHelper
 import no.nav.samordning.hendelser.hendelse.Hendelse
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
-import org.junit.Assert.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @SpringBootTest
 class DatabaseTests {
@@ -31,7 +33,7 @@ class DatabaseTests {
         val hendelse1 = db.fetchSeqAndHendelser("2000", 0, 0, 2).values.first()
         val hendelse2 = db.fetchSeqAndHendelser("3000", 0, 0, 2).values.first()
 
-        assertThat<Hendelse>(expectedHendelse, samePropertyValuesAs<Hendelse>(hendelse1))
+        assertThat(expectedHendelse, samePropertyValuesAs(hendelse1))
         assertThat<Hendelse>(expectedHendelse, samePropertyValuesAs<Hendelse>(hendelse2))
     }
 
