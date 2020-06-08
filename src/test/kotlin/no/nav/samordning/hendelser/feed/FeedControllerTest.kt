@@ -29,7 +29,7 @@ internal class FeedControllerTest {
         mockMvc.perform(get(GOOD_URL)
                 .header("Authorization", prepareToken))
                 .andDo(print()).andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
     }
 
     @Test

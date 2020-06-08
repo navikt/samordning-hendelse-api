@@ -1,14 +1,16 @@
 package no.nav.samordning.hendelser.database
 
-import com.jayway.jsonpath.JsonPath
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.samordning.hendelser.hendelse.Hendelse
-import org.hamcrest.Matchers
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
-import org.junit.Assert.assertThat
 import org.junit.jupiter.api.Test
-import javax.json.bind.JsonbBuilder
+import java.time.LocalDate
+import kotlin.test.assertEquals
 
-class HendelseJSONTest {
+class HendelseDataJSONTest {
+
+    private val mapper = ObjectMapper()
 
     @Test
     fun jsonToObject() {
@@ -17,13 +19,13 @@ class HendelseJSONTest {
             identifikator = "12345678901"
             vedtakId = "ABC123"
             samId = "BOGUS"
-            fom = "2020-01-01"
-            tom = "2025-01-01"
+            fom = LocalDate.of(2020,1,1)
+            tom = LocalDate.of(2025,1,1)
         }
 
         val json = """{"ytelsesType":"AAP","identifikator":"12345678901","vedtakId":"ABC123","samId":"BOGUS","fom":"2020-01-01","tom":"2025-01-01"}"""
 
-        val hendelse2 = JsonbBuilder.create().fromJson(json, Hendelse::class.java)
+        val hendelse2 = mapper.readValue(json, Hendelse::class.java)
         assertThat(hendelse, samePropertyValuesAs(hendelse2))
     }
 
@@ -34,18 +36,15 @@ class HendelseJSONTest {
             identifikator = "12345678901"
             vedtakId = "ABC123"
             samId = "BOGUS"
-            fom = "2020-01-01"
-            tom = "2025-01-01"
+            fom = LocalDate.of(2020,1,1)
+            tom = LocalDate.of(2025,1,1)
         }
 
-        val result = JsonbBuilder.create().toJson(hendelse)
+        val result = mapper.writeValueAsString(hendelse)
 
-        val excpected = """{"ytelsesType":"AAP","identifikator":"12345678901","vedtakId":"ABC123","samId":"BOGUS","fom":"2020-01-01","tom":"2025-01-01"}"""
+        val expected = """{"ytelsesType":"AAP","identifikator":"12345678901","vedtakId":"ABC123","samId":"BOGUS","fom":"2020-01-01","tom":"2025-01-01"}"""
 
-        val excpectedList = JsonPath.read<List<String>>(excpected, "$.*")
-        val resultList = JsonPath.read<List<String>>(result, "$.*")
 
-        assertThat(excpectedList,
-                Matchers.containsInAnyOrder<Any>(*resultList.toTypedArray()))
+        assertEquals(mapper.readTree(expected), mapper.readTree(result))
     }
 }

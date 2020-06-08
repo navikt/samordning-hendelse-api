@@ -1,2 +1,2 @@
-FROM navikt/java:11
-COPY target/app.jar /app/app.jar
+FROM navikt/java:13
+COPY build/libs/*.jar /app/app.jar

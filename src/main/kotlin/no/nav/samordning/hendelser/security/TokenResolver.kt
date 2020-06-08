@@ -1,12 +1,13 @@
 package no.nav.samordning.hendelser.security
 
 import com.auth0.jwt.JWT
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.samordning.hendelser.consumer.TpregisteretConsumer
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.CLIENT_ID
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.CLIENT_ORGANISATION_NUMBER
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.ISSUER
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.SCOPE
-import org.json.JSONObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus.BAD_REQUEST
@@ -37,15 +38,15 @@ class TokenResolver(
                 )
             }
 
-    private fun validateClaims(claims: JSONObject, tpnr: String) =
+    private fun validateClaims(claims: JsonNode, tpnr: String) =
             claims.validScope().and(claims.validOrganisation(tpnr)).also {
                 log(if (it) "Valid" else "Invalid", tpnr, claims)
                 if (!it) LOG.info("Invalid token")
             }
 
-    private fun JSONObject.validOrganisation(tpnr: String) =
+    private fun JsonNode.validOrganisation(tpnr: String) =
             tpRegisteretConsumer.validateOrganisation(
-                    getString(CLIENT_ORGANISATION_NUMBER),
+                    get(CLIENT_ORGANISATION_NUMBER).asText(),
                     tpnr
             )!!
 
@@ -54,6 +55,7 @@ class TokenResolver(
 
         private val LOG = LoggerFactory.getLogger(TokenResolver::class.java)
         private const val REQUIRED_SCOPE = "nav:pensjon/v1/samordning"
+        private val mapper = ObjectMapper()
 
         private val REQUIRED_CLAIM_KEYS = listOf(
                 CLIENT_ID,
@@ -61,7 +63,7 @@ class TokenResolver(
                 ISSUER,
                 SCOPE)
 
-        private fun getClaims(token: String) = JSONObject(decode(token))
+        private fun getClaims(token: String) = mapper.readTree(decode(token))
                 .also(::checkThatRequiredParametersAreProvided)
 
         private fun decode(token: String) = String(
@@ -69,21 +71,21 @@ class TokenResolver(
                         JWT.decode(token).payload
                 ))
 
-        private fun checkThatRequiredParametersAreProvided(claims: JSONObject) = REQUIRED_CLAIM_KEYS
+        private fun checkThatRequiredParametersAreProvided(claims: JsonNode) = REQUIRED_CLAIM_KEYS
                 .filterNot(claims::has)
                 .joinToString(", ")
                 .takeUnless(String::isEmpty)
                 ?.let { throw tokenError("Missing parameters: $it") }
                 ?: LOG.logClaims(claims)
 
-        private fun Logger.logClaims(claims: JSONObject) {
-            info("Client_ID: ${claims[CLIENT_ID]}")
-            info("ORNGNR: ${claims[CLIENT_ORGANISATION_NUMBER]}")
-            info("SCOPE: ${claims[SCOPE]}")
-            info("ISSUER: ${claims[ISSUER]}")
+        private fun Logger.logClaims(claims: JsonNode) {
+            info("Client_ID: ${claims[CLIENT_ID].asText()}")
+            info("ORNGNR: ${claims[CLIENT_ORGANISATION_NUMBER].asText()}")
+            info("SCOPE: ${claims[SCOPE].asText()}")
+            info("ISSUER: ${claims[ISSUER].asText()}")
         }
 
-        private fun JSONObject.validScope() = getString(SCOPE).let { scope ->
+        private fun JsonNode.validScope() = this[SCOPE].asText().let { scope ->
             (scope == REQUIRED_SCOPE)
                     .also { if (!it) LOG.info("Invalid scope: $scope") }
         }
@@ -93,7 +95,7 @@ class TokenResolver(
                         "https://tools.ietf.org/html/rfc6750#section-3.1"
                 ))
 
-        private fun log(status: String, tpnr: String, claims: JSONObject) =
-                LOG.info("$status tpnr $tpnr for client_id ${claims[CLIENT_ID]}")
+        private fun log(status: String, tpnr: String, claims: JsonNode) =
+                LOG.info("$status tpnr $tpnr for client_id ${claims[CLIENT_ID].asText()}")
     }
 }

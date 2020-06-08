@@ -1,6 +1,6 @@
 package no.nav.samordning.hendelser.database
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.samordning.hendelser.hendelse.Hendelse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
@@ -13,12 +13,14 @@ class Database (databaseConfig: DatabaseConfig) {
     @Autowired
     private lateinit var jdbcTemplate: JdbcTemplate
 
+    private val mapper = ObjectMapper()
+
     private val totalHendelserSql = "SELECT COUNT(*) FROM HENDELSER H"
     private val tpnrHendelserSql = "$totalHendelserSql WHERE H.TPNR = ? AND ${databaseConfig.ytelsesFilter}"
     private val seqAndHendelseSql = "SELECT ROW_NUMBER() OVER(PARTITION BY H.TPNR = ? ORDER BY H.ID) AS SEQ, H.HENDELSE_DATA #>> '{}' AS DATA FROM HENDELSER H WHERE H.TPNR = ? AND ${databaseConfig.ytelsesFilter} OFFSET ? LIMIT ?"
 
     val totalHendelser: String?
-        get() = jdbcTemplate.queryForObject<String>(totalHendelserSql, String::class.java)
+        get() = jdbcTemplate.queryForObject(totalHendelserSql, String::class.java)
 
     fun getNumberOfPages(tpnr: String, sekvensnummer: Int, antall: Int) =
             try {
@@ -40,6 +42,6 @@ class Database (databaseConfig: DatabaseConfig) {
     fun fetchSeqAndHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Int) =
             jdbcTemplate.queryForList(seqAndHendelseSql, tpnr, tpnr, sekvensnummer.coerceAtLeast(1)+(side*antall)-1, antall)
                     .associate {
-                        it.getValue("seq") as Long to Gson().fromJson(it.getValue("data") as String, Hendelse::class.java)
+                        it.getValue("seq") as Long to mapper.readValue(it.getValue("data") as String, Hendelse::class.java)
                     }.toMap()
 }
