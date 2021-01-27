@@ -4,6 +4,11 @@ group = "no.nav.samordning"
 version = "1"
 description = "samordning-hendelse-api"
 
+val logbackClassicVersion = "1.2.3"
+val logstashLogbackEncoder = "5.2"
+val slf4jVersion = "1.7.30"
+val log4jVersion = "2.13.3"
+
 plugins {
     kotlin("jvm") version "1.3.72"
     kotlin("plugin.spring") version "1.3.72"
