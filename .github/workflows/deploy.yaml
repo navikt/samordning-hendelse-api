@@ -19,7 +19,7 @@ jobs:
       - name: Build
         env:
           TESTCONTAINERS_RYUK_DISABLED: true
-        run: gradlew clean build
+        run: ./gradlew clean build
 
       # Build image
       - name: Login to Github Package Registry
