@@ -40,7 +40,7 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("com.h2database","h2","1.4.200")
-    testImplementation("org.testcontainers","postgresql","1.14.3")
+    testImplementation("org.testcontainers","postgresql","1.15.1")
     testImplementation("org.testcontainers","mockserver","1.14.3")
     testImplementation("org.mock-server","mockserver-client-java","3.12")
 
