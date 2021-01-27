@@ -19,7 +19,7 @@ jobs:
       - name: Build
         env:
           TESTCONTAINERS_RYUK_DISABLED: true
-        run: gradle clean build
+        run: gradlew clean build
 
       # Build image
       - name: Login to Github Package Registry
@@ -35,7 +35,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t $(cat .docker_image):$(cat .docker_tag) .
-          echo "::set-env name=IMAGE::$(cat .docker_image):$(cat .docker_tag)"
+          echo "IMAGE=$(cat .docker_image):$(cat .docker_tag)" >> $GITHUB_ENV
       - name: Push Docker image
         run: "docker push $(cat .docker_image):$(cat .docker_tag)"
 
