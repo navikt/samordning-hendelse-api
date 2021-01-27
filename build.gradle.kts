@@ -43,13 +43,23 @@ dependencies {
     testImplementation("org.testcontainers","postgresql","1.14.3")
     testImplementation("org.testcontainers","mockserver","1.14.3")
     testImplementation("org.mock-server","mockserver-client-java","3.12")
+
+    implementation("ch.qos.logback:logback-classic:$logbackClassicVersion")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
+    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
 }
 
 tasks{
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "13"
     }
+    withType<Wrapper> {
+        gradleVersion = "6.4"
+    }
     test {
         useJUnitPlatform()
     }
+
 }
