@@ -71,7 +71,7 @@ internal class TokenResolverTest {
 
         val exception = assertThrows(OAuth2AuthenticationException::class.java) { resolver.resolve(request) }
 
-        assertEquals("Missing parameters: client_id, client_orgno, scope", exception.message)
+        assertEquals("Missing parameters: client_id, consumer, scope", exception.message)
     }
 
     companion object {
