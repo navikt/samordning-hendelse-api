@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "no.nav.samordning"
@@ -62,5 +63,9 @@ tasks{
     test {
         useJUnitPlatform()
     }
-
+    withType<Test> {
+        testLogging {
+            events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+        }
+    }
 }
