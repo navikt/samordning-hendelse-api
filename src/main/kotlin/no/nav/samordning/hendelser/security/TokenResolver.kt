@@ -3,12 +3,9 @@ package no.nav.samordning.hendelser.security
 import com.auth0.jwt.JWT
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.samordning.hendelser.consumer.Consumer
 import no.nav.samordning.hendelser.consumer.TpregisteretConsumer
-import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.CLIENT_ID
-import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.CLIENT_ORGANISATION_NUMBER
+import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.CLIENT_CONSUMER_OBJECT
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.ISSUER
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.SCOPE
 import org.slf4j.Logger
@@ -27,8 +24,7 @@ class TokenResolver(
 ) : BearerTokenResolver {
 
     private object ClaimKeys {
-        const val CLIENT_ID = "client_id"
-        const val CLIENT_ORGANISATION_NUMBER = "consumer"
+        const val CLIENT_CONSUMER_OBJECT = "consumer"
         const val ISSUER = "iss"
         const val SCOPE = "scope"
     }
@@ -49,11 +45,9 @@ class TokenResolver(
 
     private fun JsonNode.validOrganisation(tpnr: String) =
         tpRegisteretConsumer.validateOrganisation(
-            parseOrgno(get(CLIENT_ORGANISATION_NUMBER).asText()),
+            Consumer.parse(get(CLIENT_CONSUMER_OBJECT).asText()).getOrgno(),
             tpnr
         )!!
-
-    private fun parseOrgno(consumerObject: String) = jacksonObjectMapper().readValue<Consumer>(consumerObject).getOrgno()
 
     companion object {
 
@@ -62,8 +56,7 @@ class TokenResolver(
         private val mapper = ObjectMapper()
 
         private val REQUIRED_CLAIM_KEYS = listOf(
-            CLIENT_ID,
-            CLIENT_ORGANISATION_NUMBER,
+            CLIENT_CONSUMER_OBJECT,
             ISSUER,
             SCOPE
         )
@@ -85,8 +78,7 @@ class TokenResolver(
             ?: LOG.logClaims(claims)
 
         private fun Logger.logClaims(claims: JsonNode) {
-            info("Client_ID: ${claims[CLIENT_ID].asText()}")
-            info("ORNGNR: ${claims[CLIENT_ORGANISATION_NUMBER].asText()}")
+            info("ORNGNR: ${Consumer.parse(claims[CLIENT_CONSUMER_OBJECT].asText()).getOrgno()}")
             info("SCOPE: ${claims[SCOPE].asText()}")
             info("ISSUER: ${claims[ISSUER].asText()}")
         }
@@ -104,6 +96,6 @@ class TokenResolver(
         )
 
         private fun log(status: String, tpnr: String, claims: JsonNode) =
-            LOG.info("$status tpnr $tpnr for client_id ${claims[CLIENT_ID].asText()}")
+            LOG.info("$status tpnr $tpnr for scope ${claims[SCOPE].asText()}")
     }
 }

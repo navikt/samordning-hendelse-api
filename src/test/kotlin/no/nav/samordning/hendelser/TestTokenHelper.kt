@@ -61,9 +61,7 @@ object TestTokenHelper {
             .withArrayClaim("aud", arrayOf("tp_ordning", "preprod"))
             .withClaim("iss", iss)
             .withClaim("scope", scope)
-            .withClaim("client_id", "tp_ordning")
             .withClaim("consumer", """{ "authority" : "iso6523-actorid-upis", "ID" : "0192:$orgno"}""")
-        //.withClaim("client_orgno", orgno)
             .sign(algorithm)
 
     private fun createServiceJwt(algorithm: Algorithm) = JWT.create()
