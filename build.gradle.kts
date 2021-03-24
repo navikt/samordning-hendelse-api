@@ -10,10 +10,10 @@ val slf4jVersion = "1.7.30"
 val log4jVersion = "2.13.3"
 
 plugins {
-    kotlin("jvm") version "1.3.72"
-    kotlin("plugin.spring") version "1.3.72"
-    id("org.springframework.boot") version "2.3.0.RELEASE"
-    id("io.spring.dependency-management") version "1.0.9.RELEASE"
+    kotlin("jvm") version "1.4.20"
+    kotlin("plugin.spring") version "1.4.20"
+    id("org.springframework.boot") version "2.3.9.RELEASE"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
 
 repositories {
@@ -53,13 +53,17 @@ dependencies {
 
 tasks{
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "13"
+        kotlinOptions.jvmTarget = "14"
     }
     withType<Wrapper> {
-        gradleVersion = "6.4"
+        gradleVersion = "6.8"
     }
     test {
         useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
     }
 
 }
