@@ -3,6 +3,7 @@ package no.nav.samordning.hendelser.feed
 import io.micrometer.core.annotation.Timed
 import no.nav.samordning.hendelser.database.Database
 import no.nav.samordning.hendelser.metrics.AppMetrics
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.validation.annotation.Validated
@@ -17,6 +18,10 @@ import javax.validation.constraints.PositiveOrZero
 @RestController
 @Validated
 class FeedController {
+
+    companion object {
+        private val LOG = LoggerFactory.getLogger(FeedController::class.java)
+    }
 
     @Autowired
     private lateinit var database: Database
@@ -37,6 +42,8 @@ class FeedController {
 
         val hendelseMap = database.fetchSeqAndHendelser(tpnr, sekvensnummer, side, antall)
         val latestReadSNR = hendelseMap.keys.lastOrNull() ?: 1
+
+        LOG.debug("hendelseMap size " + hendelseMap.size);
 
         metrics.incHendelserLest(tpnr, hendelseMap.size.toDouble())
 
