@@ -2,6 +2,7 @@ package no.nav.samordning.hendelser.database
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.samordning.hendelser.hendelse.Hendelse
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
@@ -9,6 +10,10 @@ import kotlin.math.ceil
 
 @Repository
 class Database (databaseConfig: DatabaseConfig) {
+
+    companion object {
+        private val LOG = LoggerFactory.getLogger(Database::class.java)
+    }
 
     @Autowired
     private lateinit var jdbcTemplate: JdbcTemplate
@@ -28,14 +33,16 @@ class Database (databaseConfig: DatabaseConfig) {
                         .minus(sekvensnummer-1)
                         .div(antall.toDouble())
                         .let(::ceil).toInt()
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                LOG.warn(e.message)
                 0
             }
 
     fun latestSekvensnummer(tpnr: String) =
             try {
                 jdbcTemplate.queryForObject<Long>(tpnrHendelserSql, Long::class.java, tpnr)
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                LOG.warn(e.message)
                 1L
             }!!
 
