@@ -19,10 +19,6 @@ import javax.validation.constraints.PositiveOrZero
 @Validated
 class FeedController {
 
-    companion object {
-        private val LOG = LoggerFactory.getLogger(FeedController::class.java)
-    }
-
     @Autowired
     private lateinit var database: Database
 
