@@ -43,8 +43,6 @@ class FeedController {
         val hendelseMap = database.fetchSeqAndHendelser(tpnr, sekvensnummer, side, antall)
         val latestReadSNR = hendelseMap.keys.lastOrNull() ?: 1
 
-        LOG.debug("hendelseMap size " + hendelseMap.size);
-
         metrics.incHendelserLest(tpnr, hendelseMap.size.toDouble())
 
         return Feed(hendelseMap.values.toList(), database.latestSekvensnummer(tpnr), latestReadSNR, nextUrl(tpnr, sekvensnummer, antall, side))
