@@ -5,6 +5,7 @@ import no.nav.pensjonsamhandling.maskinporten.validation.annotation.Maskinporten
 import no.nav.samordning.hendelser.database.Database
 import no.nav.samordning.hendelser.metrics.AppMetrics
 import no.nav.samordning.hendelser.security.TpnrValidator
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.validation.annotation.Validated

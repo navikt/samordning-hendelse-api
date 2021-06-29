@@ -5,6 +5,10 @@ version = "1"
 description = "samordning-hendelse-api"
 
 val maskinportenVersion = "0.1.6"
+val logbackClassicVersion = "1.2.3"
+val logstashLogbackEncoder = "5.2"
+val slf4jVersion = "1.7.30"
+val log4jVersion = "2.13.3"
 
 plugins {
     kotlin("jvm") version "1.5.20"
@@ -46,16 +50,29 @@ dependencies {
     testImplementation("com.h2database","h2","1.4.200")
     testImplementation("com.ninja-squad", "springmockk", "3.0.1")
     testImplementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring-test", maskinportenVersion)
-    testImplementation("org.testcontainers","postgresql","1.14.3")
+    testImplementation("org.testcontainers","postgresql","1.15.1")
     testImplementation("org.testcontainers","mockserver","1.14.3")
     testImplementation("org.mock-server","mockserver-client-java","3.12")
+
+    implementation("ch.qos.logback:logback-classic:$logbackClassicVersion")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
+    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
 }
 
 tasks{
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "13"
+        kotlinOptions.jvmTarget = "14"
+    }
+    withType<Wrapper> {
+        gradleVersion = "6.8"
     }
     test {
         useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
     }
 }
