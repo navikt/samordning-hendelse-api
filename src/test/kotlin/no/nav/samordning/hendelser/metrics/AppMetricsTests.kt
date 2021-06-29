@@ -1,6 +1,8 @@
 package no.nav.samordning.hendelser.metrics
 
-import no.nav.samordning.hendelser.TestAuthHelper.token
+import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
+import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
+import no.nav.samordning.hendelser.feed.FeedController.Companion.SCOPE
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -13,16 +15,20 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureMaskinportenValidator
 internal class AppMetricsTests {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @Autowired
+    private lateinit var tokenGenerator: MaskinportenValidatorTokenGenerator
+
     @Test
     @Throws(Exception::class)
     fun hendelser_lest_metrics_are_incremented() {
         mockMvc.perform(get("/hendelser?tpnr=1000")
-                .header("Authorization", token("0000000000", true)))
+                .header("Authorization", token()))
                 .andExpect(status().isOk)
 
         val metricName = "samordning_hendelser_lest_total{tpnr=\"1000\",}"
@@ -30,7 +36,7 @@ internal class AppMetricsTests {
         val count = getMetricValue(metricName)
 
         mockMvc.perform(get("/hendelser?tpnr=1000")
-                .header("Authorization", token("0000000000", true)))
+                .header("Authorization", token()))
                 .andExpect(status().isOk)
 
         assertEquals(count!! + 1, getMetricValue(metricName))
@@ -44,4 +50,7 @@ internal class AppMetricsTests {
             ?.filter(String::isNotEmpty)
             ?.getOrNull(1)
             ?.toDouble()
+
+    private fun token() =
+        tokenGenerator.generateToken(SCOPE, "0000000000").serialize()
 }

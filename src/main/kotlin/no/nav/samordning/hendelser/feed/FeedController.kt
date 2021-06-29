@@ -1,8 +1,10 @@
 package no.nav.samordning.hendelser.feed
 
 import io.micrometer.core.annotation.Timed
+import no.nav.pensjonsamhandling.maskinporten.validation.annotation.Maskinporten
 import no.nav.samordning.hendelser.database.Database
 import no.nav.samordning.hendelser.metrics.AppMetrics
+import no.nav.samordning.hendelser.security.TpnrValidator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.validation.annotation.Validated
@@ -29,6 +31,7 @@ class FeedController {
 
     @Timed
     @GetMapping(path = ["/hendelser"])
+    @Maskinporten(SCOPE, TpnrValidator::class)
     fun hendelser(
             @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
             @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,
@@ -46,4 +49,8 @@ class FeedController {
     private fun nextUrl(tpnr: String, sekvensnummer: Int, antall: Int, side: Int) =
             if (database.getNumberOfPages(tpnr, sekvensnummer, antall) > side + 1) "$nextBaseUrl/hendelser?tpnr=$tpnr&sekvensnummer=$sekvensnummer&antall=$antall&side=${side + 1}"
             else null
+
+    companion object {
+        const val SCOPE = "nav:pensjon/v1/samordning"
+    }
 }

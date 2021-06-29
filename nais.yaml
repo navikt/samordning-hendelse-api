@@ -12,9 +12,11 @@ spec:
   ingresses:
     - {{ingress}}
   liveness:
-    path: isAlive
+    path: actuator/health/liveness
+    initialDelay: 30
   readiness:
-    path: isReady
+    path: actuator/health/readiness
+    initialDelay: 30
   vault:
     enabled: true
   replicas:

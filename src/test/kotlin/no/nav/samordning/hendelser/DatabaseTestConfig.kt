@@ -27,7 +27,6 @@ class DatabaseTestConfig {
             System.setProperty("spring.datasource.url", postgres.jdbcUrl)
             System.setProperty("spring.datasource.username", postgres.username)
             System.setProperty("spring.datasource.password", postgres.password)
-            System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.endpoint + "/jwks")
             System.setProperty("TPREGISTERET_URL", mockServer.endpoint)
         }
     }
@@ -54,15 +53,6 @@ class DatabaseTestConfig {
         mockServer.start()
 
         val mockClient = MockServerClient(mockServer.containerIpAddress, mockServer.serverPort!!)
-
-        mockClient.`when`(HttpRequest.request()
-                .withMethod("GET")
-                .withPath("/jwks"))
-                .respond(HttpResponse.response()
-                        .withStatusCode(200)
-                        .withHeader("\"Content-type\", \"application/json\"")
-                        .withBody(TestTokenHelper.generateJwks())
-                )
 
         mockClient.`when`(HttpRequest.request()
                 .withMethod("GET")

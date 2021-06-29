@@ -1,6 +1,8 @@
 package no.nav.samordning.hendelser.feed
 
-import no.nav.samordning.hendelser.TestAuthHelper.token
+import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
+import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
+import no.nav.samordning.hendelser.feed.FeedController.Companion.SCOPE
 import org.hamcrest.core.IsNull
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -16,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureMaskinportenValidator
 internal class PaginationTests {
 
     @Value("\${NEXT_BASE_URL}")
@@ -24,19 +27,22 @@ internal class PaginationTests {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @Autowired
+    private lateinit var tokenGenerator: MaskinportenValidatorTokenGenerator
+
     @Test
     @Throws(Exception::class)
     fun iterate_feed_with_next_page_url() {
         val nextUrl = JSONObject(
                 mockMvc.perform(get("/hendelser?tpnr=4000&antall=2")
-                        .header("Authorization", token("4444444444", true)))
+                        .header("Authorization", token()))
                         .andDo(print()).andReturn().response.contentAsString)
                 .getString("nextUrl")
 
         assertEquals("$nextBaseUrl/hendelser?tpnr=4000&sekvensnummer=1&antall=2&side=1", nextUrl)
 
         mockMvc.perform(get(nextUrl)
-                .header("Authorization", token("4444444444", true)))
+                .header("Authorization", token()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nextUrl").value(IsNull.nullValue()))
     }
 
@@ -45,7 +51,7 @@ internal class PaginationTests {
     fun iterate_feed_with_next_url_from_sekvensnummer() {
         val nextUrl = JSONObject(
                 mockMvc.perform(get("/hendelser?tpnr=4000&sekvensnummer=2&antall=1")
-                        .header("Authorization", token("4444444444", true)))
+                        .header("Authorization", token()))
                         .andExpect(MockMvcResultMatchers.jsonPath("$.sisteLesteSekvensnummer").value(2))
                         .andDo(print()).andReturn().response.contentAsString)
                 .getString("nextUrl")
@@ -53,8 +59,11 @@ internal class PaginationTests {
         assertEquals("$nextBaseUrl/hendelser?tpnr=4000&sekvensnummer=2&antall=1&side=1", nextUrl)
 
         mockMvc.perform(get(nextUrl)
-                .header("Authorization", token("4444444444", true)))
+                .header("Authorization", token()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.sisteLesteSekvensnummer").value(3))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nextUrl").value(IsNull.nullValue()))
     }
+
+    private fun token() =
+        tokenGenerator.generateToken(SCOPE, "4444444444").serialize()
 }

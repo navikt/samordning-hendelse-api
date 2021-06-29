@@ -9,6 +9,5 @@ class DatabaseConfig {
     @Value("\${DESIRED_YTELSESTYPER}")
     private lateinit var ytelsesTyper: String
 
-    val ytelsesFilter: String
-        get() = ytelsesTyper.split(',').joinToString(prefix = "(SELECT(SELECT H2.HENDELSE_DATA #>> '{}' FROM HENDELSER H2 WHERE H2.ID = H.ID)::json->>'ytelsesType') IN ('", separator = "', '", postfix = "')")
+    val ytelsesFilter = "(SELECT(SELECT H2.HENDELSE_DATA #>> '{}' FROM HENDELSER H2 WHERE H2.ID = H.ID)::json->>'ytelsesType') IN ($ytelsesTyper)"
 }
