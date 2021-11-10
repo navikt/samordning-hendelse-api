@@ -12,12 +12,14 @@ import org.springframework.vault.core.lease.event.SecretLeaseCreatedEvent
 
 @Configuration
 @Profile("!test")
-class VaultHikariConfig(private val container: SecretLeaseContainer, private val hikariDataSource: HikariDataSource) : InitializingBean {
-
+class VaultHikariConfig(
+    private val container: SecretLeaseContainer,
+    private val hikariDataSource: HikariDataSource,
     @Value("\${VAULT_POSTGRES_BACKEND}")
-    private lateinit var vaultPostgresBackend: String
+    private val vaultPostgresBackend: String,
     @Value("\${VAULT_POSTGRES_ROLE}")
-    private lateinit var vaultPostgresRole: String
+    private val vaultPostgresRole: String
+) : InitializingBean {
 
     override fun afterPropertiesSet() {
         val secret = RequestedSecret.rotating("$vaultPostgresBackend/creds/$vaultPostgresRole")
@@ -36,7 +38,6 @@ class VaultHikariConfig(private val container: SecretLeaseContainer, private val
     }
 
     companion object {
-
         private val LOGGER = LoggerFactory.getLogger(VaultHikariConfig::class.java.name)
     }
 }

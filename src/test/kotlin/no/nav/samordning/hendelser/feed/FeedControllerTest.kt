@@ -67,8 +67,10 @@ internal class FeedControllerTest {
     @Test
     @Throws(Exception::class)
     fun greeting_should_return_message_from_service_with_first_record() {
-        mockMvc.get("/hendelser?tpnr=1000&antall=1") {
+        mockMvc.get("/hendelser") {
             headers { setBearerAuth(token()) }
+            param("tpnr", "1000")
+            param("antall", "1")
         }.andDo { print() }
             .andExpect {
                 jsonPath("$.hendelser[0].identifikator", hasToString<Any>("01016600000"))
@@ -78,11 +80,16 @@ internal class FeedControllerTest {
     @Test
     @Throws(Exception::class)
     fun greeting_should_return_message_from_service_with_size_check() {
-        mockMvc.get("/hendelser?tpnr=4000&side=0&antall=5") {
+        every { tpnrValidator(eq("4444444444"), any()) } returns true
+        mockMvc.get("/hendelser") {
             headers {
                 setBearerAuth(token(orgno = "4444444444"))
+                param("tpnr", "4000")
+                param("side", "0")
+                param("antall", "5")
             }
         }.andExpect {
+            status { isOk() }
             jsonPath("$.hendelser", hasSize<Any>(3))
         }
     }
@@ -90,9 +97,11 @@ internal class FeedControllerTest {
     @Test
     @Throws(Exception::class)
     fun bad_parameters_return_400() {
-        mockMvc.get("/hendelser?tpnr=4000&side=-1") {
+        mockMvc.get("/hendelser") {
             headers {
                 setBearerAuth(token(orgno = "4444444444"))
+                param("tpnr", "4000")
+                param("side", "-1")
             }
         }.andDo {
             print()

@@ -9,23 +9,25 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
-import reactor.netty.tcp.TcpClient
 import javax.servlet.http.HttpServletRequest
 
 @Service
-class TpnrValidator(webClientBuilder: WebClient.Builder) : RequestAwareOrganisationValidator {
+class TpnrValidator(
+    webClientBuilder: WebClient.Builder,
 
     @Value("\${TPREGISTERET_URL}")
-    lateinit var tpregisteretUri: String
+    val tpregisteretUri: String
+) : RequestAwareOrganisationValidator {
 
-    private fun tcpClient(): TcpClient =
-        TcpClient.create()
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
-            .doOnConnected { it.addHandlerLast(ReadTimeoutHandler(READ_TIMEOUT_MILLIS / 1000)) }
-
-    private val webClient = webClientBuilder
-            .clientConnector(ReactorClientHttpConnector(HttpClient.from(tcpClient())))
-            .build()
+    private val webClient = webClientBuilder.clientConnector(
+        ReactorClientHttpConnector(
+            HttpClient.create()
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
+                .doOnConnected {
+                    it.addHandler(ReadTimeoutHandler(READ_TIMEOUT_MILLIS / 1000))
+                }
+        )
+    ).build()
 
     override fun invoke(orgno: String, o: HttpServletRequest): Boolean {
         val tpnr = o.getParameter("tpnr").substringBefore('?')
