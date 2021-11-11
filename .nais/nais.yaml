@@ -19,6 +19,26 @@ spec:
     initialDelay: 30
   vault:
     enabled: true
+  maskinporten:
+    enabled: true
+    scopes:
+      exposes:
+        - name: v1/samordning
+          product: pensjon
+          active: true
+          consumers:
+            - name: SPK
+              orgnr: 982583462
+            - name: OSLO PENSJONSFORSIKRING AS
+              orgnr: 982759412
+            - name: KLP
+              orgnr: 938708606
+            - name: GABLER PENSJONSTJENESTER AS
+              orgnr: 916833520
+            - name: Storebrand Pensjonstjenester AS
+              orgnr: 931936492
+            - name: Storebrand Livsforsikring AS
+              orgnr: 958995369
   replicas:
     min: 1
     max: 1
@@ -29,6 +49,9 @@ spec:
     requests:
       cpu: 500m
       memory: 256Mi
+  env:
+    - name: MASKINPORTEN_URL
+      value: {{maskinporten}}
   prometheus:
     enabled: true
     path: actuator/prometheus

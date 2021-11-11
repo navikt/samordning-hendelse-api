@@ -1,3 +1,4 @@
 team: pensjonsamhandling
 namespace: pensjonsamhandling
 ingress: https://samordning-hendelse-api.nais.preprod.local
+maskinporten: https://ver2.maskinporten.no/
