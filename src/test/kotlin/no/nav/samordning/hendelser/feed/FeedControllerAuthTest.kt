@@ -46,6 +46,22 @@ internal class FeedControllerAuthTest {
     }
 
     @Test
+    fun permit_all_can_access_all() {
+        mockMvc.get(ENDPOINT) {
+            withTokenFor("2222222222")
+            param(TPNR_PARAM_NAME, TPNR_1)
+        }.andExpect {
+            status { isOk() }
+        }
+        mockMvc.get(ENDPOINT) {
+            withTokenFor("2222222222")
+            param(TPNR_PARAM_NAME, TPNR_2)
+        }.andExpect {
+            status { isOk() }
+        }
+    }
+
+    @Test
     fun invalid_orgno_is_forbidden() {
         mockMvc.get(ENDPOINT) {
             withTokenFor("1111111111")

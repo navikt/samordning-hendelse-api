@@ -7,7 +7,7 @@ description = "samordning-hendelse-api"
 val logbackClassicVersion = "1.2.3"
 val logstashLogbackEncoder = "5.2"
 val log4jVersion = "2.13.3"
-val maskinportenVersion = "0.1.7"
+val maskinportenVersion = "0.1.9"
 val slf4jVersion = "1.7.32"
 val springCloudVersion = "3.0.4"
 
