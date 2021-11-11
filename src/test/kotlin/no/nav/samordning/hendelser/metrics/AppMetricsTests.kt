@@ -28,7 +28,6 @@ internal class AppMetricsTests {
     private lateinit var hendelserLestCounterMap: Map<String, Counter>
 
     @Test
-    @Throws(Exception::class)
     fun hendelser_lest_metrics_are_incremented() {
         mockMvc.get("/hendelser") {
             headers { setBearerAuth(token()) }

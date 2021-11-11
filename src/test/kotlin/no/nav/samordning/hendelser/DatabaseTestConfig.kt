@@ -1,40 +1,34 @@
 package no.nav.samordning.hendelser
 
-import org.mockserver.client.server.MockServerClient
-import org.mockserver.model.HttpRequest
-import org.mockserver.model.HttpResponse
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
-import org.testcontainers.containers.MockServerContainer
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.WireMock.*
+import org.springframework.context.annotation.Configuration
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.MountableFile
-import java.security.NoSuchAlgorithmException
 
 /**
  * Creates and manages shared testcontainers for all tests
  */
-@Component
+@Configuration
 class DatabaseTestConfig {
 
-    @Autowired
-    @Throws(Exception::class)
-    fun init() {
+    init {
         if (uninitialized) {
             initPostgresContainer()
-            initMockServerContainer()
+            initStubs()
 
             System.setProperty("spring.datasource.url", postgres.jdbcUrl)
             System.setProperty("spring.datasource.username", postgres.username)
             System.setProperty("spring.datasource.password", postgres.password)
-            System.setProperty("TPREGISTERET_URL", mockServer.endpoint)
+            System.setProperty("TPREGISTERET_URL", wiremock.baseUrl())
         }
     }
 
-    private class KPostgreSQLContainer : PostgreSQLContainer<KPostgreSQLContainer>()
+    private class KPostgreSQLContainer(name: String) : PostgreSQLContainer<KPostgreSQLContainer>(name)
 
     private fun initPostgresContainer() {
-        postgres = KPostgreSQLContainer()
+        postgres = KPostgreSQLContainer("postgres")
             .withDatabaseName("samordning-hendelser")
             .withUsername("user")
             .withPassword("pass")
@@ -49,39 +43,23 @@ class DatabaseTestConfig {
         postgres.start()
     }
 
-    @Throws(NoSuchAlgorithmException::class)
-    private fun initMockServerContainer() {
-        mockServer = MockServerContainer()
-        mockServer.start()
-
-        val mockClient = MockServerClient(mockServer.containerIpAddress, mockServer.serverPort!!)
-
-        mockClient.`when`(
-            HttpRequest.request()
-                .withMethod("GET")
-                .withPath("/organisation")
-                .withHeader("orgNr", "0000000000")
-                .withHeader("tpId", "1000")
+    private fun initStubs() {
+        wiremock = WireMockServer()
+        wiremock.stubFor(
+            get("/organisation")
+                .withHeader("orgNr", equalTo("0000000000"))
+                .withHeader("tpId", equalTo("1000"))
+                .willReturn(noContent())
         )
-            .respond(
-                HttpResponse.response()
-                    .withStatusCode(204)
-            )
-
-        mockClient.`when`(
-            HttpRequest.request()
-                .withMethod("GET")
-                .withPath("/organisation")
-                .withHeader("orgNr", "4444444444")
-                .withHeader("tpId", "4000")
+        wiremock.stubFor(
+            get("/organisation")
+                .withHeader("orgNr", equalTo("4444444444"))
+                .withHeader("tpId", equalTo("4000"))
+                .willReturn(noContent())
         )
-            .respond(
-                HttpResponse.response()
-                    .withStatusCode(204)
-            )
+        wiremock.start()
     }
 
-    @Throws(Exception::class)
     fun emptyDatabase() {
         postgres.execInContainer(
             "psql",
@@ -92,7 +70,6 @@ class DatabaseTestConfig {
         )
     }
 
-    @Throws(Exception::class)
     fun refillDatabase() {
         postgres.execInContainer(
             "psql",
@@ -104,8 +81,8 @@ class DatabaseTestConfig {
 
     companion object {
         private lateinit var postgres: KPostgreSQLContainer
-        private lateinit var mockServer: MockServerContainer
+        private lateinit var wiremock: WireMockServer
         private val uninitialized: Boolean
-            get() = !::postgres.isInitialized && !::mockServer.isInitialized
+            get() = !::postgres.isInitialized
     }
 }

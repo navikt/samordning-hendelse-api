@@ -12,9 +12,9 @@ val slf4jVersion = "1.7.32"
 val springCloudVersion = "3.0.4"
 
 plugins {
-    kotlin("jvm") version "1.6.0-RC"
-    kotlin("plugin.noarg") version "1.6.0-RC"
-    kotlin("plugin.spring") version "1.6.0-RC"
+    kotlin("jvm") version "1.5.31"
+    kotlin("plugin.noarg") version "1.5.31"
+    kotlin("plugin.spring") version "1.5.31"
     id("org.springframework.boot") version "2.5.6"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
@@ -32,19 +32,19 @@ repositories {
 dependencies {
     implementation(kotlin("reflect"))
     implementation("ch.qos.logback", "logback-classic", logbackClassicVersion)
-    implementation("com.vladmihalcea", "hibernate-types-52", "2.9.10")
-    implementation("io.micrometer", "micrometer-registry-prometheus", "1.5.1")
+    implementation("com.vladmihalcea", "hibernate-types-52", "2.14.0")
+    implementation("io.micrometer", "micrometer-registry-prometheus", "1.7.5")
     implementation("net.logstash.logback", "logstash-logback-encoder", logstashLogbackEncoder)
     implementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring", maskinportenVersion)
-    implementation("org.postgresql", "postgresql", "42.2.12")
-    implementation("org.hibernate.validator", "hibernate-validator", "6.0.10.Final")
+    implementation("org.postgresql", "postgresql", "42.3.1")
     implementation("org.apache.logging.log4j", "log4j-api", log4jVersion)
     implementation("org.apache.logging.log4j", "log4j-core", log4jVersion)
     implementation("org.slf4j", "slf4j-api", slf4jVersion)
-    implementation("org.springframework.boot", "spring-boot-starter-web")
-    implementation("org.springframework.boot", "spring-boot-starter-jdbc")
-    implementation("org.springframework.boot", "spring-boot-starter-webflux")
     implementation("org.springframework.boot", "spring-boot-starter-actuator")
+    implementation("org.springframework.boot", "spring-boot-starter-jdbc")
+    implementation("org.springframework.boot", "spring-boot-starter-validation")
+    implementation("org.springframework.boot", "spring-boot-starter-web")
+    implementation("org.springframework.boot", "spring-boot-starter-webflux")
     implementation("org.springframework.cloud", "spring-cloud-starter-bootstrap", springCloudVersion)
     implementation("org.springframework.cloud", "spring-cloud-starter-vault-config", springCloudVersion)
     implementation("org.springframework.cloud", "spring-cloud-vault-config-databases", springCloudVersion)
@@ -54,11 +54,11 @@ dependencies {
         exclude(module = "mockito-core")
     }
     testImplementation("com.h2database", "h2", "1.4.200")
+    testImplementation("com.github.tomakehurst", "wiremock-jre8", "2.31.0")
     testImplementation("com.ninja-squad", "springmockk", "3.0.1")
     testImplementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring-test", maskinportenVersion)
-    testImplementation("org.testcontainers", "postgresql", "1.15.1")
-    testImplementation("org.testcontainers", "mockserver", "1.14.3")
-    testImplementation("org.mock-server", "mockserver-client-java", "3.12")
+    testImplementation("org.testcontainers", "postgresql", "1.16.2")
+    testImplementation("org.mock-server", "mockserver-client-java", "5.11.2")
 }
 
 tasks {

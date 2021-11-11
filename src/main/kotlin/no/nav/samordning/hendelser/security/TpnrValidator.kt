@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 import javax.servlet.http.HttpServletRequest
 
@@ -34,10 +35,9 @@ class TpnrValidator(
         return webClient.get().uri("$tpregisteretUri/organisation")
             .header("orgNr", orgno)
             .header("tpId", tpnr)
-            .retrieve()
-            .toBodilessEntity()
+            .exchangeToMono { response -> Mono.just(response.statusCode().is2xxSuccessful) }
             .block()!!
-            .statusCode.is2xxSuccessful.also { LOG.info("validateOrganisation status [$orgno, $tpnr]: $it") }
+            .also { LOG.info("validateOrganisation status [$orgno, $tpnr]: $it") }
     }
 
     companion object {
