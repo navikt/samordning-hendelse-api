@@ -28,17 +28,17 @@ spec:
           enabled: true
           consumers:
             - name: SPK
-              orgnr: "982583462"
+              orgno: "982583462"
             - name: OSLO PENSJONSFORSIKRING AS
-              orgnr: "982759412"
+              orgno: "982759412"
             - name: KLP
-              orgnr: "938708606"
+              orgno: "938708606"
             - name: GABLER PENSJONSTJENESTER AS
-              orgnr: "916833520"
+              orgno: "916833520"
             - name: Storebrand Pensjonstjenester AS
-              orgnr: "931936492"
+              orgno: "931936492"
             - name: Storebrand Livsforsikring AS
-              orgnr: "958995369"
+              orgno: "958995369"
             - name: NAV
               orgno: "889640782"
   replicas:
