@@ -23,9 +23,9 @@ spec:
     enabled: true
     scopes:
       exposes:
-        - name: v1/samordning
-          product: pensjon
-          active: true
+        - name: "v1/samordning"
+          product: "pensjon"
+          enabled: true
           consumers:
             - name: SPK
               orgnr: "982583462"
