@@ -19,6 +19,7 @@ jobs:
       - name: Build
         env:
           TESTCONTAINERS_RYUK_DISABLED: true
+          GITHUB_TOKEN: ${{ secrets.GITH_ACCESS_TOKEN }}
         run: ./gradlew clean build
 
       # Build image
