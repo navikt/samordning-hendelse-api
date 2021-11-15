@@ -1,0 +1,18 @@
+spring:
+  profiles.active: test
+  jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false
+
+
+management:
+  endpoint.prometheus.enabled: true
+  endpoints.web.exposure.include:
+    - prometheus
+    - health
+
+NEXT_BASE_URL: http://localhost
+DESIRED_YTELSESTYPER: "'AP', 'AAP', 'PT', 'GP', 'IP', 'ET'"
+
+maskinporten.validation:
+  baseUrl: https://maskinporten.no
+  permitAll:
+    - 2222222222

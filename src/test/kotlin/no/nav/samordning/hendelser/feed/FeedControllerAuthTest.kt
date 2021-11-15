@@ -1,119 +1,118 @@
 package no.nav.samordning.hendelser.feed
 
-import no.nav.samordning.hendelser.TestAuthHelper.emptyToken
-import no.nav.samordning.hendelser.TestAuthHelper.expiredToken
-import no.nav.samordning.hendelser.TestAuthHelper.futureToken
-import no.nav.samordning.hendelser.TestAuthHelper.token
+import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
+import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
+import no.nav.samordning.hendelser.feed.FeedController.Companion.SCOPE
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.get
 
 /**
  * Tests authentication/authorization (token validation) of the feed controller API.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureMaskinportenValidator
 internal class FeedControllerAuthTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @Autowired
+    private lateinit var tokenGenerator: MaskinportenValidatorTokenGenerator
+
     @Test
-    @Throws(Exception::class)
     fun valid_token_issuer_is_authorized() {
-        mockMvc.perform(get(ENDPOINT)
-                .header(AUTH_HEADER_NAME, token(ORG_NUMBER_1, true))
-                .param(TPNR_PARAM_NAME, TPNR_1))
-                .andExpect(status().isOk)
+        mockMvc.get(ENDPOINT) {
+            withTokenFor(ORG_NUMBER_1)
+            param(TPNR_PARAM_NAME, TPNR_1)
+        }.andExpect {
+            status { isOk() }
+        }
     }
 
     @Test
-    @Throws(Exception::class)
     fun valid_orgno_and_tpnr_is_authorized() {
-        mockMvc.perform(get(ENDPOINT)
-                .header(AUTH_HEADER_NAME, token(ORG_NUMBER_2, true))
-                .param(TPNR_PARAM_NAME, TPNR_2))
-                .andExpect(status().isOk)
+        mockMvc.get(ENDPOINT) {
+            withTokenFor(ORG_NUMBER_2)
+            param(TPNR_PARAM_NAME, TPNR_2)
+        }.andExpect {
+            status { isOk() }
+        }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun expired_token_is_unauthorized() {
-        mockMvc.perform(get(ENDPOINT)
-                .header(AUTH_HEADER_NAME, expiredToken(ORG_NUMBER_2))
-                .param(TPNR_PARAM_NAME, TPNR_2))
-                .andExpect(status().isUnauthorized)
+    fun permit_all_can_access_all() {
+        mockMvc.get(ENDPOINT) {
+            withTokenFor("2222222222")
+            param(TPNR_PARAM_NAME, TPNR_1)
+        }.andExpect {
+            status { isOk() }
+        }
+        mockMvc.get(ENDPOINT) {
+            withTokenFor("2222222222")
+            param(TPNR_PARAM_NAME, TPNR_2)
+        }.andExpect {
+            status { isOk() }
+        }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun future_token_is_unauthorized() {
-        mockMvc.perform(get(ENDPOINT)
-                .header(AUTH_HEADER_NAME, futureToken(ORG_NUMBER_2))
-                .param(TPNR_PARAM_NAME, TPNR_2))
-                .andExpect(status().isUnauthorized)
+    fun invalid_orgno_is_forbidden() {
+        mockMvc.get(ENDPOINT) {
+            withTokenFor("1111111111")
+            param(TPNR_PARAM_NAME, TPNR_1)
+        }.andExpect {
+            status { isForbidden() }
+        }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun invalid_token_issuer_is_unauthorized() {
-        mockMvc.perform(get(ENDPOINT)
-                .header(AUTH_HEADER_NAME, token(ORG_NUMBER_1, false))
-                .param(TPNR_PARAM_NAME, TPNR_1))
-                .andExpect(status().isUnauthorized)
+    fun invalid_tpnr_is_forbidden() {
+        mockMvc.get(ENDPOINT) {
+            withTokenFor(ORG_NUMBER_1)
+            param(TPNR_PARAM_NAME, "1235")
+        }.andExpect {
+            status { isForbidden() }
+        }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun invalid_orgno_is_unauthorized() {
-        mockMvc.perform(get(ENDPOINT)
-                .header(AUTH_HEADER_NAME, token("1111111111", false))
-                .param(TPNR_PARAM_NAME, TPNR_1))
-                .andExpect(status().isUnauthorized)
+    fun invalid_orgno_and_tpnr_is_forbidden() {
+        mockMvc.get(ENDPOINT) {
+            withTokenFor("9999999999")
+            param(TPNR_PARAM_NAME, "2000")
+        }.andExpect {
+            status {
+                isForbidden()
+            }
+        }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun invalid_tpnr_is_unauthorized() {
-        mockMvc.perform(get(ENDPOINT)
-                .header(AUTH_HEADER_NAME, token(ORG_NUMBER_1, false))
-                .param(TPNR_PARAM_NAME, "1235"))
-                .andExpect(status().isUnauthorized)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun invalid_orgno_and_tpnr_is_unauthorized() {
-        mockMvc.perform(get(ENDPOINT)
-                .header(AUTH_HEADER_NAME, token("9999999999", true))
-                .param(TPNR_PARAM_NAME, "2000"))
-                .andExpect(status().isUnauthorized)
-    }
-
-    @Test
-    @Throws(Exception::class)
     fun no_token_is_unauthorized() {
-        mockMvc.perform(get(ENDPOINT)
-                .param(TPNR_PARAM_NAME, TPNR_2))
-                .andExpect(status().isUnauthorized)
+        mockMvc.get(ENDPOINT) {
+            param(TPNR_PARAM_NAME, TPNR_2)
+        }.andExpect {
+            status {
+                isUnauthorized()
+            }
+        }
     }
 
-    @Test
-    @Throws(Exception::class)
-    fun missing_required_parameter_returns_bad_request() {
-        mockMvc.perform(get(ENDPOINT)
-                .header(AUTH_HEADER_NAME, emptyToken())
-                .param(TPNR_PARAM_NAME, TPNR_2))
-                .andExpect(status().isBadRequest)
-    }
+    private fun MockHttpServletRequestDsl.withTokenFor(orgno: String) =
+        headers {
+            setBearerAuth(
+                tokenGenerator.generateToken(SCOPE, orgno).serialize()
+            )
+        }
 
     companion object {
         private const val ENDPOINT = "/hendelser"
-        private const val AUTH_HEADER_NAME = "Authorization"
         private const val TPNR_PARAM_NAME = "tpnr"
         private const val ORG_NUMBER_1 = "0000000000"
         private const val ORG_NUMBER_2 = "4444444444"
