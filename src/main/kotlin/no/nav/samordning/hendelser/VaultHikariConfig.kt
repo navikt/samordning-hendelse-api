@@ -32,6 +32,8 @@ class VaultHikariConfig(
                 hikariDataSource.password = password
                 hikariDataSource.hikariConfigMXBean.setUsername(username)
                 hikariDataSource.hikariConfigMXBean.setPassword(password)
+
+                hikariDataSource.hikariPoolMXBean?.softEvictConnections();
             }
         }
         container.addRequestedSecret(secret)
