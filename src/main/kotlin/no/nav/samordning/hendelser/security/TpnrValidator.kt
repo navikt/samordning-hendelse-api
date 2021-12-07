@@ -32,9 +32,7 @@ class TpnrValidator(
 
     override fun invoke(orgno: String, o: HttpServletRequest): Boolean {
         val tpnr = o.getParameter("tpnr").substringBefore('?')
-        return webClient.get().uri("$tpregisteretUri/organisation")
-            .header("orgNr", orgno)
-            .header("tpId", tpnr)
+        return webClient.get().uri("$tpregisteretUri/organisation/validate/" + tpnr + "_" + orgno)
             .exchangeToMono { response -> Mono.just(response.statusCode().is2xxSuccessful) }
             .block()!!
             .also { LOG.info("validateOrganisation status [$orgno, $tpnr]: $it") }

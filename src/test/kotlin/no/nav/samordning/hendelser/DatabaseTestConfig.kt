@@ -46,15 +46,11 @@ class DatabaseTestConfig {
     private fun initStubs() {
         wiremock = WireMockServer()
         wiremock.stubFor(
-            get("/organisation")
-                .withHeader("orgNr", equalTo("0000000000"))
-                .withHeader("tpId", equalTo("1000"))
+            get("/organisation/validate/1000_0000000000")
                 .willReturn(noContent())
         )
         wiremock.stubFor(
-            get("/organisation")
-                .withHeader("orgNr", equalTo("4444444444"))
-                .withHeader("tpId", equalTo("4000"))
+            get("/organisation/validate/4000_4444444444")
                 .willReturn(noContent())
         )
         wiremock.start()
