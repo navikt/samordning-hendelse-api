@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 class TpnrValidator(
     webClientBuilder: WebClient.Builder,
 
-    @Value("\${TPREGISTERET_URL}")
+    @Value("\${TPCONFIG_URL}")
     val tpregisteretUri: String
 ) : RequestAwareOrganisationValidator {
 
