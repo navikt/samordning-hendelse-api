@@ -21,7 +21,7 @@ class DatabaseTestConfig {
             System.setProperty("spring.datasource.url", postgres.jdbcUrl)
             System.setProperty("spring.datasource.username", postgres.username)
             System.setProperty("spring.datasource.password", postgres.password)
-            System.setProperty("TPREGISTERET_URL", wiremock.baseUrl())
+            System.setProperty("TPCONFIG_URL", wiremock.baseUrl())
         }
     }
 
