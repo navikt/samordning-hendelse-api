@@ -1,5 +1,8 @@
 name: Deploy to production
 
+env:
+  "IMAGE_BASE": "docker.pkg.github.com/${{ github.repository }}/samordning-hendelse-api"
+
 on:
   workflow_dispatch:
     inputs:
@@ -19,6 +22,6 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
           RESOURCE: nais.yaml
-          IMAGE: ${{ env.IMAGE }}
+          IMAGE: "${{ env.IMAGE_BASE }}:${{ github.event.inputs.version }}"
           TEAM: pensjonsamhandling
           VARS: .nais/nais-prod-vars.yaml
