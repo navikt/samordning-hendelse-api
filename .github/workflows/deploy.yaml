@@ -57,7 +57,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
-          RESOURCE: nais.yaml
+          RESOURCE: .nais/nais.yaml
           IMAGE: ${{ env.IMAGE }}
           TEAM: pensjonsamhandling
           VARS: .nais/nais-prod-vars.yaml
