@@ -3,3 +3,4 @@ namespace: pensjonsamhandling
 ingress: https://samordning-hendelse-api.nais.adeo.no
 maskinporten: https://maskinporten.no/
 tpconfig_url: https://tpconfig.nais.adeo.no
+spring_profiles_active: prod
