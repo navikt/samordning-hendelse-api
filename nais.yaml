@@ -27,6 +27,9 @@ spec:
     requests:
       cpu: 500m
       memory: 256Mi
+  env:
+    - name: TPCONFIG_URL
+      value: {{tpconfig_url}}
   prometheus:
     enabled: true
     path: actuator/prometheus

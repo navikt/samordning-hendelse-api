@@ -28,7 +28,7 @@ class DatabaseTestConfig {
             System.setProperty("spring.datasource.username", postgres.username)
             System.setProperty("spring.datasource.password", postgres.password)
             System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.endpoint + "/jwks")
-            System.setProperty("TPREGISTERET_URL", mockServer.endpoint)
+            System.setProperty("TPCONFIG_URL", mockServer.endpoint)
         }
     }
 
@@ -66,17 +66,13 @@ class DatabaseTestConfig {
 
         mockClient.`when`(HttpRequest.request()
                 .withMethod("GET")
-                .withPath("/organisation")
-                .withHeader("orgNr", "0000000000")
-                .withHeader("tpId", "1000"))
+                .withPath("/organisation/validate/1000_0000000000"))
                 .respond(HttpResponse.response()
                         .withStatusCode(204))
 
         mockClient.`when`(HttpRequest.request()
                 .withMethod("GET")
-                .withPath("/organisation")
-                .withHeader("orgNr", "4444444444")
-                .withHeader("tpId", "4000"))
+                .withPath("/organisation/validate/4000_4444444444"))
                 .respond(HttpResponse.response()
                         .withStatusCode(204))
     }

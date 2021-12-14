@@ -5,7 +5,6 @@ import io.netty.handler.timeout.ReadTimeoutHandler
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus.NO_CONTENT
-import org.springframework.http.HttpStatus.OK
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -21,17 +20,15 @@ class TpregisteretConsumer(webClientBuilder: WebClient.Builder) {
         private const val CONNECT_TIMEOUT_MILLIS = 3000
     }
 
-    @Value("\${TPREGISTERET_URL}")
-    lateinit var tpregisteretUri: String
+    @Value("\${TPCONFIG_URL}")
+    lateinit var tpConfigUrl: String
 
     private val webClient = WebClient.builder()
             .clientConnector(ReactorClientHttpConnector(HttpClient.from(tcpClient())))
             .build()
 
     fun validateOrganisation(orgno: String, tpnr: String): Boolean? =
-            (webClient.get().uri("$tpregisteretUri/organisation")
-                    .header("orgNr", orgno)
-                    .header("tpId", tpnr)
+            (webClient.get().uri("$tpConfigUrl/organisation/validate/${tpnr}_${orgno}")
                     .exchange().block()!!
                     .statusCode() == NO_CONTENT).also { LOG.info("validateOrganisation status [$orgno, $tpnr]: $it") }
 
