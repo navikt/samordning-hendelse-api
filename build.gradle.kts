@@ -6,8 +6,6 @@ description = "samordning-hendelse-api"
 
 val logbackClassicVersion = "1.2.3"
 val logstashLogbackEncoder = "5.2"
-val slf4jVersion = "1.7.30"
-val log4jVersion = "2.16.0"
 
 plugins {
     kotlin("jvm") version "1.4.20"
@@ -46,9 +44,6 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:$logbackClassicVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
-    implementation("org.slf4j:slf4j-api:$slf4jVersion")
-    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
-    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
 }
 
 tasks{
