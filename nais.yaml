@@ -30,3 +30,6 @@ spec:
   prometheus:
     enabled: true
     path: actuator/prometheus
+  env:
+    - name: TPCONFIG_URL
+      value: {{tpconfig_url}}
