@@ -29,6 +29,7 @@ class DatabaseTestConfig {
             System.setProperty("spring.datasource.password", postgres.password)
             System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.endpoint + "/jwks")
             System.setProperty("TPREGISTERET_URL", mockServer.endpoint)
+            System.setProperty("TPCONFIG_URL", mockServer.endpoint)
         }
     }
 
