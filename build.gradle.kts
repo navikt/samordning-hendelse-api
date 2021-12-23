@@ -8,9 +8,8 @@ val logbackClassicVersion = "1.2.3"
 val logstashLogbackEncoder = "5.2"
 
 plugins {
-    kotlin("jvm") version "1.5.31"
-    kotlin("plugin.noarg") version "1.5.31"
-    kotlin("plugin.spring") version "1.5.31"
+    kotlin("jvm") version "1.4.20"
+    kotlin("plugin.spring") version "1.4.20"
     id("org.springframework.boot") version "2.3.9.RELEASE"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
 }
@@ -49,7 +48,7 @@ dependencies {
 
 tasks{
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "16"
+        kotlinOptions.jvmTarget = "14"
     }
     withType<Wrapper> {
         gradleVersion = "6.8"
