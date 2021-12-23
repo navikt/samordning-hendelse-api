@@ -80,6 +80,18 @@ class DatabaseTestConfig {
                 .withHeader("tpId", "4000"))
                 .respond(HttpResponse.response()
                         .withStatusCode(204))
+
+        mockClient.`when`(HttpRequest.request()
+            .withMethod("GET")
+            .withPath("/organisation/validate/1000_0000000000"))
+            .respond(HttpResponse.response()
+                .withStatusCode(204))
+
+        mockClient.`when`(HttpRequest.request()
+            .withMethod("GET")
+            .withPath("/organisation/validate/4000_4444444444"))
+            .respond(HttpResponse.response()
+                .withStatusCode(204))
     }
 
     @Throws(Exception::class)
