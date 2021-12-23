@@ -13,12 +13,13 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: '14.x'
+          java-version: '16.x'
 
       # Build
       - name: Build
         env:
           TESTCONTAINERS_RYUK_DISABLED: true
+          GITHUB_TOKEN: ${{ secrets.GITH_ACCESS_TOKEN }}
         run: ./gradlew clean build
 
       # Build image
@@ -45,10 +46,10 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
-          RESOURCE: nais.yaml
+          RESOURCE: .nais/nais.yaml
           IMAGE: ${{ env.IMAGE }}
           TEAM: pensjonsamhandling
-          VARS: nais-dev-vars.yaml
+          VARS: .nais/nais-dev-vars.yaml
 
 #      # Deploy to prod-fss
 #      - name: Deploy to prod-fss
