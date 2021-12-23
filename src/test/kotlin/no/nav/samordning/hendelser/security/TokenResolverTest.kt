@@ -2,6 +2,7 @@ package no.nav.samordning.hendelser.security
 
 import no.nav.samordning.hendelser.TestTokenHelper.serviceToken
 import no.nav.samordning.hendelser.TestTokenHelper.token
+import no.nav.samordning.hendelser.consumer.TpConfigConsumer
 import no.nav.samordning.hendelser.consumer.TpregisteretConsumer
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest
  */
 internal class TokenResolverTest {
     private lateinit var tpRegisteretConsumer: TpregisteretConsumer
+    private lateinit var tpConfigConsumer: TpConfigConsumer
     private lateinit var bearerTokenResolver: BearerTokenResolver
     private lateinit var request: HttpServletRequest
 
@@ -27,15 +29,17 @@ internal class TokenResolverTest {
         request = mock(HttpServletRequest::class.java)
         bearerTokenResolver = mock(BearerTokenResolver::class.java)
         tpRegisteretConsumer = mock(TpregisteretConsumer::class.java)
+        tpConfigConsumer = mock(TpConfigConsumer::class.java)
         `when`(request.getParameter("tpnr")).thenReturn("123?antall=1")
         `when`<Boolean>(tpRegisteretConsumer.validateOrganisation(GOOD_ORG_NUMBER, "123")).thenReturn(true)
+        `when`<Boolean>(tpConfigConsumer.validateOrganisation(GOOD_ORG_NUMBER, "123")).thenReturn(true)
     }
 
     @Test
     @Throws(NoSuchAlgorithmException::class)
     fun resolving_good_token_shall_return_token() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(token(GOOD_ORG_NUMBER, true))
-        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer)
+        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer, tpConfigConsumer)
 
         val result = resolver.resolve(request)
 
@@ -46,7 +50,7 @@ internal class TokenResolverTest {
     @Throws(NoSuchAlgorithmException::class)
     fun resolving_invalid_scope_token_shall_return_null() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(token("BAD SCOPE", GOOD_ORG_NUMBER, true))
-        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer)
+        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer, tpConfigConsumer)
 
         val result = resolver.resolve(request)
 
@@ -57,7 +61,7 @@ internal class TokenResolverTest {
     @Throws(NoSuchAlgorithmException::class)
     fun resolving_invalid_org_token_shall_return_null() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(token("-1", true))
-        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer)
+        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer, tpConfigConsumer)
 
         val result = resolver.resolve(request)
 
@@ -67,7 +71,7 @@ internal class TokenResolverTest {
     @Test
     fun resolving_token_with_missing_claims_shall_give_exception_telling_which_claims() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(serviceToken())
-        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer)
+        val resolver = TokenResolver(bearerTokenResolver, tpRegisteretConsumer, tpConfigConsumer)
 
         val exception = assertThrows(OAuth2AuthenticationException::class.java) { resolver.resolve(request) }
 

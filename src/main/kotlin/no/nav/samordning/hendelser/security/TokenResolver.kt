@@ -3,6 +3,7 @@ package no.nav.samordning.hendelser.security
 import com.auth0.jwt.JWT
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.samordning.hendelser.consumer.TpConfigConsumer
 import no.nav.samordning.hendelser.consumer.TpregisteretConsumer
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.CLIENT_ID
 import no.nav.samordning.hendelser.security.TokenResolver.ClaimKeys.CLIENT_ORGANISATION_NUMBER
@@ -20,7 +21,8 @@ import javax.servlet.http.HttpServletRequest
 
 class TokenResolver(
         private val bearerTokenResolver: BearerTokenResolver,
-        private val tpRegisteretConsumer: TpregisteretConsumer
+        private val tpRegisteretConsumer: TpregisteretConsumer,
+        private val tpConfigConsumer: TpConfigConsumer
 ) : BearerTokenResolver {
 
     private object ClaimKeys {
@@ -45,10 +47,14 @@ class TokenResolver(
             }
 
     private fun JsonNode.validOrganisation(tpnr: String) =
-            tpRegisteretConsumer.validateOrganisation(
-                    get(CLIENT_ORGANISATION_NUMBER).asText(),
-                    tpnr
-            )!!
+        tpConfigConsumer.validateOrganisation(
+            get(CLIENT_ORGANISATION_NUMBER).asText(),
+            tpnr
+        )!!
+//            tpRegisteretConsumer.validateOrganisation(
+//                    get(CLIENT_ORGANISATION_NUMBER).asText(),
+//                    tpnr
+//            )!!
 
 
     companion object {
