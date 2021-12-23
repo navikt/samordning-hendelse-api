@@ -2,7 +2,7 @@ name: Release to GitHub Package Registry
 
 on:
   push:
-    branches: log4j-2.16.0
+    branches: master
 
 jobs:
   build_and_release:
