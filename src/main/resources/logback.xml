@@ -5,8 +5,9 @@
     </appender>
 
     <logger name="no.nav.samordning.hendelser" level="INFO" />
+    <logger name="org.springframework.vault" level="TRACE" />
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="STDOUT_JSON" />
     </root>
 </configuration>
