@@ -6,6 +6,7 @@
 
     <logger name="no.nav.samordning.hendelser" level="INFO" />
     <logger name="org.springframework.vault" level="TRACE" />
+    <logger name="com.zaxxer.hikari" level="TRACE" />
 
     <root level="DEBUG">
         <appender-ref ref="STDOUT_JSON" />
