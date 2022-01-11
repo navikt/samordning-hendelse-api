@@ -5,10 +5,8 @@
     </appender>
 
     <logger name="no.nav.samordning.hendelser" level="INFO" />
-    <logger name="org.springframework.vault" level="TRACE" />
-    <logger name="com.zaxxer.hikari" level="TRACE" />
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="STDOUT_JSON" />
     </root>
 </configuration>
