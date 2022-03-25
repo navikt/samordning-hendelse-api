@@ -4,9 +4,9 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
 
-    <logger name="no.nav.samordning.hendelser" level="INFO" />
+    <logger name="no.nav.samordning.hendelser" level="WARN" />
 
-    <root level="INFO">
+    <root level="WARN">
         <appender-ref ref="STDOUT_JSON" />
     </root>
 </configuration>
