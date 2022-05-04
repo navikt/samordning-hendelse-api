@@ -1,0 +1,7 @@
+logging.level:
+  no.nav.samordning.hendelser: INFO
+  org.springframework.security: INFO
+
+TPCONFIG_URL: https://tp.nais.adeo.no/api/tpconfig
+
+maskinporten.validation.baseUrl: https://maskinporten.no/

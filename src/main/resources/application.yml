@@ -9,13 +9,6 @@ spring:
   datasource.hikari.maximum-pool-size: ${MAX_POOL_SIZE}
   jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: false
 
-
-logging.level:
-  no.nav.samordning.hendelser: ${LOG_LEVEL}
-  org.springframework.security: ${LOG_LEVEL}
-
 DESIRED_YTELSESTYPER: "'ALDER', 'AFP'"
-maskinporten.validation:
-  baseUrl: ${MASKINPORTEN_URL}
-  permitAll:
-    - 889640782 #NAV
+maskinporten.validation.permitAll:
+  - 889640782 #NAV

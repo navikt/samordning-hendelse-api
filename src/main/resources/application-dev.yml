@@ -1,0 +1,7 @@
+logging.level:
+  no.nav.samordning.hendelser: DEBUG
+  org.springframework.security: DEBUG
+
+TPCONFIG_URL: https://tp-q1.dev.intern.nav.no/api/tpconfig
+
+maskinporten.validation.baseUrl: https://ver2.maskinporten.no/
