@@ -1,6 +1,6 @@
 logging.level:
+  no.nav.pensjonsamhandling.maskinporten.validation: INFO
   no.nav.samordning.hendelser: INFO
-  org.springframework.security: INFO
 
 TPCONFIG_URL: https://tp.nais.adeo.no/api/tpconfig
 
