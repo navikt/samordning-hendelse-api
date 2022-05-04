@@ -59,6 +59,8 @@ spec:
       value: {{tpconfig_url}}
     - name: SPRING_PROFILES_ACTIVE
       value: {{spring_profiles_active}}
+    - name: LOG_LEVEL
+      value: {{logging}}
   prometheus:
     enabled: true
     path: actuator/prometheus

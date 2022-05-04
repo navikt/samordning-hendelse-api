@@ -4,3 +4,4 @@ ingress: https://samordning-hendelse-api.nais.preprod.local
 maskinporten: https://ver2.maskinporten.no/
 tpconfig_url: https://tp-q1.dev.intern.nav.no/api/tpconfig
 spring_profiles_active: dev
+logging: DEBUG
