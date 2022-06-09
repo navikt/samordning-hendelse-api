@@ -1,4 +1,4 @@
 team: pensjonsamhandling
 namespace: pensjonsamhandling
 ingress: https://samordning-hendelse-api.nais.adeo.no
-tpconfig_url: https://tpconfig.nais.adeo.no
+tpconfig_url: https://tp.nais.adeo.no/api/tpconfig
