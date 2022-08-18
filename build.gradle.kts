@@ -30,7 +30,6 @@ dependencies {
     implementation("com.auth0","java-jwt","3.8.3")
     implementation("com.vladmihalcea","hibernate-types-52","2.9.10")
     implementation("io.micrometer","micrometer-registry-prometheus","1.5.1")
-    implementation("no.nav.pensjonsamhandling", "maskinporten-validation-core", "1.0.0")
     implementation("org.postgresql","postgresql","42.2.12")
     implementation("org.hibernate.validator","hibernate-validator","6.0.10.Final")
     implementation("org.springframework.boot","spring-boot-starter-web")

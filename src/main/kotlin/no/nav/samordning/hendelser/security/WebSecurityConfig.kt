@@ -1,7 +1,6 @@
 package no.nav.samordning.hendelser.security
 
 import no.nav.samordning.hendelser.consumer.TpConfigConsumer
-import no.nav.samordning.hendelser.consumer.TpregisteretConsumer
 import no.nav.samordning.hendelser.security.support.ROLE_SAMHANDLER
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -41,5 +40,8 @@ class WebSecurityConfig(
     }
 
     @Bean
-    fun tokenResolver(tpRegisteretConsumer: TpregisteretConsumer, tpConfigConsumer: TpConfigConsumer) = TokenResolver(DefaultBearerTokenResolver(), tpRegisteretConsumer, tpConfigConsumer)
+    fun tokenResolver(tpConfigConsumer: TpConfigConsumer) = TokenResolver(
+        DefaultBearerTokenResolver(),
+        tpConfigConsumer
+    )
 }
