@@ -11,6 +11,7 @@ spec:
   team: {{team}}
   ingresses:
     - {{ingress}}
+  webproxy: true
   liveness:
     path: isAlive
   readiness:
@@ -31,5 +32,5 @@ spec:
     enabled: true
     path: actuator/prometheus
   env:
-    - name: TPCONFIG_URL
-      value: {{tpconfig_url}}
+    - name: SPRING_PROFILES_ACTIVE
+      value: {{profile}}

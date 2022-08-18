@@ -11,7 +11,7 @@ import reactor.netty.http.client.HttpClient
 import reactor.netty.tcp.TcpClient
 
 @Service
-class TpConfigConsumer(@Value("\${TPCONFIG_URL}") private val tpConfigUri: String) {
+class TpConfigConsumer(@Value("\${tpconfig.url}") private val tpConfigUri: String) {
 
     private val webClient = WebClient.builder()
             .clientConnector(ReactorClientHttpConnector(HttpClient.from(tcpClient())))
