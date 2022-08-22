@@ -15,7 +15,7 @@ import java.util.*
 import javax.servlet.http.HttpServletRequest
 
 class TokenResolver(
-    private val bearerTokenResolver: BearerTokenResolver, private val tpConfigConsumer: TpConfigConsumer
+    private val bearerTokenResolver: BearerTokenResolver, private val tpConfigConsumer: TpConfigConsumer, private val acceptAll: String?
 ) : BearerTokenResolver {
 
     override fun resolve(request: HttpServletRequest) = bearerTokenResolver.resolve(request)?.takeIf {
@@ -30,7 +30,7 @@ class TokenResolver(
             if (!it) LOG.info("Invalid token")
         }
 
-    private fun JsonNode.validOrganisation(tpnr: String) = tpConfigConsumer.validateOrganisation(
+    private fun JsonNode.validOrganisation(tpnr: String) = orgNo == acceptAll || tpConfigConsumer.validateOrganisation(
         orgNo, tpnr
     )!!
 

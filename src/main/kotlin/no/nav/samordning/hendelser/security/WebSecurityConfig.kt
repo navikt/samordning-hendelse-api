@@ -2,6 +2,7 @@ package no.nav.samordning.hendelser.security
 
 import no.nav.samordning.hendelser.consumer.TpConfigConsumer
 import no.nav.samordning.hendelser.security.support.ROLE_SAMHANDLER
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManagerResolver
@@ -16,7 +17,8 @@ import javax.servlet.http.HttpServletRequest
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfig(
-    private val jwtIssuerAuthenticationManagerResolver: AuthenticationManagerResolver<HttpServletRequest>?
+    private val jwtIssuerAuthenticationManagerResolver: AuthenticationManagerResolver<HttpServletRequest>?,
+    @Value("\${oauth2.acceptAll") val acceptAll: String?,
 ) : WebSecurityConfigurerAdapter() {
 
     public override fun configure(http: HttpSecurity?) {
@@ -42,6 +44,7 @@ class WebSecurityConfig(
     @Bean
     fun tokenResolver(tpConfigConsumer: TpConfigConsumer) = TokenResolver(
         DefaultBearerTokenResolver(),
-        tpConfigConsumer
+        tpConfigConsumer,
+        acceptAll
     )
 }
