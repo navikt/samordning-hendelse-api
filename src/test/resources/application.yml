@@ -1,0 +1,15 @@
+spring.profiles.active: test
+
+management.endpoint.prometheus.enabled: true
+management.endpoints.web.exposure.include: prometheus, health
+
+NEXT_BASE_URL: http://localhost
+DESIRED_YTELSESTYPER: AP,AAP,PT,GP,IP,ET
+
+oauth2:
+  maskinporten:
+    issuer: http://localhost
+    jwkSetUri: http://localhost
+  sts:
+    issuer: https://localhost
+    jwkSetUri: http://localhost

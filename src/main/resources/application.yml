@@ -1,0 +1,6 @@
+management.endpoint.prometheus.enabled: true
+management.endpoints.web.exposure.include: prometheus, health
+
+#spring.datasource.hikari.maximum-pool-size: ${MAX_POOL_SIZE}
+
+DESIRED_YTELSESTYPER: ALDER,AFP

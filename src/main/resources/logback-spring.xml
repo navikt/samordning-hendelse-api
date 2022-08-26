@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <valueMask>
+                    <value>\b(\d{6})\d{5}\b</value>
+                    <mask>$1*****</mask>
+                </valueMask>
+            </jsonGeneratorDecorator>
+        </encoder>
+    </appender>
+
+
+
+    <springProfile name="dev">
+        <logger name="no.nav.samordning.hendelser" level="DEBUG" />
+        <logger name="org.springframework.security" level="DEBUG" />
+    </springProfile>
+    <springProfile name="prod">
+        <logger name="no.nav.samordning.hendelser" level="INFO" />
+        <logger name="org.springframework.security" level="INFO" />
+    </springProfile>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT_JSON" />
+    </root>
+</configuration>

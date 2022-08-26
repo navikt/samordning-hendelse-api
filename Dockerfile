@@ -1,2 +1,2 @@
-FROM navikt/java:14
-COPY build/libs/*.jar /app/app.jar
+FROM navikt/java:17
+COPY build/libs/hendelser-1.jar /app/app.jar

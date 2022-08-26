@@ -1,0 +1,12 @@
+tpconfig.url: https://tp-q1.dev.intern.nav.no/api/tpconfig
+
+oauth2:
+  acceptAll: 889640782
+  maskinporten:
+    issuer: https://ver2.maskinporten.no/
+    jwkSetUri: https://ver2.maskinporten.no/jwk
+  sts:
+    issuer: https://security-token-service.nais.preprod.local
+    jwkSetUri: https://security-token-service.dev.adeo.no/rest/v1/sts/jwks
+
+MAX_POOL_SIZE: 3

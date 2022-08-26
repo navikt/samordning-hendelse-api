@@ -4,25 +4,40 @@ group = "no.nav.samordning"
 version = "1"
 description = "samordning-hendelse-api"
 
-val logbackClassicVersion = "1.2.3"
-val logstashLogbackEncoder = "5.2"
+val logbackClassicVersion = "1.2.11"
+val logstashLogbackEncoder = "7.2"
 
 plugins {
-    kotlin("jvm") version "1.4.20"
-    kotlin("plugin.spring") version "1.4.20"
-    id("org.springframework.boot") version "2.3.9.RELEASE"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    kotlin("jvm") version "1.7.0"
+    kotlin("plugin.spring") version "1.7.0"
+    id("org.springframework.boot") version "2.7.2"
+    id("io.spring.dependency-management") version "1.0.13.RELEASE"
 }
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://maven.pkg.github.com/navikt/maskinporten-validation")
+        credentials {
+            username = "token"
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
+
+dependencyManagement{
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2021.0.3")
+    }
 }
 
 dependencies {
     implementation(kotlin("reflect"))
     implementation("com.auth0","java-jwt","3.8.3")
     implementation("com.vladmihalcea","hibernate-types-52","2.9.10")
-    implementation("io.micrometer","micrometer-registry-prometheus","1.5.1")
+    implementation("io.micrometer","micrometer-core","1.9.3")
+    implementation("io.micrometer","micrometer-registry-prometheus","1.9.3")
+    implementation("no.nav:vault-jdbc:1.3.10")
     implementation("org.postgresql","postgresql","42.2.12")
     implementation("org.hibernate.validator","hibernate-validator","6.0.10.Final")
     implementation("org.springframework.boot","spring-boot-starter-web")
@@ -31,13 +46,14 @@ dependencies {
     implementation("org.springframework.boot","spring-boot-starter-actuator")
     implementation("org.springframework.boot","spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.security.oauth","spring-security-oauth2","2.5.0.RELEASE")
-    implementation("org.springframework.cloud","spring-cloud-vault-config-databases","2.2.2.RELEASE")
-    runtimeOnly("org.springframework.cloud","spring-cloud-starter-vault-config","2.1.3.RELEASE")
+    implementation("org.springframework.cloud","spring-cloud-starter-bootstrap")
+    implementation("org.springframework.cloud","spring-cloud-vault-config-databases")
+    runtimeOnly("org.springframework.cloud","spring-cloud-starter-vault-config")
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.springframework.boot","spring-boot-starter-test") {
-        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-    }
+    testImplementation("org.springframework.boot","spring-boot-starter-test")
+    testImplementation("org.springframework.security","spring-security-test")
     testImplementation("com.h2database","h2","1.4.200")
+    testImplementation("com.ninja-squad","springmockk","3.1.0")
     testImplementation("org.testcontainers","postgresql","1.15.1")
     testImplementation("org.testcontainers","mockserver","1.14.3")
     testImplementation("org.mock-server","mockserver-client-java","3.12")
@@ -48,10 +64,7 @@ dependencies {
 
 tasks{
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "14"
-    }
-    withType<Wrapper> {
-        gradleVersion = "6.8"
+        kotlinOptions.jvmTarget = "17"
     }
     test {
         useJUnitPlatform()
@@ -60,5 +73,4 @@ tasks{
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
     }
-
 }

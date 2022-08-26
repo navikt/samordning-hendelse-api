@@ -1,44 +1,40 @@
 package no.nav.samordning.hendelser
 
+import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.InitializingBean
+import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import org.springframework.vault.core.lease.SecretLeaseContainer
-import org.springframework.vault.core.lease.domain.RequestedSecret
-import org.springframework.vault.core.lease.event.SecretLeaseCreatedEvent
+
 
 @Configuration
 @Profile("!test")
-class VaultHikariConfig(private val container: SecretLeaseContainer, private val hikariDataSource: HikariDataSource) : InitializingBean {
-
+class VaultHikariConfig(
+    @Value("\${SPRING_DATASOURCE_URL}")
+    private val vaultPostgresUrl: String,
     @Value("\${VAULT_POSTGRES_BACKEND}")
-    private lateinit var vaultPostgresBackend: String
+    private val vaultPostgresBackend: String,
     @Value("\${VAULT_POSTGRES_ROLE}")
-    private lateinit var vaultPostgresRole: String
+    private val vaultPostgresRole: String,
+    @Value("\${MAX_POOL_SIZE}")
+    private val maxPoolSize: Int
+) {
 
-    override fun afterPropertiesSet() {
-        val secret = RequestedSecret.rotating("$vaultPostgresBackend/creds/$vaultPostgresRole")
-        container.addLeaseListener { leaseEvent ->
-            if (leaseEvent.source === secret && leaseEvent is SecretLeaseCreatedEvent) {
-                LOGGER.info("Rotating creds for path: ${leaseEvent.getSource().path}")
-                val username = leaseEvent.secrets["username"].toString()
-                val password = leaseEvent.secrets["password"].toString()
-                hikariDataSource.username = username
-                hikariDataSource.password = password
-                hikariDataSource.hikariConfigMXBean.setUsername(username)
-                hikariDataSource.hikariConfigMXBean.setPassword(password)
-
-                hikariDataSource.hikariPoolMXBean?.softEvictConnections();
-            }
-        }
-        container.addRequestedSecret(secret)
+    private val hikariConfig = HikariConfig().apply {
+        jdbcUrl = vaultPostgresUrl
+        minimumIdle = 0
+        maxLifetime = 30001
+        maximumPoolSize = maxPoolSize
+        connectionTimeout = 250
+        idleTimeout = 10001
     }
 
-    companion object {
-
-        private val LOGGER = LoggerFactory.getLogger(VaultHikariConfig::class.java.name)
-    }
+    @Bean
+    fun hikariDataSource(): HikariDataSource = HikariCPVaultUtil.createHikariDataSourceWithVaultIntegration(
+        hikariConfig,
+        vaultPostgresBackend,
+        vaultPostgresRole
+    )
 }
