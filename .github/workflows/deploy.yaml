@@ -2,7 +2,7 @@ name: Release to GitHub Package Registry
 
 on:
   push:
-    branches: feature/without-log4j
+    branches: master
 
 jobs:
   build_and_release:
