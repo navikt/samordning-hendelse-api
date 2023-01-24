@@ -20,17 +20,26 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtIss
 class AuthenticationManagerConfig(
     @Value("\${oauth2.maskinporten.issuer}") val maskinportenIssuer: String,
     @Value("\${oauth2.maskinporten.jwkSetUri}") val maskinportenJwkSetUri: String,
+    @Value("\${oauth2.maskinportenOld.issuer:#{null}}") val maskinportenOldIssuer: String?,
+    @Value("\${oauth2.maskinportenOld.jwkSetUri:#{null}}") val maskinportenOldJwkSetUri: String?,
     @Value("\${oauth2.sts.issuer}") val stsIssuer: String,
     @Value("\${oauth2.sts.jwkSetUri}") val stsJwkSetUri: String
 ) {
     @Bean
     fun authenticationManagerResolver() = JwtIssuerAuthenticationManagerResolver(
-        listOf(
+        listOfNotNull(
             JwtAuthenticationManager(
                 issuer = maskinportenIssuer,
                 jwkSetUri = maskinportenJwkSetUri,
                 jwtAuthenticationConverter = MaskinportenJwtAuthenticationConverter()
             ),
+            if(maskinportenOldIssuer != null && maskinportenOldJwkSetUri != null)
+                JwtAuthenticationManager(
+                    issuer = maskinportenOldIssuer!!,
+                    jwkSetUri = maskinportenOldJwkSetUri!!,
+                    jwtAuthenticationConverter = MaskinportenJwtAuthenticationConverter()
+                )
+            else null,
             JwtAuthenticationManager(
                 issuer = stsIssuer,
                 jwkSetUri = stsJwkSetUri,

@@ -3,6 +3,9 @@ tpconfig.url: https://tp-q1.dev.intern.nav.no/api/tpconfig
 oauth2:
   acceptAll: 889640782
   maskinporten:
+    issuer: https://test.maskinporten.no/
+    jwkSetUri: https://test.maskinporten.no/jwk
+  maskinportenOld:
     issuer: https://ver2.maskinporten.no/
     jwkSetUri: https://ver2.maskinporten.no/jwk
   sts:
