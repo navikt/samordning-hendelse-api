@@ -3,7 +3,7 @@ package no.nav.samordning.hendelser.metrics
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.samordning.hendelser.database.Database
+import no.nav.samordning.hendelser.database.HendelseService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -14,7 +14,7 @@ import java.util.*
 class AppMetrics(private val registry: MeterRegistry) {
 
     @Autowired
-    private lateinit var database: Database
+    private lateinit var hendelseService: HendelseService
 
     private var totalAntallHendelser: Number = 0
 
@@ -28,7 +28,7 @@ class AppMetrics(private val registry: MeterRegistry) {
     fun totalHendelserCount() {
         val counterTask = object : TimerTask() {
             override fun run() {
-                totalAntallHendelser = database.totalHendelser!!.toInt()
+                totalAntallHendelser = hendelseService.totalHendelser
             }
         }
         val timer = Timer("Timer")

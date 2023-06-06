@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class EmptyDatabaseTests {
+class EmptyHendelseServiceTests {
 
     @Autowired
-    private lateinit var db: Database
+    private lateinit var db: HendelseService
 
     @Autowired
     private lateinit var conf: DatabaseTestConfig

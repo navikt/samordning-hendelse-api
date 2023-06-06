@@ -8,10 +8,11 @@ val logbackClassicVersion = "1.2.11"
 val logstashLogbackEncoder = "7.2"
 
 plugins {
-    kotlin("jvm") version "1.7.0"
-    kotlin("plugin.spring") version "1.7.0"
-    id("org.springframework.boot") version "2.7.2"
-    id("io.spring.dependency-management") version "1.0.13.RELEASE"
+    kotlin("jvm") version "1.8.0"
+    kotlin("plugin.spring") version "1.8.0"
+    kotlin("plugin.jpa") version "1.8.0"
+    id("org.springframework.boot") version "3.0.1"
+    id("io.spring.dependency-management") version "1.1.0"
 }
 
 repositories {
@@ -34,15 +35,14 @@ dependencyManagement{
 dependencies {
     implementation(kotlin("reflect"))
     implementation("com.auth0","java-jwt","3.8.3")
-    implementation("com.vladmihalcea","hibernate-types-52","2.9.10")
     implementation("io.micrometer","micrometer-core","1.9.3")
     implementation("io.micrometer","micrometer-registry-prometheus","1.9.3")
     implementation("no.nav:vault-jdbc:1.3.10")
     implementation("org.postgresql","postgresql","42.2.12")
     implementation("org.hibernate.validator","hibernate-validator","6.0.10.Final")
     implementation("org.springframework.boot","spring-boot-starter-web")
-    implementation("org.springframework.boot","spring-boot-starter-jdbc")
     implementation("org.springframework.boot","spring-boot-starter-webflux")
+    implementation("org.springframework.boot","spring-boot-starter-data-jpa")
     implementation("org.springframework.boot","spring-boot-starter-actuator")
     implementation("org.springframework.boot","spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.security.oauth","spring-security-oauth2","2.5.0.RELEASE")

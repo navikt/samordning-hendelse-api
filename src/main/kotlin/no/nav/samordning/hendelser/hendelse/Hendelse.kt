@@ -5,19 +5,20 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
+import java.io.Serializable
 import java.time.LocalDate
 
-class Hendelse {
-    lateinit var ytelsesType: String
-    lateinit var identifikator: String
-    lateinit var vedtakId: String
-    var samId: String? = null
+class Hendelse(
+    val ytelsesType: String,
+    val identifikator: String,
+    val vedtakId: String,
+    var samId: String? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
-    lateinit var fom: LocalDate
+    val fom: LocalDate,
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     var tom: LocalDate? = null
-}
+) : Serializable

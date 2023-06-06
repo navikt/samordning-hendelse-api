@@ -11,10 +11,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @SpringBootTest
-class DatabaseTests {
+class HendelseServiceTests {
 
     @Autowired
-    private lateinit var db: Database
+    private lateinit var db: HendelseService
 
     @Autowired
     private lateinit var testData: TestDataHelper
