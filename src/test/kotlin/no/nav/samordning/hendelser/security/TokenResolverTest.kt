@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.security
 
+import jakarta.servlet.http.HttpServletRequest
 import no.nav.samordning.hendelser.TestTokenHelper.serviceToken
 import no.nav.samordning.hendelser.TestTokenHelper.token
 import no.nav.samordning.hendelser.consumer.TpConfigConsumer
@@ -12,7 +13,6 @@ import org.mockito.Mockito.mock
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver
 import java.security.NoSuchAlgorithmException
-import javax.servlet.http.HttpServletRequest
 
 /**
  * Tests TokenResolver in isolation.

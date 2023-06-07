@@ -3,6 +3,7 @@ package no.nav.samordning.hendelser.security
 import com.auth0.jwt.JWT
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.servlet.http.HttpServletRequest
 import no.nav.samordning.hendelser.consumer.TpConfigConsumer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,7 +16,6 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenResolv
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver
 import org.springframework.stereotype.Service
 import java.util.*
-import javax.servlet.http.HttpServletRequest
 
 @Service
 class TokenResolver(
