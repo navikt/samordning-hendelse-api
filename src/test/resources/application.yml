@@ -1,7 +1,18 @@
-spring.profiles.active: test
+spring:
+  profiles.active: test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    generate-ddl: true
+    database: postgresql
 
-management.endpoint.prometheus.enabled: true
-management.endpoints.web.exposure.include: prometheus, health
+management:
+  endpoint.prometheus.enabled: true
+  endpoints.web.exposure.include: prometheus, health
+
+tpconfig.url: https://tp-q1.dev.intern.nav.no/api/tpconfig
 
 NEXT_BASE_URL: http://localhost
 DESIRED_YTELSESTYPER: AP,AAP,PT,GP,IP,ET

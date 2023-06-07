@@ -5,12 +5,16 @@ import no.nav.samordning.hendelser.hendelse.Hendelse
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDate
 import kotlin.test.assertEquals
 
+@SpringBootTest
 class HendelseDataJSONTest {
 
-    private val mapper = ObjectMapper()
+    @Autowired
+    lateinit var mapper: ObjectMapper
 
     @Test
     fun jsonToObject() {
