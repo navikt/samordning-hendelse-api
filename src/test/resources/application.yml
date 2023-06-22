@@ -1,7 +1,5 @@
 spring:
   profiles.active: test
-#  datasource:
-#    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
   sql.init.mode: always
   jpa:
     hibernate.ddl-auto: create-drop

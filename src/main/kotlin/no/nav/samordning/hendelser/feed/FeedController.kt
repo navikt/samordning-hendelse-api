@@ -1,6 +1,10 @@
 package no.nav.samordning.hendelser.feed
 
 import io.micrometer.core.annotation.Timed
+import jakarta.validation.constraints.Digits
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.PositiveOrZero
 import no.nav.samordning.hendelser.database.HendelseService
 import no.nav.samordning.hendelser.metrics.AppMetrics
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,10 +13,6 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import javax.validation.constraints.Digits
-import javax.validation.constraints.Max
-import javax.validation.constraints.Min
-import javax.validation.constraints.PositiveOrZero
 
 @RestController
 @Validated
@@ -30,10 +30,10 @@ class FeedController {
     @Timed
     @GetMapping(path = ["/hendelser"])
     fun hendelser(
-            @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
-            @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,
-            @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Int,
-            @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Int
+        @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
+        @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,
+        @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Int,
+        @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Int
     ): Feed {
         val hendelseMap = hendelseService.fetchSeqAndHendelser(tpnr, sekvensnummer, side, antall)
         val latestReadSNR = hendelseMap.keys.lastOrNull() ?: 1

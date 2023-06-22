@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import java.io.Serializable
 import java.time.LocalDate
 
+@Suppress("unused")
 class Hendelse(
     val ytelsesType: String,
     val identifikator: String,

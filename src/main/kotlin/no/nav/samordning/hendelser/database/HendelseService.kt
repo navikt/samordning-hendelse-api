@@ -1,19 +1,21 @@
 package no.nav.samordning.hendelser.database
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.samordning.hendelser.hendelse.Hendelse
 import no.nav.samordning.hendelser.hendelse.HendelseRepository
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.stereotype.Service
-import java.time.LocalDate
 import kotlin.math.ceil
 
 @Service
-class HendelseService(val hendelseRepository: HendelseRepository, val databaseConfig: DatabaseConfig) {
+class HendelseService(
+    private val hendelseRepository: HendelseRepository,
+    private val databaseConfig: DatabaseConfig,
+    private val objectMapper: ObjectMapper
+) {
 
     private val log = getLogger(javaClass)
-    private val objectMapper = ObjectMapper()
     val totalHendelser: Long
         get() = hendelseRepository.count()
 
@@ -37,19 +39,5 @@ class HendelseService(val hendelseRepository: HendelseRepository, val databaseCo
             databaseConfig.ytelsesTyper.toSet(),
             sekvensnummer.coerceAtLeast(1) + (side * antall) - 1,
             antall
-        ).associate {
-            it.get(0) as Long to objectMapper.readValue(it.get(1) as String, JsonNode::class.java).let {
-                Hendelse(
-                    ytelsesType = it["ytelsesType"].asText(),
-                    identifikator = it["identifikator"].asText(),
-                    vedtakId = it["vedtakId"].asText(),
-                    fom = "(\\d{4})-(\\d+)-(\\d+)".toRegex().find(it["fom"].asText())!!.groups.let {
-                        LocalDate.of(it[1]!!.value.toInt(), it[2]!!.value.toInt(), it[3]!!.value.toInt())
-                    },
-                    tom = "(\\d{4})-(\\d+)-(\\d+)".toRegex().find(it["tom"].asText())?.groups?.let {
-                        LocalDate.of(it[1]!!.value.toInt(), it[2]!!.value.toInt(), it[3]!!.value.toInt())
-                    }
-                )
-            }
-        }
+        ).associate { it.index to objectMapper.readValue<Hendelse>(it.hendelse) }
 }

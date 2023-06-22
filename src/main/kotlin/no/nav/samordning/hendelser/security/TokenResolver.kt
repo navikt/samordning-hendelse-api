@@ -20,11 +20,10 @@ import java.util.*
 @Service
 class TokenResolver(
     private val tpConfigConsumer: TpConfigConsumer,
-    @Value("\${oauth2.acceptAll:#{null}}") private val acceptAll: String?
+    @Value("\${oauth2.acceptAll:#{null}}") private val acceptAll: String?,
+    private val mapper: ObjectMapper
 ) : BearerTokenResolver {
     private val log = getLogger(javaClass)
-
-    private val mapper = ObjectMapper()
 
     internal var bearerTokenResolver: BearerTokenResolver = DefaultBearerTokenResolver()
 

@@ -9,3 +9,4 @@ DESIRED_YTELSESTYPER: ALDER,AFP
 spring:
   jpa:
     database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect

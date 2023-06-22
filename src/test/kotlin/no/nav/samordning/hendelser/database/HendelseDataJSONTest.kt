@@ -1,6 +1,7 @@
 package no.nav.samordning.hendelser.database
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.samordning.hendelser.hendelse.Hendelse
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
@@ -11,6 +12,7 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 
 @SpringBootTest
+@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
 class HendelseDataJSONTest {
 
     @Autowired

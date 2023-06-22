@@ -1,7 +1,5 @@
 package no.nav.samordning.hendelser.hendelse
 
-import org.hibernate.sql.results.internal.TupleImpl
-import org.postgresql.core.Tuple
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
@@ -17,7 +15,7 @@ interface HendelseRepository : JpaRepository<HendelseContainer, Long> {
 
     @Query(
         value = """
-        SELECT ROW_NUMBER() OVER(PARTITION BY TPNR = '1000' ORDER BY ID) as index, HENDELSE_DATA FROM HENDELSER as hendelse
+        SELECT ROW_NUMBER() OVER(PARTITION BY TPNR = '1000' ORDER BY ID) as index, HENDELSE_DATA as hendelse FROM HENDELSER
             WHERE TPNR = :tpnr
             AND HENDELSE_DATA ->> 'ytelsesType' in :ytelsesTyper
             OFFSET :offset
@@ -29,7 +27,7 @@ interface HendelseRepository : JpaRepository<HendelseContainer, Long> {
         ytelsesTyper: Set<String>,
         offset: Int,
         limit: Int
-    ): List<jakarta.persistence.Tuple>
+    ): List<IndexedHendelse>
 
 
 }

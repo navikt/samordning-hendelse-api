@@ -1,5 +1,7 @@
 package no.nav.samordning.hendelser.security
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import jakarta.servlet.http.HttpServletRequest
 import no.nav.samordning.hendelser.TestTokenHelper.serviceToken
 import no.nav.samordning.hendelser.TestTokenHelper.token
@@ -21,6 +23,7 @@ internal class TokenResolverTest {
     private lateinit var tpConfigConsumer: TpConfigConsumer
     private lateinit var bearerTokenResolver: BearerTokenResolver
     private lateinit var request: HttpServletRequest
+    private val objectMapper: ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build())
 
     @BeforeEach
     fun setUp() {
@@ -35,7 +38,7 @@ internal class TokenResolverTest {
     @Throws(NoSuchAlgorithmException::class)
     fun resolving_good_token_shall_return_token() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(token(GOOD_ORG_NUMBER, true))
-        val resolver = TokenResolver(tpConfigConsumer, null)
+        val resolver = TokenResolver(tpConfigConsumer, null, objectMapper)
         resolver.bearerTokenResolver = bearerTokenResolver
 
         val result = resolver.resolve(request)
@@ -47,7 +50,7 @@ internal class TokenResolverTest {
     @Throws(NoSuchAlgorithmException::class)
     fun resolving_invalid_scope_token_shall_return_null() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(token("BAD SCOPE", GOOD_ORG_NUMBER, true))
-        val resolver = TokenResolver(tpConfigConsumer, null)
+        val resolver = TokenResolver(tpConfigConsumer, null, objectMapper)
         resolver.bearerTokenResolver = bearerTokenResolver
 
         val result = resolver.resolve(request)
@@ -59,7 +62,7 @@ internal class TokenResolverTest {
     @Throws(NoSuchAlgorithmException::class)
     fun resolving_invalid_org_token_shall_return_null() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(token("-1", true))
-        val resolver = TokenResolver(tpConfigConsumer, null)
+        val resolver = TokenResolver(tpConfigConsumer, null, objectMapper)
         resolver.bearerTokenResolver = bearerTokenResolver
 
         val result = resolver.resolve(request)
@@ -70,7 +73,7 @@ internal class TokenResolverTest {
     @Test
     fun resolving_token_with_missing_claims_shall_give_exception_telling_which_claims() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(serviceToken())
-        val resolver = TokenResolver(tpConfigConsumer, null)
+        val resolver = TokenResolver(tpConfigConsumer, null, objectMapper)
         resolver.bearerTokenResolver = bearerTokenResolver
 
         val exception = assertThrows(OAuth2AuthenticationException::class.java) { resolver.resolve(request) }
