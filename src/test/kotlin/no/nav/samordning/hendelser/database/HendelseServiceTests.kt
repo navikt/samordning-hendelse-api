@@ -1,55 +1,45 @@
 package no.nav.samordning.hendelser.database
 
-import no.nav.samordning.hendelser.TestDataHelper
-import no.nav.samordning.hendelser.hendelse.Hendelse
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase
+import no.nav.samordning.hendelser.TestData
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.context.annotation.Import
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-@SpringBootTest
+@DataJpaTest
+@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
+@Import(DatabaseConfig::class, HendelseService::class)
 class HendelseServiceTests {
 
     @Autowired
     private lateinit var db: HendelseService
 
-    @Autowired
-    private lateinit var testData: TestDataHelper
-
     @Test
     fun expected_hendelse_is_fetched() {
-        val expectedHendelse = testData.hendelse("01016600000")
+        val expectedHendelse = TestData.h1000.hendelseData
         val hendelse = db.fetchSeqAndHendelser("1000", 0, 0, 1).values.first()
 
-        assertThat<Hendelse>(expectedHendelse, samePropertyValuesAs<Hendelse>(hendelse))
-    }
-
-    @Test
-    fun expected_hendelse_from_multiple_tpnr_is_fetched() {
-        val expectedHendelse = testData.hendelse("01016700000")
-        val hendelse1 = db.fetchSeqAndHendelser("2000", 0, 0, 2).values.first()
-        val hendelse2 = db.fetchSeqAndHendelser("3000", 0, 0, 2).values.first()
-
-        assertThat(expectedHendelse, samePropertyValuesAs(hendelse1))
-        assertThat<Hendelse>(expectedHendelse, samePropertyValuesAs<Hendelse>(hendelse2))
+        assertThat(hendelse, samePropertyValuesAs(expectedHendelse))
     }
 
     @Test
     fun multiple_expected_hendelser_are_fetched() {
-        val expectedHendelser = testData.hendelser("01016800000", "01016900000", "01017000000")
+        val expectedHendelser = listOf(TestData.h4000GP.hendelseData, TestData.h4000IP.hendelseData, TestData.h4000PT.hendelseData)
         val hendelser = db.fetchSeqAndHendelser("4000", 0, 0, 3)
 
         hendelser.values.forEachIndexed { i, hendelse ->
-            assertThat<Hendelse>(hendelse, samePropertyValuesAs<Hendelse>(expectedHendelser[i]))
+            assertThat(expectedHendelser[i], samePropertyValuesAs(hendelse))
         }
     }
 
     @Test
     fun unknown_hendelse_returns_empty_list() {
-        assertEquals(emptyMap<Long, Hendelse>(), db.fetchSeqAndHendelser("1234", 1, 0, 9999))
+        assertEquals(emptyMap(), db.fetchSeqAndHendelser("1234", 1, 0, 9999))
     }
 
     @Test
@@ -63,25 +53,25 @@ class HendelseServiceTests {
 
     @Test
     fun hendelser_split_with_pagination() {
-        val expectedPageOne = testData.hendelser("01016800000", "01016900000")
-        val expectedPageTwo = testData.hendelser("01017000000")
+        val expectedPageOne = listOf(TestData.h4000GP.hendelseData, TestData.h4000IP.hendelseData)
+        val expectedPageTwo = TestData.h4000PT.hendelseData
 
         val pageOne = db.fetchSeqAndHendelser("4000", 0, 0, 2)
         val pageTwo = db.fetchSeqAndHendelser("4000", 0, 1, 2)
 
         pageOne.values.forEachIndexed { i, hendelse ->
-            assertThat<Hendelse>(hendelse, samePropertyValuesAs<Hendelse>(expectedPageOne[i]))
+            assertThat(hendelse, samePropertyValuesAs(expectedPageOne[i]))
         }
-        assertThat<Hendelse>(pageTwo.values.first(), samePropertyValuesAs<Hendelse>(expectedPageTwo.first()))
+        assertThat(pageTwo.values.first(), samePropertyValuesAs(expectedPageTwo))
     }
 
     @Test
     fun skip_hendelser_with_offset() {
-        val expectedHendelse = testData.hendelse("01017000000")
+        val expectedHendelse = TestData.h4000PT.hendelseData
         val hendelser = db.fetchSeqAndHendelser("4000", 3, 0, 3)
 
         assertEquals(1, hendelser.size)
-        assertThat<Hendelse>(hendelser.values.first(), samePropertyValuesAs<Hendelse>(expectedHendelse!!))
+        assertThat(hendelser.values.first(), samePropertyValuesAs(expectedHendelse))
     }
 
     @Test

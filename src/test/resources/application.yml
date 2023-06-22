@@ -1,12 +1,13 @@
 spring:
   profiles.active: test
-  datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+#  datasource:
+#    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+  sql.init.mode: always
   jpa:
-    hibernate:
-      ddl-auto: create-drop
-    generate-ddl: true
+    hibernate.ddl-auto: create-drop
     database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
 
 management:
   endpoint.prometheus.enabled: true

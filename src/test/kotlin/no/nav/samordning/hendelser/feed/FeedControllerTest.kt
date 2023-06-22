@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.feed
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.samordning.hendelser.security.support.ROLE_SAMHANDLER
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.hasToString
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
 internal class FeedControllerTest {
 
     @Autowired
