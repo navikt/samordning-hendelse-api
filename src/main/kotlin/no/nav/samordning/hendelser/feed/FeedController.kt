@@ -1,6 +1,7 @@
 package no.nav.samordning.hendelser.feed
 
 import io.micrometer.core.annotation.Timed
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -28,6 +29,7 @@ class FeedController {
     private lateinit var nextBaseUrl: String
 
     @Timed
+    @Valid
     @GetMapping(path = ["/hendelser"])
     fun hendelser(
         @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
