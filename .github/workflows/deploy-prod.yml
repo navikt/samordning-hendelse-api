@@ -1,0 +1,26 @@
+name: Deploy to Prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Which version to deploy (e.g. 2020.01.01-12.55-a1b2c3d4e5f6)"
+        required: true
+
+jobs:
+  prod_deploy:
+    name: Deploy samordning-ut to Prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Input
+        run: echo "version = ${{ github.event.inputs.version }}"
+      - name: Deploy samordning-ut to prod-fss
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_KEY }}
+          CLUSTER: prod-fss
+          RESOURCE: samordning-ut/nais-prod.yaml
+          IMAGE: "docker.pkg.github.com/${{ github.repository }}/samordning-hendelse-api:${{ github.event.inputs.version }}"
+          TEAM: pensjonsamhandling
+          VARS: nais-prod-vars.yaml
