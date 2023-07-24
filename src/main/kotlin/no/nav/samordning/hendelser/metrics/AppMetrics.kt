@@ -3,8 +3,8 @@ package no.nav.samordning.hendelser.metrics
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.samordning.hendelser.database.Database
-import org.slf4j.LoggerFactory
+import no.nav.samordning.hendelser.database.HendelseService
+import org.slf4j.LoggerFactory.getLogger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
@@ -13,8 +13,10 @@ import java.util.*
 @Component
 class AppMetrics(private val registry: MeterRegistry) {
 
+    private val log = getLogger(javaClass)
+
     @Autowired
-    private lateinit var database: Database
+    private lateinit var hendelseService: HendelseService
 
     private var totalAntallHendelser: Number = 0
 
@@ -28,7 +30,7 @@ class AppMetrics(private val registry: MeterRegistry) {
     fun totalHendelserCount() {
         val counterTask = object : TimerTask() {
             override fun run() {
-                totalAntallHendelser = database.totalHendelser!!.toInt()
+                totalAntallHendelser = hendelseService.totalHendelser
             }
         }
         val timer = Timer("Timer")
@@ -44,12 +46,7 @@ class AppMetrics(private val registry: MeterRegistry) {
                         .tag("tpnr", tpnr).register(registry)
             }.increment(antall)
         } catch (e: NullPointerException) {
-            LOG.info("No counter for tpnr: $tpnr")
+            log.info("No counter for tpnr: $tpnr")
         }
-    }
-
-    companion object {
-
-        private val LOG = LoggerFactory.getLogger(AppMetrics::class.java)
     }
 }

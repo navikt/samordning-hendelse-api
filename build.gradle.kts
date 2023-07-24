@@ -4,14 +4,14 @@ group = "no.nav.samordning"
 version = "1"
 description = "samordning-hendelse-api"
 
-val logbackClassicVersion = "1.2.11"
-val logstashLogbackEncoder = "7.2"
+val logstashEncoderVersion = "7.2"
 
 plugins {
-    kotlin("jvm") version "1.7.0"
-    kotlin("plugin.spring") version "1.7.0"
-    id("org.springframework.boot") version "2.7.2"
-    id("io.spring.dependency-management") version "1.0.13.RELEASE"
+    kotlin("jvm") version "1.8.21"
+    kotlin("plugin.spring") version "1.8.21"
+    kotlin("plugin.jpa") version "1.8.21"
+    id("org.springframework.boot") version "3.1.2"
+    id("io.spring.dependency-management") version "1.1.2"
 }
 
 repositories {
@@ -34,16 +34,18 @@ dependencyManagement{
 dependencies {
     implementation(kotlin("reflect"))
     implementation("com.auth0","java-jwt","3.8.3")
-    implementation("com.vladmihalcea","hibernate-types-52","2.9.10")
-    implementation("io.micrometer","micrometer-core","1.9.3")
-    implementation("io.micrometer","micrometer-registry-prometheus","1.9.3")
-    implementation("no.nav:vault-jdbc:1.3.10")
-    implementation("org.postgresql","postgresql","42.2.12")
-    implementation("org.hibernate.validator","hibernate-validator","6.0.10.Final")
+    implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.15.2")
+    implementation("io.micrometer","micrometer-core","1.11.0")
+    implementation("io.micrometer","micrometer-registry-prometheus","1.11.0")
+    implementation("no.nav", "vault-jdbc" ,"1.3.10")
+    implementation("net.logstash.logback", "logstash-logback-encoder", logstashEncoderVersion)
+    implementation("org.postgresql","postgresql","42.6.0")
+    implementation("org.hibernate.validator","hibernate-validator","8.0.0.Final")
     implementation("org.springframework.boot","spring-boot-starter-web")
-    implementation("org.springframework.boot","spring-boot-starter-jdbc")
     implementation("org.springframework.boot","spring-boot-starter-webflux")
+    implementation("org.springframework.boot","spring-boot-starter-data-jpa")
     implementation("org.springframework.boot","spring-boot-starter-actuator")
+    implementation("org.springframework.boot","spring-boot-starter-validation")
     implementation("org.springframework.boot","spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.security.oauth","spring-security-oauth2","2.5.0.RELEASE")
     implementation("org.springframework.cloud","spring-cloud-starter-bootstrap")
@@ -52,14 +54,13 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.springframework.boot","spring-boot-starter-test")
     testImplementation("org.springframework.security","spring-security-test")
-    testImplementation("com.h2database","h2","1.4.200")
+    testImplementation("io.zonky.test","embedded-database-spring-test","2.3.0")
+    testImplementation("io.zonky.test","embedded-postgres","1.2.10")
+    testImplementation("javax.el","javax.el-api", "3.0.0")
     testImplementation("com.ninja-squad","springmockk","3.1.0")
     testImplementation("org.testcontainers","postgresql","1.15.1")
     testImplementation("org.testcontainers","mockserver","1.14.3")
     testImplementation("org.mock-server","mockserver-client-java","3.12")
-
-    implementation("ch.qos.logback:logback-classic:$logbackClassicVersion")
-    implementation("net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoder")
 }
 
 tasks{

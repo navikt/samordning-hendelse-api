@@ -17,20 +17,20 @@ import java.security.NoSuchAlgorithmException
 @Component
 class DatabaseTestConfig {
 
-    @Autowired
-    @Throws(Exception::class)
-    fun init() {
-        if (uninitialized) {
-            initPostgresContainer()
-            initMockServerContainer()
-
-            System.setProperty("spring.datasource.url", postgres.jdbcUrl)
-            System.setProperty("spring.datasource.username", postgres.username)
-            System.setProperty("spring.datasource.password", postgres.password)
-            System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.endpoint + "/jwks")
-            System.setProperty("tpconfig.url", mockServer.endpoint)
-        }
-    }
+//    @Autowired
+//    @Throws(Exception::class)
+//    fun init() {
+//        if (uninitialized) {
+//            initPostgresContainer()
+//            initMockServerContainer()
+//
+//            System.setProperty("spring.datasource.url", postgres.jdbcUrl)
+//            System.setProperty("spring.datasource.username", postgres.username)
+//            System.setProperty("spring.datasource.password", postgres.password)
+//            System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", mockServer.endpoint + "/jwks")
+//            System.setProperty("tpconfig.url", mockServer.endpoint)
+//        }
+//    }
 
     private class KPostgreSQLContainer : PostgreSQLContainer<KPostgreSQLContainer>()
 

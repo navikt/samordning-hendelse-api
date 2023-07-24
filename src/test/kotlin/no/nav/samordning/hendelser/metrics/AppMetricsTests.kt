@@ -2,6 +2,7 @@ package no.nav.samordning.hendelser.metrics
 
 import com.ninjasquad.springmockk.SpykBean
 import io.mockk.verify
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.samordning.hendelser.security.support.ROLE_SAMHANDLER
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
 internal class AppMetricsTests {
 
     @Autowired

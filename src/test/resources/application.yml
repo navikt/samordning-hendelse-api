@@ -1,7 +1,17 @@
-spring.profiles.active: test
+spring:
+  profiles.active: test
+  sql.init.mode: always
+  jpa:
+    hibernate.ddl-auto: create-drop
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
 
-management.endpoint.prometheus.enabled: true
-management.endpoints.web.exposure.include: prometheus, health
+management:
+  endpoint.prometheus.enabled: true
+  endpoints.web.exposure.include: prometheus, health
+
+tpconfig.url: https://tp-q1.dev.intern.nav.no/api/tpconfig
 
 NEXT_BASE_URL: http://localhost
 DESIRED_YTELSESTYPER: AP,AAP,PT,GP,IP,ET

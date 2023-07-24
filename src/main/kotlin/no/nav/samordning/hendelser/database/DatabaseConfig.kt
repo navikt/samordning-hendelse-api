@@ -1,14 +1,17 @@
 package no.nav.samordning.hendelser.database
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class DatabaseConfig {
-
+class DatabaseConfig(
     @Value("\${DESIRED_YTELSESTYPER}")
-    private lateinit var ytelsesTyper: String
+    val ytelsesTyper: Array<String>
+) {
 
-    val ytelsesFilter: String
-        get() = ytelsesTyper.split(',').joinToString(prefix = "(SELECT(SELECT H2.HENDELSE_DATA #>> '{}' FROM HENDELSER H2 WHERE H2.ID = H.ID)::json->>'ytelsesType') IN ('", separator = "', '", postfix = "')")
+    @Bean
+    fun objectMapper(): ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() )
 }

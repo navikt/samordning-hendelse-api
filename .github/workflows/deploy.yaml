@@ -2,7 +2,8 @@ name: Release to GitHub Package Registry
 
 on:
   push:
-    branches: master
+    branches:
+      - master
 
 jobs:
   build_and_release:
@@ -17,8 +18,6 @@ jobs:
 
       # Build
       - name: Build
-        env:
-          TESTCONTAINERS_RYUK_DISABLED: true
         run: ./gradlew clean build
 
       # Build image
@@ -38,25 +37,3 @@ jobs:
           echo "IMAGE=$(cat .docker_image):$(cat .docker_tag)" >> $GITHUB_ENV
       - name: Push Docker image
         run: "docker push $(cat .docker_image):$(cat .docker_tag)"
-
-      # Deploy to dev-fss
-      - name: Deploy to dev-fss
-        uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-fss
-          RESOURCE: nais.yaml
-          IMAGE: ${{ env.IMAGE }}
-          TEAM: pensjonsamhandling
-          VARS: nais-dev-vars.yaml
-
-      # Deploy to prod-fss
-#      - name: Deploy to prod-fss
-#        uses: nais/deploy/actions/deploy@v1
-#        env:
-#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-#          CLUSTER: prod-fss
-#          RESOURCE: nais.yaml
-#          IMAGE: ${{ env.IMAGE }}
-#          TEAM: pensjonsamhandling
-#          VARS: nais-prod-vars.yaml

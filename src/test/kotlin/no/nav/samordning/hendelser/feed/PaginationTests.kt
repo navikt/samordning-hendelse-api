@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.feed
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.samordning.hendelser.security.support.ROLE_SAMHANDLER
 import org.hamcrest.core.IsNull
 import org.json.JSONObject
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
 internal class PaginationTests {
 
     @Value("\${NEXT_BASE_URL}")
