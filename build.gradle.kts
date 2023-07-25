@@ -41,6 +41,7 @@ dependencies {
     implementation("net.logstash.logback", "logstash-logback-encoder", logstashEncoderVersion)
     implementation("org.postgresql","postgresql","42.6.0")
     implementation("org.apache.httpcomponents", "httpclient", "4.5.14")
+    implementation("org.apache.httpcomponents.client5", "httpclient5", "5.2.1")
     implementation("org.hibernate.validator","hibernate-validator","8.0.0.Final")
     implementation("org.springframework.boot","spring-boot-starter-web")
     implementation("org.springframework.boot","spring-boot-starter-webflux")
