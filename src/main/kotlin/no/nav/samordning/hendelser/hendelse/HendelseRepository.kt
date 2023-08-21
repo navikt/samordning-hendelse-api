@@ -15,7 +15,7 @@ interface HendelseRepository : JpaRepository<HendelseContainer, Long> {
 
     @Query(
         value = """
-        SELECT ROW_NUMBER() OVER(PARTITION BY TPNR = '1000' ORDER BY ID) as index, HENDELSE_DATA as hendelse FROM HENDELSER
+        SELECT ROW_NUMBER() OVER(PARTITION BY TPNR = :tpnr ORDER BY ID) as index, HENDELSE_DATA as hendelse FROM HENDELSER
             WHERE TPNR = :tpnr
             AND HENDELSE_DATA ->> 'ytelsesType' in :ytelsesTyper
             OFFSET :offset
