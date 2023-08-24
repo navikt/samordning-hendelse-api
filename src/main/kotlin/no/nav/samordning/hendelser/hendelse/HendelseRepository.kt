@@ -17,7 +17,7 @@ interface HendelseRepository : JpaRepository<HendelseContainer, Long> {
         value = """
         SELECT ROW_NUMBER() OVER(PARTITION BY TPNR = :tpnr ORDER BY ID) as index, HENDELSE_DATA as hendelse FROM HENDELSER
             WHERE TPNR = :tpnr
-            AND (SELECT (HENDELSE_DATA #>> '{}')::json ->> 'ytelsesType') in :ytelsesTyper
+            AND (SELECT CAST (HENDELSE_DATA #> '{}' as json) ->> 'ytelsesType') in :ytelsesTyper
             OFFSET :offset
             LIMIT :limit
     """, nativeQuery = true

@@ -6,3 +6,5 @@ INSERT INTO HENDELSER(TPNR, HENDELSE_DATA) VALUES
    ('4000', '{"identifikator": "01016900000", "ytelsesType": "IP", "vedtakId": "4", "fom": "2023-01-01", "tom": "2033-01-01"}'),
    ('4000', '{"identifikator": "01017000000", "ytelsesType": "PT", "vedtakId": "5", "fom": "2024-01-01", "tom": "2034-01-01"}'),
    ('5000', '{"identifikator": "01018000000", "ytelsesType": "NOT_IN_FILTER", "vedtakId": "6", "fom": "2024-01-01", "tom": "2034-01-01"}');
+--    ('4000', '{\“identifikator\“: \“01016700000\“, \“ytelsesType\“: \“ET\“, \“vedtakId\“: \“7\“, \“samId\“: \“7\“, \“fom\“: \“2023-04-01\“, \“tom\“: null}'),
+--    ('4000', '{\“identifikator\“: \“01016700000\“, \“ytelsesType\“: \“AAP\“, \“vedtakId\“: \“8\“, \“samId\“: \“8\“, \“fom\“: \“2023-04-01\“, \“tom\“: null}');
