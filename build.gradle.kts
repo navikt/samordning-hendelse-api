@@ -7,7 +7,7 @@ description = "samordning-hendelse-api"
 val logstashEncoderVersion = "7.2"
 
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.10"
     kotlin("plugin.spring") version "1.9.0"
     kotlin("plugin.jpa") version "1.9.0"
     id("org.springframework.boot") version "3.1.2"
