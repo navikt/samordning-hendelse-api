@@ -2,6 +2,7 @@ package no.nav.samordning.hendelser.hendelse
 
 import jakarta.persistence.*
 import jakarta.persistence.GenerationType.IDENTITY
+import no.nav.samordning.hendelser.kafka.SamHendelse
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes.JSON
 
@@ -13,6 +14,11 @@ class HendelseContainer(
     val id: Long,
     val tpnr: String,
     @JdbcTypeCode(JSON)
-    @Column(name = "HENDELSE_DATA",)
+    @Column(name = "HENDELSE_DATA")
     val hendelseData: Hendelse
-)
+) {
+    constructor(samHendelse: SamHendelse) : this(
+        id = 0L, tpnr = samHendelse.tpNr,
+        hendelseData = Hendelse(samHendelse)
+    )
+}
