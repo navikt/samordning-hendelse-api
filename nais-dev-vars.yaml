@@ -3,3 +3,5 @@ namespace: pensjonsamhandling
 ingress: https://samordning-hendelse-api.nais.preprod.local
 profile: dev
 delegatable: true
+
+kafka-pool: nav-dev
