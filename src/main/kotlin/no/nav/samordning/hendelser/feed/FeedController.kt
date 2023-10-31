@@ -56,7 +56,7 @@ class FeedController {
     @GetMapping(path = ["/hendelser/ytelse"])
     fun hendelser(
         @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
-        @RequestParam(value = "ytelse", required = true, defaultValue = "OMS") ytelse: Set<YtelseType>,
+        @RequestParam(value = "ytelse", required = true) ytelse: Set<YtelseType>,
         @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,
         @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Int,
         @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Int
