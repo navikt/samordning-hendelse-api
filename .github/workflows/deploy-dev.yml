@@ -11,6 +11,11 @@ jobs:
   dev_deploy:
     name: Deploy to Dev
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      checks: write
     steps:
       - uses: actions/checkout@v3
       - name: Input
