@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
+import no.nav.samordning.hendelser.kafka.SamHendelse
 import java.io.Serializable
 import java.time.LocalDate
 
@@ -22,4 +23,15 @@ class Hendelse(
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     var tom: LocalDate? = null
-) : Serializable
+) : Serializable {
+
+    constructor(hendelse: SamHendelse) : this(
+        ytelsesType = hendelse.ytelsesType,
+        identifikator = hendelse.identifikator,
+        vedtakId = hendelse.vedtakId,
+        samId = hendelse.samId,
+        fom = hendelse.fom,
+        tom = hendelse.tom
+    )
+}
+

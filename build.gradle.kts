@@ -5,6 +5,7 @@ version = "1"
 description = "samordning-hendelse-api"
 
 val logstashEncoderVersion = "7.2"
+val springkafkaVersion="3.0.11"
 
 plugins {
     kotlin("jvm") version "1.9.0"
@@ -51,16 +52,20 @@ dependencies {
     implementation("org.springframework.cloud", "spring-cloud-starter-bootstrap")
     implementation("org.springframework.cloud", "spring-cloud-starter-vault-config")
     implementation("org.springframework.cloud", "spring-cloud-vault-config-databases")
+    implementation("org.springframework.kafka:spring-kafka:$springkafkaVersion")
+    testImplementation("org.springframework.kafka:spring-kafka-test:$springkafkaVersion")
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.springframework.boot", "spring-boot-starter-test")
     testImplementation("org.springframework.security", "spring-security-test")
     testImplementation("io.zonky.test", "embedded-database-spring-test", "2.3.0")
-    testImplementation("io.zonky.test", "embedded-postgres", "1.2.10")
+    testImplementation("io.zonky.test", "embedded-postgres", "2.0.4")
     testImplementation("javax.el", "javax.el-api", "3.0.0")
     testImplementation("com.ninja-squad", "springmockk", "3.1.0")
     testImplementation("org.testcontainers", "postgresql", "1.15.1")
     testImplementation("org.testcontainers", "mockserver", "1.14.3")
     testImplementation("org.mock-server", "mockserver-client-java", "3.12")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
+
 }
 
 tasks{

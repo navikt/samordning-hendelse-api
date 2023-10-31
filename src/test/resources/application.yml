@@ -6,6 +6,23 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     defer-datasource-initialization: true
+  kafka:
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      bootstrap-servers: localhost:9092
+      group-id: hendelse-api
+
+    properties:
+      security.protocol: PLAINTEXT
+      ssl:
+        truststore:
+          location:
+          password:
+        keystore:
+          location:
+          password:
+        key.password:
 
 management:
   endpoint.prometheus.enabled: true
@@ -23,3 +40,5 @@ oauth2:
   sts:
     issuer: https://localhost
     jwkSetUri: http://localhost
+
+VEDTAK_HENDELSE_KAFKA_TOPIC: test-topic
