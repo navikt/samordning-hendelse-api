@@ -26,11 +26,13 @@ class VarsleVedtakSamordningListener(
             hendelseRepository.saveAndFlush(
                 HendelseContainer(hendelse)
             )
+            acknowledgment.acknowledge()
+            LOG.debug("*** Acket melding ferdig")
 
         } catch (e: Exception) {
             LOG.error("Feilet ved lagre VedtakHendelse, melding: ${e.message}", e)
             Thread.sleep(3000L) //sleep 3sek..
-            throw Exception("Feilet ved lagre VedtakHendelse", e)
+            throw e
         }
     }
 }
