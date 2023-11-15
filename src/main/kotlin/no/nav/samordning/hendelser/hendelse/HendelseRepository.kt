@@ -29,5 +29,19 @@ interface HendelseRepository : JpaRepository<HendelseContainer, Long> {
         limit: Int
     ): List<IndexedHendelse>
 
+    @Query(
+        value = """
+        SELECT ROW_NUMBER() OVER(PARTITION BY TPNR = :tpnr ORDER BY ID) as index, HENDELSE_DATA as hendelse FROM HENDELSER
+            WHERE TPNR = :tpnr
+            OFFSET :offset
+            LIMIT :limit
+    """, nativeQuery = true
+    )
+    fun findAllByTpnr(
+        tpnr: String,
+        offset: Int,
+        limit: Int
+    ): List<IndexedHendelse>
+
 
 }

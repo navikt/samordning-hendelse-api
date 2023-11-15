@@ -62,13 +62,20 @@ class HendelseService(
         sekvensnummer: Int,
         side: Int,
         antall: Int
-    ) =
+    ) = if(ytelser.isEmpty()) {
+        hendelseRepository.findAllByTpnr(
+            tpnr,
+            sekvensnummer.coerceAtLeast(1) + (side * antall) - 1,
+            antall
+        )
+    } else {
         hendelseRepository.findAllByTpnrAndYtelsesType(
             tpnr,
             ytelser.names(),
             sekvensnummer.coerceAtLeast(1) + (side * antall) - 1,
             antall
-        ).associate { it.index to objectMapper.readValue<Hendelse>(it.hendelse) }
+        )
+    }.associate { it.index to objectMapper.readValue<Hendelse>(it.hendelse) }
 
     private fun Set<YtelseType>.names() = map { it.name }.toSet()
 }
