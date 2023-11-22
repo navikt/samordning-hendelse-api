@@ -1,7 +1,4 @@
-team: pensjonsamhandling
-namespace: pensjonsamhandling
 ingress: https://samordning-hendelse-api.nais.adeo.no
 profile: prod
 delegatable: false
-
 kafka-pool: nav-prod

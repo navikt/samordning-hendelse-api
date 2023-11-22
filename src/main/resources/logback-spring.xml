@@ -11,14 +11,13 @@
         </encoder>
     </appender>
 
-
-
     <springProfile name="dev">
-        <logger name="no.nav.samordning.hendelser" level="DEBUG" />
-        <logger name="org.springframework.security" level="DEBUG" />
+        <logger name="no.nav.samordning" level="DEBUG" />
+        <logger name="org.springframework.security" level="INFO" />
     </springProfile>
+
     <springProfile name="prod">
-        <logger name="no.nav.samordning.hendelser" level="INFO" />
+        <logger name="no.nav.samordning" level="INFO" />
         <logger name="org.springframework.security" level="INFO" />
     </springProfile>
 
