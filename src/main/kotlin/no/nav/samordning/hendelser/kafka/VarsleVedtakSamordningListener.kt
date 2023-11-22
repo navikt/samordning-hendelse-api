@@ -1,5 +1,10 @@
 package no.nav.samordning.hendelser.kafka
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
+import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.samordning.hendelser.hendelse.Hendelse
 import no.nav.samordning.hendelser.hendelse.HendelseContainer
 import no.nav.samordning.hendelser.hendelse.HendelseRepository
@@ -16,17 +21,24 @@ import org.springframework.transaction.annotation.Transactional
 class VarsleVedtakSamordningListener(
     private val hendelseRepository: HendelseRepository
 ) {
+    private val mapper : ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule())
     private val LOG: Logger = getLogger(javaClass)
 
     @KafkaListener(topics = ["\${VEDTAK_HENDELSE_KAFKA_TOPIC}"])
-    fun listener(hendelse: SamHendelse, cr: ConsumerRecord<String, SamHendelse>, acknowledgment: Acknowledgment) {
+    fun listener(hendelse: String, cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
         LOG.info("*** Innkommende VedtakHendelse. Offset: ${cr.offset()}, Partition: ${cr.partition()}, Key: ${cr.key()}")
-        //if (LOG.isDebugEnabled) LOG.debug("VedtakHendelse: $hendelse")
+        LOG.debug("VedtakHendelse: $hendelse")
+
+        val samHendelse: SamHendelse = try {
+            mapper.readValue<SamHendelse>(hendelse)
+        } catch (e: Exception) {
+            acknowledgment.acknowledge()
+            LOG.error("Feilet ved deserializering *** acket, melding: ${e.message}", e)
+            return
+        }
 
         try {
-            hendelseRepository.saveAndFlush(
-                HendelseContainer(hendelse)
-            )
+            hendelseRepository.saveAndFlush(HendelseContainer(samHendelse))
             acknowledgment.acknowledge()
             LOG.info("*** Acket melding ferdig")
 

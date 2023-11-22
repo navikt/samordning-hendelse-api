@@ -1,5 +1,8 @@
 package no.nav.samordning.hendelser.kafka
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -16,6 +19,7 @@ internal class VarsleVedtakSamordningListenerTest {
 
     private val acknowledgment: Acknowledgment = mockk(relaxed = true)
     private val hendelseRepository = mockk<HendelseRepository>(relaxed = true)
+    private val mapper : ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule())
     private val listener =  VarsleVedtakSamordningListener(hendelseRepository)
 
     @BeforeEach
@@ -31,7 +35,7 @@ internal class VarsleVedtakSamordningListenerTest {
         val container = HendelseContainer(samHendelse)
 
         every { hendelseRepository.saveAndFlush(any()) } returns container
-        listener.listener(samHendelse, mockk(relaxed = true), acknowledgment)
+        listener.listener(samHendelse.toJson(), mockk(relaxed = true), acknowledgment)
         verify(exactly = 1) { acknowledgment.acknowledge()  }
         verify(exactly = 1) { hendelseRepository.saveAndFlush(any()) }
 
@@ -45,7 +49,7 @@ internal class VarsleVedtakSamordningListenerTest {
         every { hendelseRepository.saveAndFlush(any()) } throws IOException("IO error")
 
         assertThrows<IOException> {
-            listener.listener(mockSamHendelse(), mockk(relaxed = true), acknowledgment)
+            listener.listener(mockSamHendelse().toJson(), mockk(relaxed = true), acknowledgment)
         }
         verify(exactly = 0) { acknowledgment.acknowledge()  }
         verify(exactly = 1) { hendelseRepository.saveAndFlush(any()) }
@@ -63,4 +67,7 @@ internal class VarsleVedtakSamordningListenerTest {
     )
 
 
+
 }
+
+fun SamHendelse.toJson() = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule()).writeValueAsString(this)
