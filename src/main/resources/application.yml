@@ -17,7 +17,6 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       bootstrap-servers: ${KAFKA_BROKERS}
       group-id: hendelse-api
-
     properties:
       security.protocol: SSL
       ssl:
