@@ -19,12 +19,11 @@ class VarsleVedtakSamordningListener(
     private val LOG: Logger = getLogger(javaClass)
 
     @KafkaListener(topics = ["\${VEDTAK_HENDELSE_KAFKA_TOPIC}"])
-    fun listener(hendelse: SamHendelse, cr: ConsumerRecord<String, Hendelse>, acknowledgment: Acknowledgment) {
+    fun listener(hendelse: SamHendelse, cr: ConsumerRecord<String, SamHendelse>, acknowledgment: Acknowledgment) {
         LOG.info("*** Innkommende VedtakHendelse. Offset: ${cr.offset()}, Partition: ${cr.partition()}, Key: ${cr.key()}")
         //if (LOG.isDebugEnabled) LOG.debug("VedtakHendelse: $hendelse")
 
         try {
-
             hendelseRepository.saveAndFlush(
                 HendelseContainer(hendelse)
             )
