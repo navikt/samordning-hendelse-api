@@ -6,19 +6,18 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import no.nav.samordning.hendelser.hendelse.HendelseContainer
-import no.nav.samordning.hendelser.hendelse.HendelseRepository
+import no.nav.samordning.hendelser.hendelse.HendelseContainerDO
+import no.nav.samordning.hendelser.hendelse.HendelseRepositoryDO
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.kafka.support.Acknowledgment
 import java.io.IOException
-import java.time.LocalDate
 
 internal class VarsleVedtakSamordningListenerTest {
 
     private val acknowledgment: Acknowledgment = mockk(relaxed = true)
-    private val hendelseRepository = mockk<HendelseRepository>(relaxed = true)
+    private val hendelseRepository = mockk<HendelseRepositoryDO>(relaxed = true)
     private val mapper : ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule())
     private val listener =  VarsleVedtakSamordningListener(hendelseRepository)
 
@@ -32,7 +31,7 @@ internal class VarsleVedtakSamordningListenerTest {
 
         val samHendelse = mockSamHendelse()
 
-        val container = HendelseContainer(samHendelse)
+        val container = HendelseContainerDO(samHendelse)
 
         every { hendelseRepository.saveAndFlush(any()) } returns container
         listener.listener(samHendelse.toJson(), mockk(relaxed = true), acknowledgment)
@@ -62,7 +61,7 @@ internal class VarsleVedtakSamordningListenerTest {
         "ALDER",
         "12345678901",
         "123123","32321",
-        LocalDate.of(2022,10,9),
+        "2022-10-09",
         null
     )
 

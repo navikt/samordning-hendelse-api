@@ -3,11 +3,9 @@ package no.nav.samordning.hendelser.kafka
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.samordning.hendelser.hendelse.Hendelse
-import no.nav.samordning.hendelser.hendelse.HendelseContainer
-import no.nav.samordning.hendelser.hendelse.HendelseRepository
+import no.nav.samordning.hendelser.hendelse.HendelseContainerDO
+import no.nav.samordning.hendelser.hendelse.HendelseRepositoryDO
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
@@ -19,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class VarsleVedtakSamordningListener(
-    private val hendelseRepository: HendelseRepository
+    private val hendelseRepository: HendelseRepositoryDO
 ) {
     private val mapper : ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule())
     private val LOG: Logger = getLogger(javaClass)
@@ -38,7 +36,7 @@ class VarsleVedtakSamordningListener(
         }
 
         try {
-            hendelseRepository.saveAndFlush(HendelseContainer(samHendelse))
+            hendelseRepository.saveAndFlush(HendelseContainerDO(samHendelse))
             acknowledgment.acknowledge()
             LOG.info("*** Acket melding ferdig")
 
