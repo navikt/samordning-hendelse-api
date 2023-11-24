@@ -2,13 +2,19 @@ package no.nav.samordning.hendelser.database
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.samordning.hendelser.TestData
+import no.nav.samordning.hendelser.hendelse.HendelseContainer
+import no.nav.samordning.hendelser.hendelse.HendelseRepository
+import no.nav.samordning.hendelser.kafka.SamHendelse
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @DataJpaTest
@@ -18,6 +24,21 @@ class HendelseServiceTests {
 
     @Autowired
     private lateinit var db: HendelseService
+
+    @Autowired
+    private lateinit var hendelseRepository: HendelseRepository
+
+    @Test
+    @Transactional
+    fun hendelse_store_and_fetch() {
+        val samHendelse = SamHendelse("7000", "OMS", "01016700000", "8", "1122", LocalDate.of(2023, 12, 1), null)
+        val hendelseContainer = HendelseContainer(samHendelse)
+        val response = hendelseRepository.saveAndFlush(hendelseContainer)
+
+        assertNotNull(hendelseContainer)
+        assertEquals("7000", response.tpnr)
+
+    }
 
     @Test
     fun expected_hendelse_is_fetched() {

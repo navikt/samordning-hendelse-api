@@ -14,7 +14,8 @@ class HendelseContainer(
     val id: Long,
     val tpnr: String,
     @JdbcTypeCode(JSON)
-    @Column(name = "HENDELSE_DATA")
+    @Column(name = "HENDELSE_DATA", columnDefinition = "jsonb")
+    @Convert(converter = JpaConverterJson::class)
     val hendelseData: Hendelse
 ) {
     constructor(samHendelse: SamHendelse) : this(
