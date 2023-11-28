@@ -25,18 +25,21 @@ class VarsleVedtakSamordningListener(
     @KafkaListener(topics = ["\${VEDTAK_HENDELSE_KAFKA_TOPIC}"])
     fun listener(hendelse: String, cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
         LOG.info("*** Innkommende VedtakHendelse. Offset: ${cr.offset()}, Partition: ${cr.partition()}, Key: ${cr.key()}")
-        LOG.debug("VedtakHendelse: $hendelse")
 
         val samHendelse: SamHendelse = try {
+            LOG.debug("hendelse json: $hendelse")
             mapper.readValue<SamHendelse>(hendelse)
         } catch (e: Exception) {
             acknowledgment.acknowledge()
-            LOG.error("Feilet ved deserializering *** acket, melding: ${e.message}", e)
+            LOG.error("Feilet ved deserializering, Acket, melding må sendes på nytt, melding: ${e.message}", e)
             return
         }
 
         try {
-            hendelseRepository.saveAndFlush(HendelseContainerDO(samHendelse))
+            val container = HendelseContainerDO(samHendelse)
+            val id = hendelseRepository.saveAndFlush(container).id
+            val hendelse = container.hendelseData
+            LOG.info("Lagrer $id med tpnr='${container.tpnr}' og Hendelse{identifikator='*****', vedtakId='${hendelse.vedtakId}', samId='${hendelse.samId}', ytelsesType='${hendelse.ytelsesType}', fom='${hendelse.fom}', tom='${hendelse.tom}'")
             acknowledgment.acknowledge()
             LOG.info("*** Acket melding ferdig")
 
@@ -46,4 +49,5 @@ class VarsleVedtakSamordningListener(
             throw e
         }
     }
+
 }
