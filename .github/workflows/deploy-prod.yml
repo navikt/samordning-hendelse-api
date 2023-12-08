@@ -20,7 +20,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
-          RESOURCE: nais.yaml
+          RESOURCE: nais-prod.yaml
           IMAGE: "docker.pkg.github.com/${{ github.repository }}/samordning-hendelse-api:${{ github.event.inputs.version }}"
           TEAM: pensjonsamhandling
-          VARS: nais-prod-vars.yaml
+

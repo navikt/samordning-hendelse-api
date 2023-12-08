@@ -9,7 +9,8 @@ spec:
   image: {{image}}
   port: 8080
   ingresses:
-    - {{ingress}}
+    - https://samordning-hendelse-api.nais.adeo.no
+    - https://samordning-hendelse-api.intern.nav.no
   webproxy: true
   maskinporten:
     enabled: true
@@ -40,6 +41,6 @@ spec:
     path: actuator/prometheus
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: {{profile}}
+      value: prod
   kafka:
-    pool: {{kafka-pool}}
+    pool: nav-prod
