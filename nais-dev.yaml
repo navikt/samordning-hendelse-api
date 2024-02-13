@@ -42,5 +42,7 @@ spec:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: dev
+    - name: LOGGING_CONFIG
+      value: classpath:logback-json.xml
   kafka:
     pool: nav-dev
