@@ -10,15 +10,17 @@ on:
 jobs:
   prod_deploy:
     name: Deploy to Prod
+    permissions:
+      contents: "read"
+      id-token: "write"  
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Input
         run: echo "version = ${{ github.event.inputs.version }}"
       - name: Deploy to prod-fss
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
           RESOURCE: nais-prod.yaml
           IMAGE: "docker.pkg.github.com/${{ github.repository }}/samordning-hendelse-api:${{ github.event.inputs.version }}"
