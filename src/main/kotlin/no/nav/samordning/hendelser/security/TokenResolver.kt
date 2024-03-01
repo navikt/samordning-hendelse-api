@@ -68,8 +68,12 @@ class TokenResolver(
         info("ISSUER: ${claims[ISSUER].asText()}")
     }
 
-    private fun JsonNode.validScope() = this[SCOPE].asText().let { scope ->
-        (scope == REQUIRED_SCOPE).also { if (!it) log.info("Invalid scope: $scope") }
+    private fun JsonNode.validScope() = this[SCOPE].asText().lines().let {
+        if (REQUIRED_SCOPE in it) true
+        else {
+            log.info("Invalid scope: $it")
+            false
+        }
     }
 
     private val JsonNode.orgNo: String
