@@ -43,6 +43,5 @@ spec:
       value: q2
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
-    - name:
   kafka:
     pool: nav-dev
