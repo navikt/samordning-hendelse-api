@@ -1,0 +1,48 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: samordning-hendelse-api-q2
+  namespace: pensjonsamhandling
+  labels:
+    team: pensjonsamhandling
+spec:
+  image: {{image}}
+  port: 8080
+  ingresses:
+    - https://samordning-hendelse-api-q2.intern.dev.nav.no
+  webproxy: true
+  maskinporten:
+    enabled: true
+  liveness:
+    path: actuator/health/liveness
+    initialDelay: 45
+    periodSeconds: 1
+    failureThreshold: 60
+  readiness:
+    path: actuator/health/readiness
+    initialDelay: 45
+    periodSeconds: 1
+    failureThreshold: 60
+  vault:
+    enabled: true
+  replicas:
+    min: 2
+    max: 2
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi
+  prometheus:
+    enabled: true
+    path: actuator/prometheus
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: q2
+    - name: LOGGING_CONFIG
+      value: classpath:logback-json.xml
+    - name:
+  kafka:
+    pool: nav-dev
