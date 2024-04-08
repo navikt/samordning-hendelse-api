@@ -29,7 +29,7 @@ class VaultHikariConfig(
         maximumPoolSize = maxPoolSize
         connectionTimeout = 250
         idleTimeout = 10001
-    }.also { println("vaultPostgresUrl: $vaultPostgresUrl") }
+    }
 
     @Bean
     fun hikariDataSource(): HikariDataSource = HikariCPVaultUtil.createHikariDataSourceWithVaultIntegration(
