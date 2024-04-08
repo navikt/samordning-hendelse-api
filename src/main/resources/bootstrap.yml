@@ -15,5 +15,5 @@ spring:
         service-account-token-file: /var/run/secrets/kubernetes.io/serviceaccount/token
       kv:
         enabled: true
-        #application-name: samordning-hendelse-api/default
-        #default-context: samordning-hendelse-api/default
+        application-name: ${ BOOTSTRAP_APPNAME }
+        default-context: ${ BOOTSTRAP_APPNAME }

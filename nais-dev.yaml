@@ -40,6 +40,8 @@ spec:
     enabled: true
     path: actuator/prometheus
   env:
+    - name: BOOTSTRAP_APPNAME
+      value: samordning-hendelse-api/pensjonsamhandling
     - name: SPRING_PROFILES_ACTIVE
       value: dev
     - name: LOGGING_CONFIG
