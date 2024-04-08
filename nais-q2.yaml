@@ -12,7 +12,7 @@ spec:
     - https://samordning-hendelse-api-q2.intern.dev.nav.no
   webproxy: true
   maskinporten:
-    enabled: true
+    enabled: false
   liveness:
     path: actuator/health/liveness
     initialDelay: 45
