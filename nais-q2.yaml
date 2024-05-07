@@ -42,7 +42,7 @@ spec:
     - name: BOOTSTRAP_APPNAME
       value: samordning-hendelse-api-q2/pensjonsamhandling
     - name: SPRING_PROFILES_ACTIVE
-      value: q2
+      value: dev,q2
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
   kafka:
