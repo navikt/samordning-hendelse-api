@@ -10,6 +10,7 @@ spec:
   port: 8080
   ingresses:
     - https://samordning-hendelse-api-q2.intern.dev.nav.no
+    - https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
   webproxy: true
   maskinporten:
     enabled: true
