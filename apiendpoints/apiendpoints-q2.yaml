@@ -30,3 +30,37 @@ spec:
         - sekvensnummer
       backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
       backendPath: /hendelser
+---
+apiVersion: krakend.nais.io/v1
+kind: ApiEndpoints
+metadata:
+  name: samordning-hendelser-ytelse
+  namespace: pensjonsamhandling
+  labels:
+    team: pensjonsamhandling
+spec:
+  krakend: pensjon
+  auth:
+    name: maskinporten
+    cache: true
+    scopes:
+      - nav:pensjon/v1/samordning
+  rateLimit:
+    maxRate: 100
+    every: 60s
+  endpoints:
+    - path: /samordning/hendelser/ytelse
+      method: GET
+      timeout: 60s
+      forwardHeaders:
+        - Authorization
+        - Content-Type
+        - X-Request-Id
+      queryParams:
+        - tpnr
+        - ytelse
+        - side
+        - antall
+        - sekvensnummer
+      backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
+      backendPath: /hendelser/ytelse
