@@ -1,7 +1,7 @@
 apiVersion: krakend.nais.io/v1
 kind: Krakend
 metadata:
-  name: pensjon
+  name: pensjon-samordning
   namespace: pensjonsamhandling
   labels:
     team: pensjonsamhandling
@@ -17,5 +17,5 @@ spec:
     hosts:
       - host: pensjon-gw.ekstern.dev.nav.no
         paths:
-          - path: /
+          - path: /samordning/
             pathType: ImplementationSpecific
