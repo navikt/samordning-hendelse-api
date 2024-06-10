@@ -48,6 +48,18 @@ internal class TokenResolverTest {
 
     @Test
     @Throws(NoSuchAlgorithmException::class)
+    fun resolving_navorg_token_shall_return_token() {
+        `when`(bearerTokenResolver.resolve(any())).thenReturn(token(NAV_ORG_NUMBER, true))
+        val resolver = TokenResolver(tpConfigConsumer, NAV_ORG_NUMBER, objectMapper)
+        resolver.bearerTokenResolver = bearerTokenResolver
+
+        val result = resolver.resolve(request)
+        println(result)
+        assertEquals("ey", result!!.substring(0, 2))
+    }
+
+    @Test
+    @Throws(NoSuchAlgorithmException::class)
     fun resolving_invalid_scope_token_shall_return_null() {
         `when`(bearerTokenResolver.resolve(any())).thenReturn(token("BAD SCOPE", GOOD_ORG_NUMBER, true))
         val resolver = TokenResolver(tpConfigConsumer, null, objectMapper)
@@ -83,5 +95,6 @@ internal class TokenResolverTest {
 
     companion object {
         private const val GOOD_ORG_NUMBER = "987654321"
+        private const val NAV_ORG_NUMBER = "889640782"
     }
 }

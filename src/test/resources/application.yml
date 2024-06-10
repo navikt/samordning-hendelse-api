@@ -34,6 +34,7 @@ NEXT_BASE_URL: http://localhost
 DESIRED_YTELSESTYPER: AP,AAP,PT,GP,IP,ET
 
 oauth2:
+  acceptAll: 889640782
   maskinporten:
     issuer: http://localhost
     jwkSetUri: http://localhost
