@@ -1,0 +1,6 @@
+### GET request to example server
+GET https://pensjon-gw.ekstern.dev.nav.no/samordning/hendelser?tpnr=3200&side=0&antall=10&sekvensnummer=1
+Content-Type: application/json
+X-Request-Id: 123456-KrakenD-Hendelser
+Authorization: {{Tokenkey}}
+###
