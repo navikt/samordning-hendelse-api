@@ -22,7 +22,7 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-fss
-          RESOURCE: nais-q2.yaml
+          RESOURCE: .nais/nais-q2.yaml
           IMAGE: "docker.pkg.github.com/${{ github.repository }}/samordning-hendelse-api:${{ github.event.inputs.version }}"
           TEAM: pensjonsamhandling
 
@@ -30,10 +30,10 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
-          RESOURCE: apiendpoints/krakend-q2.yaml
+          RESOURCE: .nais/apiendpoints/krakend-dev.yaml
 
       - name: Deploy apiEndpoints config
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
-          RESOURCE: apiendpoints/apiendpoints-q2.yaml
+          RESOURCE: .nais/apiendpoints/apiendpoints-q2.yaml

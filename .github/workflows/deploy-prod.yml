@@ -22,7 +22,7 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: prod-fss
-          RESOURCE: nais-prod.yaml
+          RESOURCE: .nais/nais-prod.yaml
           IMAGE: "docker.pkg.github.com/${{ github.repository }}/samordning-hendelse-api:${{ github.event.inputs.version }}"
           TEAM: pensjonsamhandling
 

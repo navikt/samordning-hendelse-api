@@ -11,6 +11,7 @@ spec:
   ingresses:
     - https://samordning-hendelse-api.nais.preprod.local
     - https://samordning-hendelse-api.dev.intern.nav.no
+    - https://samordning-hendelse-api-q1.dev-fss-pub.nais.io
   webproxy: true
   maskinporten:
     enabled: true
