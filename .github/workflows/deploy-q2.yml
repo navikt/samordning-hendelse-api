@@ -30,7 +30,7 @@ jobs:
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
-          RESOURCE: .nais/apiendpoints/krakend-dev.yaml
+          RESOURCE: .nais/apiendpoints/krakend-q2.yaml
 
       - name: Deploy apiEndpoints config
         uses: nais/deploy/actions/deploy@v2
