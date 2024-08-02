@@ -61,7 +61,7 @@ dependencies {
     testImplementation("org.testcontainers", "postgresql", "1.15.1")
     testImplementation("org.testcontainers", "mockserver", "1.14.3")
     testImplementation("org.mock-server", "mockserver-client-java", "3.12")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.3")
 
 }
 
