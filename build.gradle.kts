@@ -8,7 +8,7 @@ val logstashEncoderVersion = "7.2"
 val springkafkaVersion="3.0.11"
 
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "2.0.10"
     kotlin("plugin.spring") version "1.9.0"
     kotlin("plugin.jpa") version "1.9.0"
     id("org.springframework.boot") version "3.1.2"
