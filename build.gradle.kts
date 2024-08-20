@@ -5,7 +5,7 @@ version = "1"
 description = "samordning-hendelse-api"
 
 val logstashEncoderVersion = "7.2"
-val springkafkaVersion="3.0.11"
+val springkafkaVersion="3.2.3"
 
 plugins {
     kotlin("jvm") version "1.9.0"
