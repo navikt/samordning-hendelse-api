@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
-internal class FeedControllerTest {
+internal class YtelseControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc

@@ -1,4 +1,4 @@
-package no.nav.samhandling.tp.domain.codestable
+package no.nav.samordning.hendelser.ytelse.domain
 
 enum class HendelseTypeCode
  {
