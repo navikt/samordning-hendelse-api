@@ -2,6 +2,7 @@ package no.nav.samordning.hendelser.ytelse.service
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.samordning.hendelser.hendelse.Hendelse
+import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.stereotype.Service
@@ -36,7 +37,7 @@ class YtelseService(
             tpnr,
             sekvensnummer.coerceAtLeast(1) + (side * antall) - 1,
             antall
-        ).associate { it.index to objectMapper.readValue<Hendelse>(it.hendelse) }
+        ).associate { it.index to it.ytelseHendelse }
 
 
 }
