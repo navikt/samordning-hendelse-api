@@ -46,15 +46,14 @@ spec:
       value: prod
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
-    - name: "OTEL_EXPORTER_OTLP_ENDPOINT"
-      value: "https://elastic-apm.adeo.no"
-    - name: "OTEL_METRICS_EXPORTER"
-      value: "otlp"
-    - name: "OTEL_LOGS_EXPORTER"
-      value: "none"
     - name: "OTEL_RESOURCE_ATTRIBUTES"
-      value: "service.name=samordning-hendelse-api,deployment.environment=p"
-    - name: "OTEL_TRACES_EXPORTER"
-      value: "otlp"
+      value: "deployment.environment.name=p"
   kafka:
     pool: nav-prod
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+      destinations:
+        - id: grafana-lgtm
+        - id: elastic-apm
