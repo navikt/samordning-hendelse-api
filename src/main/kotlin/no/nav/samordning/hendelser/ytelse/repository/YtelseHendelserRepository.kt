@@ -1,6 +1,7 @@
 package no.nav.samordning.hendelser.ytelse.repository
 
-import no.nav.samordning.hendelser.ytelse.IndexedYtelseHendelse
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
@@ -14,13 +15,9 @@ interface YtelseHendelserRepository: JpaRepository<YtelseHendelse, Long> {
     )
     fun countAllByTpnr(tpnr: String): Long
 
-    @Query(
-        value = """
-        SELECT ROW_NUMBER() OVER(PARTITION BY TPNR = :tpnr ORDER BY ID) as index, * as ytelseHendelse FROM YTELSE_HENDELSER
-            WHERE TPNR = :tpnr
-            OFFSET :offset
-            LIMIT :limit
-    """, nativeQuery = true
-    )
-    fun findAllByTpnr(tpnr: String, offset: Int, limit: Int): List<IndexedYtelseHendelse>
+    fun findByTpnrAndSekvensnummerBetween(tpnr: String, offset: Long, limit: Long): List<YtelseHendelse>
+
+
+    fun getFirstByTpnrOrderBySekvensnummerDesc(tpnr: String): YtelseHendelse?
+
 }

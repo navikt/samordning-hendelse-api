@@ -43,3 +43,4 @@ oauth2:
     jwkSetUri: http://localhost
 
 VEDTAK_HENDELSE_KAFKA_TOPIC: test-topic
+YTELSE_HENDELSE_KAFKA_TOPIC: test-ytelse-topic

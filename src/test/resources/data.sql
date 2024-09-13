@@ -8,3 +8,6 @@ INSERT INTO HENDELSER(TPNR, HENDELSE_DATA) VALUES
    ('5000', '{"identifikator": "01018000000", "ytelsesType": "NOT_IN_FILTER", "vedtakId": "6", "fom": "2024-01-01", "tom": "2034-01-01"}'),
    ('6000', '{"identifikator": "01019000000", "ytelsesType": "OMS", "vedtakId": "7", "fom": "2024-01-01", "tom": null}');
 
+INSERT INTO YTELSE_HENDELSER(TPNR, SEKVENSNUMMER, FNR, HENDELSE_TYPE, YTELSE_TYPE, DATO_BRUK_FOM, DATO_INNM_YTEL_FOM, DATO_BRUK_TOM) VALUES
+    ('1000', '1', '01016600000', 'OPPRETT', 'LIVSVARIG_AFP', '2020-01-01 12:12:12', null, null);
+

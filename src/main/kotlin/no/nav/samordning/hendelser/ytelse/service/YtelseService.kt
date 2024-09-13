@@ -1,10 +1,10 @@
 package no.nav.samordning.hendelser.ytelse.service
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.samordning.hendelser.hendelse.Hendelse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
 import org.slf4j.LoggerFactory.getLogger
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import kotlin.math.ceil
 
@@ -14,7 +14,7 @@ class YtelseService(
 ) {
 
     private val log = getLogger(javaClass)
-    val totalHendelser: Long
+    val totalHendelsertpYtelser: Long
         get() = ytelseHendelserRepository.count()
 
     fun getNumberOfPages(tpnr: String, sekvensnummer: Int, antall: Int) = try {
@@ -32,12 +32,14 @@ class YtelseService(
     }
 
 
-    fun fetchSeqAndHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Int) =
-        ytelseHendelserRepository.findAllByTpnr(
-            tpnr,
-            sekvensnummer.coerceAtLeast(1) + (side * antall) - 1,
-            antall
-        ).associate { it.index to it.ytelseHendelse }
-
-
+    fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Int): List<YtelseHendelse> {
+        val offset = sekvensnummer.coerceAtLeast(1) + (side * antall) - 1L
+        return ytelseHendelserRepository.findByTpnrAndSekvensnummerBetween(
+            tpnr, 
+            offset,
+            offset + antall
+        )
+    }
+    
+    fun fetchAllYtelser(): MutableList<YtelseHendelse> = ytelseHendelserRepository.findAll()
 }

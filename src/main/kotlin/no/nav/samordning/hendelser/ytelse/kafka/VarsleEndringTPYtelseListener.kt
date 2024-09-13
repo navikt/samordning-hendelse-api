@@ -37,7 +37,7 @@ class VarsleEndringTPYtelseListener(
         }
 
         try {
-            val id = ytelseHendelserRepository.saveAndFlush(ytelseHendelse).id
+            saveAndFlush(ytelseHendelse)
 
             logger.info("Lagrer med hendelseType: ${ytelseHendelse.hendelseType}, tpnr: ${ytelseHendelse.tpnr}, ytelseTypeCode: ${ytelseHendelse.ytelseType}")
             acknowledgment.acknowledge()
@@ -48,6 +48,14 @@ class VarsleEndringTPYtelseListener(
             Thread.sleep(3000L) //sleep 3sek..
             throw e
         }
+    }
+
+    private fun saveAndFlush(ytelseHendelse: YtelseHendelse) {
+        val sekvensnummer = ytelseHendelserRepository
+            .getFirstByTpnrOrderBySekvensnummerDesc(ytelseHendelse.tpnr)
+            ?.sekvensnummer ?: 0
+        ytelseHendelse.sekvensnummer = sekvensnummer + 1
+        ytelseHendelserRepository.saveAndFlush(ytelseHendelse)
     }
 
 }

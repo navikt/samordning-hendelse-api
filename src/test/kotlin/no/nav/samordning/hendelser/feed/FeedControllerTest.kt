@@ -23,13 +23,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
-internal class YtelseControllerTest {
+internal class FeedControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @ParameterizedTest(name = "Valid requests returns ok with content")
-    @ValueSource(strings = [GOOD_URL, URL_WITH_YTELSE])
+    @ValueSource(strings = [URL_VEDTAK, URL_VEDTAK_YTELSE, URL_TP_YTELSER])
     @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun `valid requests returns ok with content`(url: String) {
         mockMvc.perform(get(url))
@@ -38,7 +38,7 @@ internal class YtelseControllerTest {
     }
 
     @ParameterizedTest(name = "Service should not accept too large requests")
-    @ValueSource(strings = [GOOD_URL, URL_WITH_YTELSE])
+    @ValueSource(strings = [URL_VEDTAK, URL_VEDTAK_YTELSE])
     @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun `service shouldnt accept too large requests`(url: String) {
         mockMvc.perform(
@@ -49,7 +49,7 @@ internal class YtelseControllerTest {
     }
 
     @ParameterizedTest(name = "Should return message from service with first record")
-    @CsvSource("$GOOD_URL, 01016600000", "$URL_WITH_YTELSE, 01019000000")
+    @CsvSource("$URL_VEDTAK, 01016600000", "$URL_VEDTAK_YTELSE, 01019000000")
     @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun `should return message from service with first record`(url: String, expected: String) {
         mockMvc.perform(get("$url&antall=1"))
@@ -58,7 +58,7 @@ internal class YtelseControllerTest {
     }
 
     @ParameterizedTest(name = "Should return message from service with size check")
-    @CsvSource("/hendelser?tpnr=4000&side=0&antall=5, 3", "$URL_WITH_YTELSE&antall=5, 1")
+    @CsvSource("/hendelser?tpnr=4000&side=0&antall=5, 3", "$URL_VEDTAK_YTELSE&antall=5, 1")
     @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun `should return message from service with size check`(url: String, expected: String) {
         mockMvc.perform(get(url))
@@ -75,34 +75,35 @@ internal class YtelseControllerTest {
     @Test
     @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun delete_method_is_not_allowed() {
-        mockMvc.perform(delete(GOOD_URL))
+        mockMvc.perform(delete(URL_VEDTAK))
             .andExpect(status().isMethodNotAllowed)
     }
 
     @Test
     @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun patch_method_is_not_allowed() {
-        mockMvc.perform(patch(GOOD_URL))
+        mockMvc.perform(patch(URL_VEDTAK))
             .andExpect(status().isMethodNotAllowed)
     }
 
     @Test
     @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun post_method_is_not_allowed() {
-        mockMvc.perform(post(GOOD_URL))
+        mockMvc.perform(post(URL_VEDTAK))
             .andExpect(status().isMethodNotAllowed)
     }
 
     @Test
     @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun put_method_is_not_allowed() {
-        mockMvc.perform(put(GOOD_URL))
+        mockMvc.perform(put(URL_VEDTAK))
             .andExpect(status().isMethodNotAllowed)
     }
 
     companion object {
 
-        private const val GOOD_URL = "/hendelser?tpnr=1000"
-        private const val URL_WITH_YTELSE = "/hendelser/ytelse?tpnr=6000&ytelse=OMS"
+        private const val URL_VEDTAK = "/hendelser?tpnr=1000"
+        private const val URL_VEDTAK_YTELSE = "/hendelser/vedtak/ytelse?tpnr=6000&ytelse=OMS"
+        private const val URL_TP_YTELSER = "/hendelser/tp/ytelser?tpnr=1000"
     }
 }

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.PositiveOrZero
 import no.nav.samordning.hendelser.database.HendelseService
+import no.nav.samordning.hendelser.hendelse.Hendelse
 import no.nav.samordning.hendelser.hendelse.YtelseType
 import no.nav.samordning.hendelser.metrics.AppMetrics
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,13 +32,13 @@ class FeedController {
 
     @Timed
     @Valid
-    @GetMapping(path = ["/hendelser"])
+    @GetMapping(path = ["/hendelser", "/hendelser/vedtak"])
     fun hendelser(
         @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
         @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,
         @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Int,
         @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Int
-    ): Feed {
+    ): Feed<Hendelse> {
         val hendelseMap = hendelseService.fetchSeqAndHendelser(tpnr, sekvensnummer, side, antall)
         val latestReadSNR = hendelseMap.keys.lastOrNull() ?: 1
 
@@ -53,14 +54,14 @@ class FeedController {
 
     @Timed
     @Valid
-    @GetMapping(path = ["/hendelser/ytelse"])
+    @GetMapping(path = ["/hendelser/vedtak/ytelse"])
     fun hendelser(
         @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
         @RequestParam(value = "ytelse", required = false, defaultValue = "") ytelse: Set<YtelseType>,
         @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,
         @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Int,
         @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Int
-    ): Feed {
+    ): Feed<Hendelse> {
         val hendelseMap = hendelseService.fetchSeqAndHendelserPerYtelse(tpnr, ytelse, sekvensnummer, side, antall)
         val latestReadSNR = hendelseMap.keys.lastOrNull() ?: 1
 

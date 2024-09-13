@@ -1,6 +1,7 @@
 package no.nav.samordning.hendelser.database
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -13,5 +14,7 @@ class DatabaseConfig(
 ) {
 
     @Bean
-    fun objectMapper(): ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() )
+    fun objectMapper(): ObjectMapper = ObjectMapper()
+        .registerModule(KotlinModule.Builder().build())
+        .registerModule(JavaTimeModule())
 }
