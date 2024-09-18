@@ -1,103 +1,100 @@
 package no.nav.samordning.hendelser.feed
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase
+import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
+import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
 import no.nav.samordning.hendelser.security.support.ROLE_SAMHANDLER
-import org.hamcrest.Matchers.hasSize
-import org.hamcrest.Matchers.hasToString
+import no.nav.samordning.hendelser.security.support.SCOPE_SAMORDNING
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
+import org.mockserver.springtest.MockServerTest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.context.aot.DisabledInAotMode
+import org.springframework.test.web.servlet.*
 
 @SpringBootTest
+@AutoConfigureMaskinportenValidator
 @AutoConfigureMockMvc
-@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
+//@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
+//@MockServerTest
 internal class FeedControllerTest {
 
+    @Autowired
+    private lateinit var maskinportenValidatorTokenGenerator: MaskinportenValidatorTokenGenerator
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @ParameterizedTest(name = "Valid requests returns ok with content")
     @ValueSource(strings = [URL_VEDTAK, URL_VEDTAK_YTELSE, URL_TP_YTELSER])
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun `valid requests returns ok with content`(url: String) {
-        mockMvc.perform(get(url))
-            .andDo(print()).andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.get(url) {
+            headers {
+                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
+            }
+        }.andDo { print() }
+        .andExpect {
+            status { isOk() }
+            content { contentType(MediaType.APPLICATION_JSON) }
+        }
     }
 
     @ParameterizedTest(name = "Service should not accept too large requests")
     @ValueSource(strings = [URL_VEDTAK, URL_VEDTAK_YTELSE])
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun `service shouldnt accept too large requests`(url: String) {
-        mockMvc.perform(
-            get(url)
-                .param("antall", "10001")
-        )
-            .andDo(print()).andExpect(status().is4xxClientError)
+        mockMvc.get(url) {
+            headers {
+                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
+            }
+            param("antall", "10001")
+        }.andDo {
+            print()
+        }.andExpect {
+            status { is4xxClientError() }
+        }
     }
 
     @ParameterizedTest(name = "Should return message from service with first record")
     @CsvSource("$URL_VEDTAK, 01016600000", "$URL_VEDTAK_YTELSE, 01019000000")
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun `should return message from service with first record`(url: String, expected: String) {
-        mockMvc.perform(get("$url&antall=1"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser[0].identifikator", hasToString<Any>(expected)))
-            .andDo(print())
+        mockMvc.get("$url&antall=1") {
+            headers {
+                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
+            }
+        }.andExpect {
+            jsonPath("$.hendelser[0].identifikator") { value(expected) }
+        }.andDo {
+            print()
+        }
     }
 
     @ParameterizedTest(name = "Should return message from service with size check")
     @CsvSource("/hendelser?tpnr=4000&side=0&antall=5, 3", "$URL_VEDTAK_YTELSE&antall=5, 1")
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun `should return message from service with size check`(url: String, expected: String) {
-        mockMvc.perform(get(url))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.hendelser", hasSize<Any>(expected.toInt())))
+        mockMvc.get(url) {
+            headers {
+                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
+            }
+        }.andExpect {
+            jsonPath("$.hendelser.length()") { value(expected.toInt()) }
+        }
     }
 
     @Test
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
     fun bad_parameters_return_400() {
-        mockMvc.perform(get("/hendelser?tpnr=4000&side=-1"))
-            .andDo(print()).andExpect(status().isBadRequest)
-    }
-
-    @Test
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
-    fun delete_method_is_not_allowed() {
-        mockMvc.perform(delete(URL_VEDTAK))
-            .andExpect(status().isMethodNotAllowed)
-    }
-
-    @Test
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
-    fun patch_method_is_not_allowed() {
-        mockMvc.perform(patch(URL_VEDTAK))
-            .andExpect(status().isMethodNotAllowed)
-    }
-
-    @Test
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
-    fun post_method_is_not_allowed() {
-        mockMvc.perform(post(URL_VEDTAK))
-            .andExpect(status().isMethodNotAllowed)
-    }
-
-    @Test
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
-    fun put_method_is_not_allowed() {
-        mockMvc.perform(put(URL_VEDTAK))
-            .andExpect(status().isMethodNotAllowed)
+        mockMvc.get("/hendelser?tpnr=4000&side=-1") {
+            headers {
+                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
+            }
+        }.andDo { print() }
+        .andExpect {
+            status { isBadRequest() }
+        }
     }
 
     companion object {

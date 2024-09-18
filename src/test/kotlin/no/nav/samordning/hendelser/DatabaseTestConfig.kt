@@ -1,13 +1,13 @@
 package no.nav.samordning.hendelser
 
-import org.mockserver.client.server.MockServerClient
+import org.mockserver.client.MockServerClient
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.testcontainers.containers.MockServerContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.utility.DockerImageName
 import org.testcontainers.utility.MountableFile
 import java.security.NoSuchAlgorithmException
 
@@ -32,7 +32,7 @@ class DatabaseTestConfig {
 //        }
 //    }
 
-    private class KPostgreSQLContainer : PostgreSQLContainer<KPostgreSQLContainer>()
+    private class KPostgreSQLContainer : PostgreSQLContainer<KPostgreSQLContainer>("postgres:12")
 
     private fun initPostgresContainer() {
         postgres = KPostgreSQLContainer()
@@ -50,10 +50,10 @@ class DatabaseTestConfig {
 
     @Throws(NoSuchAlgorithmException::class)
     private fun initMockServerContainer() {
-        mockServer = MockServerContainer()
+        mockServer = MockServerContainer(mockServerImage)
         mockServer.start()
 
-        val mockClient = MockServerClient(mockServer.containerIpAddress, mockServer.serverPort!!)
+        val mockClient = MockServerClient(mockServer.host, mockServer.serverPort!!)
 
         mockClient.`when`(HttpRequest.request()
                 .withMethod("GET")
@@ -115,5 +115,6 @@ class DatabaseTestConfig {
         private lateinit var mockServer: MockServerContainer
         private val uninitialized: Boolean
             get() = !::postgres.isInitialized && !::mockServer.isInitialized
+        private val mockServerImage = DockerImageName.parse("mockserver/mockserver").withTag("mockserver-mockserver" + MockServerClient::class.java.`package`.implementationVersion )
     }
 }

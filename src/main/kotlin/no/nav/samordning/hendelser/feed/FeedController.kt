@@ -6,10 +6,12 @@ import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.PositiveOrZero
+import no.nav.pensjonsamhandling.maskinporten.validation.annotation.Maskinporten
 import no.nav.samordning.hendelser.database.HendelseService
 import no.nav.samordning.hendelser.hendelse.Hendelse
 import no.nav.samordning.hendelser.hendelse.YtelseType
 import no.nav.samordning.hendelser.metrics.AppMetrics
+import no.nav.samordning.hendelser.security.TpConfigOrgNoValidator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.validation.annotation.Validated
@@ -33,6 +35,7 @@ class FeedController {
     @Timed
     @Valid
     @GetMapping(path = ["/hendelser", "/hendelser/vedtak"])
+    @Maskinporten("nav:pensjon/v1/samordning", TpConfigOrgNoValidator::class)
     fun hendelser(
         @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
         @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,

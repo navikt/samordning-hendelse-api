@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.ytelse.service
 
+import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
 import org.slf4j.LoggerFactory.getLogger
@@ -32,13 +33,22 @@ class YtelseService(
     }
 
 
-    fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Int): List<YtelseHendelse> {
+    fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Int): List<YtelseHendelseDTO> {
         val offset = sekvensnummer.coerceAtLeast(1) + (side * antall) - 1L
         return ytelseHendelserRepository.findByTpnrAndSekvensnummerBetween(
             tpnr, 
             offset,
             offset + antall
-        )
+        ).map { entity -> YtelseHendelseDTO(
+            entity.sekvensnummer,
+            entity.tpnr,
+            entity.fnr,
+            entity.hendelseType,
+            entity.ytelseType,
+            entity.datoBrukFom,
+            entity.datoBrukTom,
+            entity.datoInnmeldtYtelseFom)
+        }.toList()
     }
     
     fun fetchAllYtelser(): MutableList<YtelseHendelse> = ytelseHendelserRepository.findAll()

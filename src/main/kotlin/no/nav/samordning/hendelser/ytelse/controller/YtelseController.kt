@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.ytelse.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.micrometer.core.annotation.Timed
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Digits
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.PositiveOrZero
 import no.nav.samordning.hendelser.feed.Feed
 import no.nav.samordning.hendelser.metrics.AppMetrics
+import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.service.YtelseService
 import org.slf4j.LoggerFactory
@@ -25,6 +27,9 @@ class YtelseController(
 ) {
 
     @Autowired
+    private lateinit var objectMapper: ObjectMapper
+
+    @Autowired
     private lateinit var metrics: AppMetrics
 
     @Value("\${NEXT_BASE_URL}")
@@ -40,8 +45,9 @@ class YtelseController(
         @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,
         @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Int,
         @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Int
-    ): Feed<YtelseHendelse> {
+    ): Feed<YtelseHendelseDTO> {
         val ytelseHendelser = service.fetchSeqAndYtelseHendelser(tpnr, sekvensnummer, side, antall)
+        log.debug(objectMapper.writeValueAsString(ytelseHendelser))
         val latestReadSNR = ytelseHendelser.maxOfOrNull { it.sekvensnummer } ?: 1
         log.debug("tpnr = $tpnr, ytelseHendelser.size = ${ytelseHendelser.size}")
         metrics.incHendelserTpYtelserLest(tpnr, ytelseHendelser.size.toDouble())

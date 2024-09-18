@@ -16,5 +16,5 @@ class DatabaseConfig(
     @Bean
     fun objectMapper(): ObjectMapper = ObjectMapper()
         .registerModule(KotlinModule.Builder().build())
-        .registerModule(JavaTimeModule())
+        .registerModule(JavaTimeModule() as com.fasterxml.jackson.databind.Module)
 }
