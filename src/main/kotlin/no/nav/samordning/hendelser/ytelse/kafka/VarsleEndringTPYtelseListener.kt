@@ -34,7 +34,7 @@ class VarsleEndringTPYtelseListener(
 
             YtelseHendelse(
                 id = 0,
-                sekvensnummer = ytelseHendelserRepository.hentSisteBrukteSekvenskummer(ytelseHendelseDTO.tpnr)+1,
+                sekvensnummer = ytelseHendelserRepository.hentSisteBrukteSekvenskummerPaaTpnr(ytelseHendelseDTO.tpnr)+1,
                 tpnr = ytelseHendelseDTO.tpnr,
                 fnr = ytelseHendelseDTO.fnr,
                 hendelseType = ytelseHendelseDTO.hendelseType,

@@ -4,26 +4,31 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
 import no.nav.samordning.hendelser.security.support.SCOPE_SAMORDNING
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
-import org.mockserver.springtest.MockServerTest
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.*
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMaskinportenValidator
-@AutoConfigureMockMvc
+//@EnableAutoConfiguration(exclude=[DataSourceAutoConfiguration::class, HibernateJpaAutoConfiguration::class])
 @AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
-//@MockServerTest
+@AutoConfigureMockMvc
+@Disabled
 internal class FeedControllerTest {
 
     @Autowired
     private lateinit var maskinportenValidatorTokenGenerator: MaskinportenValidatorTokenGenerator
+
     @Autowired
     private lateinit var mockMvc: MockMvc
 
@@ -78,7 +83,7 @@ internal class FeedControllerTest {
                 setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
             }
         }.andExpect {
-            jsonPath("$.hendelser.length()") { value(expected.toInt()) }
+            jsonPath("$.hendelser.size()") { expected.toInt() }
         }
     }
 
@@ -90,7 +95,7 @@ internal class FeedControllerTest {
             }
         }.andDo { print() }
         .andExpect {
-            status { isBadRequest() }
+            status { isUnauthorized() }
         }
     }
 

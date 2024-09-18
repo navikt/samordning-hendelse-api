@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 group = "no.nav.samordning"
 version = "1"
 description = "samordning-hendelse-api"
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 val logstashEncoderVersion = "8.0"
 val springkafkaVersion= "3.2.3"
@@ -30,14 +31,6 @@ repositories {
     }
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_21
-
-/*dependencyManagement{
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2022.0.3")
-    }
-}*/
-
 dependencies {
     implementation(kotlin("reflect"))
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.17.2")
@@ -62,7 +55,6 @@ dependencies {
 
     testImplementation("org.springframework.kafka:spring-kafka-test:$springkafkaVersion")
     testImplementation(kotlin("test-junit5"))
-    //testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("org.springframework.boot", "spring-boot-starter-test")
     testImplementation("io.zonky.test", "embedded-database-spring-test", "2.5.1")
     testImplementation("io.zonky.test", "embedded-postgres", "2.0.7")

@@ -23,6 +23,6 @@ interface YtelseHendelserRepository: JpaRepository<YtelseHendelse, Long> {
                 "LIMIT 1",
         nativeQuery = true
     )
-    fun hentSisteBrukteSekvenskummer(tpnr: String): Long
+    fun hentSisteBrukteSekvenskummerPaaTpnr(tpnr: String): Long
 
 }
