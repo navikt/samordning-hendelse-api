@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
@@ -28,7 +27,7 @@ internal class PaginationTests {
     private lateinit var mockMvc: MockMvc
 
     @Test
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
+    //@WithMockUser(roles = [ROLE_SAMHANDLER])
     fun iterate_feed_with_next_page_url() {
         val nextUrl = JSONObject(
                 mockMvc.perform(get("/hendelser?tpnr=4000&antall=2"))
@@ -42,7 +41,7 @@ internal class PaginationTests {
     }
 
     @Test
-    @WithMockUser(roles = [ROLE_SAMHANDLER])
+    //@WithMockUser(roles = [ROLE_SAMHANDLER])
     fun iterate_feed_with_next_url_from_sekvensnummer() {
         val nextUrl = JSONObject(
                 mockMvc.perform(get("/hendelser?tpnr=4000&sekvensnummer=2&antall=1"))

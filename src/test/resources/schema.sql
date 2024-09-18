@@ -8,12 +8,11 @@ CREATE TABLE IF NOT EXISTS HENDELSER
 CREATE TABLE IF NOT EXISTS YTELSE_HENDELSER
 (
     ID                  SERIAL PRIMARY KEY,
+    SEKVENSNUMMER       BIGINT,
     TPNR                VARCHAR(20) not null,
     FNR                 VARCHAR(20) not null,
     HENDELSE_TYPE       VARCHAR(20) not null,
     YTELSE_TYPE         VARCHAR(20) not null,
     DATO_BRUK_FOM       TIMESTAMP   not null,
-    DATO_INNM_YTEL_FOM  DATE,
     DATO_BRUK_TOM       TIMESTAMP
-
 );

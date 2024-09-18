@@ -1,7 +1,5 @@
 package no.nav.samordning.hendelser.ytelse.repository
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
@@ -17,7 +15,14 @@ interface YtelseHendelserRepository: JpaRepository<YtelseHendelse, Long> {
 
     fun findByTpnrAndSekvensnummerBetween(tpnr: String, offset: Long, limit: Long): List<YtelseHendelse>
 
+    //    fun getFirstByTpnrOrderBySekvensnummerDesc(tpnr: String): YtelseHendelse?
 
-    fun getFirstByTpnrOrderBySekvensnummerDesc(tpnr: String): YtelseHendelse?
+    @Query(
+        value = "SELECT SEKVENSNUMMER FROM YTELSE_HENDELSER WHERE TPNR = :tpnr " +
+                "ORDER BY SEKVENSNUMMER DESC " +
+                "LIMIT 1",
+        nativeQuery = true
+    )
+    fun hentSisteBrukteSekvenskummer(tpnr: String): Long
 
 }

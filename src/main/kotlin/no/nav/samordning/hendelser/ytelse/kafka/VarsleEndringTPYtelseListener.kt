@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -29,7 +30,19 @@ class VarsleEndringTPYtelseListener(
 
         val ytelseHendelse: YtelseHendelse = try {
             logger.debug("hendelse json: $hendelse")
-            mapper.readValue<YtelseHendelse>(hendelse)
+            val ytelseHendelseDTO = mapper.readValue<YtelseHendelseDTO>(hendelse)
+
+            YtelseHendelse(
+                id = 0,
+                sekvensnummer = ytelseHendelserRepository.hentSisteBrukteSekvenskummer(ytelseHendelseDTO.tpnr)+1,
+                tpnr = ytelseHendelseDTO.tpnr,
+                fnr = ytelseHendelseDTO.fnr,
+                hendelseType = ytelseHendelseDTO.hendelseType,
+                ytelseType = ytelseHendelseDTO.ytelseType,
+                datoBrukFom = ytelseHendelseDTO.datoFom,
+                datoBrukTom = ytelseHendelseDTO.datoTom
+            )
+
         } catch (e: Exception) {
             acknowledgment.acknowledge()
             logger.error("Feilet ved deserializering, Acket, melding må sendes på nytt, melding: ${e.message}", e)
@@ -37,9 +50,9 @@ class VarsleEndringTPYtelseListener(
         }
 
         try {
-            saveAndFlush(ytelseHendelse)
+            val entity = ytelseHendelserRepository.saveAndFlush(ytelseHendelse)
 
-            logger.info("Lagrer med hendelseType: ${ytelseHendelse.hendelseType}, tpnr: ${ytelseHendelse.tpnr}, ytelseTypeCode: ${ytelseHendelse.ytelseType}")
+            logger.info("Lagrer med hendelseType: ${entity.hendelseType}, tpnr: ${entity.tpnr}, sekvensummer: ${entity.sekvensnummer}, ytelseTypeCode: ${entity.ytelseType}")
             acknowledgment.acknowledge()
             logger.info("*** Acket melding ferdig")
 
@@ -50,12 +63,12 @@ class VarsleEndringTPYtelseListener(
         }
     }
 
-    private fun saveAndFlush(ytelseHendelse: YtelseHendelse) {
-        val sekvensnummer = ytelseHendelserRepository
-            .getFirstByTpnrOrderBySekvensnummerDesc(ytelseHendelse.tpnr)
-            ?.sekvensnummer ?: 0
-        ytelseHendelse.sekvensnummer = sekvensnummer + 1
-        ytelseHendelserRepository.saveAndFlush(ytelseHendelse)
-    }
+//    private fun saveAndFlush(ytelseHendelse: YtelseHendelse) {
+//        val sekvensnummer = ytelseHendelserRepository
+//            .getFirstByTpnrOrderBySekvensnummerDesc(ytelseHendelse.tpnr)
+//            ?.sekvensnummer ?: 0
+//        ytelseHendelse.sekvensnummer = sekvensnummer + 1
+//        ytelseHendelserRepository.saveAndFlush(ytelseHendelse)
+//    }
 
 }

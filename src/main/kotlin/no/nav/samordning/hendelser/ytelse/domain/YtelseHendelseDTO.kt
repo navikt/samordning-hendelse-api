@@ -16,16 +16,12 @@ class YtelseHendelseDTO(
     val fnr: String,
     val hendelseType: HendelseTypeCode,
     val ytelseType: YtelseTypeCode,
-    @JsonFormat(pattern="yyyy-MM-ddTHH:mm:ss", timezone = "Europe/Oslo")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Oslo")
     @JsonSerialize(using = LocalDateTimeSerializer::class)
     @JsonDeserialize(using = LocalDateTimeDeserializer::class)
     val datoFom: LocalDateTime,
-    @JsonFormat(pattern="yyyy-MM-ddTHH:mm:ss", timezone = "Europe/Oslo")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Oslo")
     @JsonSerialize(using = LocalDateTimeSerializer::class)
     @JsonDeserialize(using = LocalDateTimeDeserializer::class)
-    val datoTom: LocalDateTime?,
-    @JsonFormat(pattern="yyyy-MM-dd", timezone = "Europe/Oslo")
-    @JsonSerialize(using = LocalDateSerializer::class)
-    @JsonDeserialize(using = LocalDateDeserializer::class)
-    val datoFomMedlemskap: LocalDate?,
+    val datoTom: LocalDateTime?
 )

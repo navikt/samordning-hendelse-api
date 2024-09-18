@@ -46,10 +46,8 @@ class YtelseService(
             entity.hendelseType,
             entity.ytelseType,
             entity.datoBrukFom,
-            entity.datoBrukTom,
-            entity.datoInnmeldtYtelseFom)
+            entity.datoBrukTom)
         }.toList()
     }
     
-    fun fetchAllYtelser(): MutableList<YtelseHendelse> = ytelseHendelserRepository.findAll()
 }
