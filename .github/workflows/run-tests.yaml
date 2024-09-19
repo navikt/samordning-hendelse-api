@@ -25,4 +25,6 @@ jobs:
 
       # Build
       - name: Build & Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew clean build --stacktrace
