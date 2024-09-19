@@ -15,14 +15,16 @@ interface YtelseHendelserRepository: JpaRepository<YtelseHendelse, Long> {
 
     fun findByTpnrAndSekvensnummerBetween(tpnr: String, offset: Long, limit: Long): List<YtelseHendelse>
 
-    //    fun getFirstByTpnrOrderBySekvensnummerDesc(tpnr: String): YtelseHendelse?
+    fun getFirstByTpnrOrderBySekvensnummerDesc(tpnr: String): YtelseHendelse?
 
-    @Query(
-        value = "SELECT SEKVENSNUMMER FROM YTELSE_HENDELSER WHERE TPNR = :tpnr " +
-                "ORDER BY SEKVENSNUMMER DESC " +
-                "LIMIT 1",
-        nativeQuery = true
-    )
-    fun hentSisteBrukteSekvenskummerPaaTpnr(tpnr: String): Long
+    @Override
+    fun saveAndFlush(ytelseHendelse: YtelseHendelse) : YtelseHendelse {
+        val sekvensnummer = getFirstByTpnrOrderBySekvensnummerDesc(ytelseHendelse.tpnr)
+            ?.sekvensnummer ?: 0
+        ytelseHendelse.sekvensnummer = sekvensnummer + 1
+        val result = this.save(ytelseHendelse)
+        this.flush()
+        return result
+    }
 
 }

@@ -7,10 +7,11 @@ import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.PositiveOrZero
+import no.nav.pensjonsamhandling.maskinporten.validation.annotation.Maskinporten
 import no.nav.samordning.hendelser.feed.Feed
 import no.nav.samordning.hendelser.metrics.AppMetrics
+import no.nav.samordning.hendelser.security.TpConfigOrgNoValidator
 import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
-import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.service.YtelseService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,6 +41,7 @@ class YtelseController(
     @Timed
     @Valid
     @GetMapping(path = ["/hendelser/tp/ytelser"])
+    @Maskinporten("nav:pensjon/v1/samordning", TpConfigOrgNoValidator::class)
     fun hendelserTpYtelser(
         @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
         @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,

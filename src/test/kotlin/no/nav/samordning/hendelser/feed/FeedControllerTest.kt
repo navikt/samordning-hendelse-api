@@ -4,15 +4,11 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
 import no.nav.samordning.hendelser.security.support.SCOPE_SAMORDNING
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
@@ -20,10 +16,8 @@ import org.springframework.test.web.servlet.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMaskinportenValidator
-//@EnableAutoConfiguration(exclude=[DataSourceAutoConfiguration::class, HibernateJpaAutoConfiguration::class])
 @AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
 @AutoConfigureMockMvc
-@Disabled
 internal class FeedControllerTest {
 
     @Autowired
@@ -37,7 +31,7 @@ internal class FeedControllerTest {
     fun `valid requests returns ok with content`(url: String) {
         mockMvc.get(url) {
             headers {
-                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
+                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
             }
         }.andDo { print() }
         .andExpect {
@@ -51,7 +45,7 @@ internal class FeedControllerTest {
     fun `service shouldnt accept too large requests`(url: String) {
         mockMvc.get(url) {
             headers {
-                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
+                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
             }
             param("antall", "10001")
         }.andDo {
@@ -66,7 +60,7 @@ internal class FeedControllerTest {
     fun `should return message from service with first record`(url: String, expected: String) {
         mockMvc.get("$url&antall=1") {
             headers {
-                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
+                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
             }
         }.andExpect {
             jsonPath("$.hendelser[0].identifikator") { value(expected) }
@@ -80,7 +74,7 @@ internal class FeedControllerTest {
     fun `should return message from service with size check`(url: String, expected: String) {
         mockMvc.get(url) {
             headers {
-                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
+                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
             }
         }.andExpect {
             jsonPath("$.hendelser.size()") { expected.toInt() }
@@ -91,11 +85,11 @@ internal class FeedControllerTest {
     fun bad_parameters_return_400() {
         mockMvc.get("/hendelser?tpnr=4000&side=-1") {
             headers {
-                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").parsedString)
+                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
             }
         }.andDo { print() }
         .andExpect {
-            status { isUnauthorized() }
+            status { isBadRequest() }
         }
     }
 

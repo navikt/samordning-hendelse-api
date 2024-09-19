@@ -32,6 +32,9 @@ tpconfig.url: https://tp-q1.dev.intern.nav.no/api/tpconfig
 NEXT_BASE_URL: http://localhost
 DESIRED_YTELSESTYPER: AP,AAP,PT,GP,IP,ET
 
+maskinporten.validation:
+  permit-all: 889640782
+
 #
 #oauth2:
 #  acceptAll: 889640782

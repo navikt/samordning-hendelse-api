@@ -38,7 +38,7 @@ dependencies {
     implementation("io.micrometer", "micrometer-core", "1.13.4")
     implementation("io.micrometer", "micrometer-registry-prometheus", "1.13.4")
     implementation("no.nav", "vault-jdbc" ,"1.3.10")
-    implementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring", "2.0.0")
+    implementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring", "2.0.3")
     implementation("net.logstash.logback", "logstash-logback-encoder", logstashEncoderVersion)
     implementation("org.postgresql", "postgresql", "42.6.0")
     implementation("org.hibernate.validator", "hibernate-validator", "8.0.1.Final")
@@ -62,7 +62,7 @@ dependencies {
     testImplementation("com.ninja-squad", "springmockk", "3.1.0")
     testImplementation("org.mock-server", "mockserver-spring-test-listener-no-dependencies", "5.15.0")
     //testImplementation("org.junit.platform:junit-platform-suite-api:$junitplatformVersion")
-    testImplementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring-test", "2.0.0")
+    testImplementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring-test", "2.0.3")
 
 }
 

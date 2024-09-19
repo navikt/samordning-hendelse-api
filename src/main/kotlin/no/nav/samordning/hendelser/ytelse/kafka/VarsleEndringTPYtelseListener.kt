@@ -34,7 +34,6 @@ class VarsleEndringTPYtelseListener(
 
             YtelseHendelse(
                 id = 0,
-                sekvensnummer = ytelseHendelserRepository.hentSisteBrukteSekvenskummerPaaTpnr(ytelseHendelseDTO.tpnr)+1,
                 tpnr = ytelseHendelseDTO.tpnr,
                 fnr = ytelseHendelseDTO.fnr,
                 hendelseType = ytelseHendelseDTO.hendelseType,
@@ -62,13 +61,5 @@ class VarsleEndringTPYtelseListener(
             throw e
         }
     }
-
-//    private fun saveAndFlush(ytelseHendelse: YtelseHendelse) {
-//        val sekvensnummer = ytelseHendelserRepository
-//            .getFirstByTpnrOrderBySekvensnummerDesc(ytelseHendelse.tpnr)
-//            ?.sekvensnummer ?: 0
-//        ytelseHendelse.sekvensnummer = sekvensnummer + 1
-//        ytelseHendelserRepository.saveAndFlush(ytelseHendelse)
-//    }
 
 }
