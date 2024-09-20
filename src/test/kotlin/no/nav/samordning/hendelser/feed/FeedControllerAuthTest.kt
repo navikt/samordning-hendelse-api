@@ -1,8 +1,11 @@
 package no.nav.samordning.hendelser.feed
 
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
+import no.nav.samordning.hendelser.consumer.TpConfigConsumer
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -25,6 +28,9 @@ internal class FeedControllerAuthTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @MockkBean
+    private lateinit var tpConfigConsumer: TpConfigConsumer
+
     @Test
     fun `Valid request is ok`() {
         mockMvc.get(ENDPOINT) {
@@ -39,6 +45,8 @@ internal class FeedControllerAuthTest {
 
     @Test
     fun `Request failing validation is forbidden`() {
+        every { tpConfigConsumer.validateOrganisation(any(), any()) } returns false
+
         mockMvc.get(ENDPOINT) {
             headers {
                 setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640777").serialize())
