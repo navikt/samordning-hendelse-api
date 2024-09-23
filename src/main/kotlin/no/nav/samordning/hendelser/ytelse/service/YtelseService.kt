@@ -1,11 +1,8 @@
 package no.nav.samordning.hendelser.ytelse.service
 
 import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
-import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
 import org.slf4j.LoggerFactory.getLogger
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import kotlin.math.ceil
 
@@ -42,7 +39,7 @@ class YtelseService(
         ).map { entity -> YtelseHendelseDTO(
             entity.sekvensnummer,
             entity.tpnr,
-            entity.fnr,
+            entity.identifikator,
             entity.hendelseType,
             entity.ytelseType,
             entity.datoBrukFom,

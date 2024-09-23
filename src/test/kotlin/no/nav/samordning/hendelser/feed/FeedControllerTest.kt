@@ -41,7 +41,7 @@ internal class FeedControllerTest {
     }
 
     @ParameterizedTest(name = "Service should not accept too large requests")
-    @ValueSource(strings = [URL_VEDTAK, URL_VEDTAK_YTELSE])
+    @ValueSource(strings = [URL_VEDTAK, URL_VEDTAK_YTELSE, URL_TP_YTELSER])
     fun `service shouldnt accept too large requests`(url: String) {
         mockMvc.get(url) {
             headers {
@@ -56,7 +56,7 @@ internal class FeedControllerTest {
     }
 
     @ParameterizedTest(name = "Should return message from service with first record")
-    @CsvSource("$URL_VEDTAK, 01016600000", "$URL_VEDTAK_YTELSE, 01019000000")
+    @CsvSource("$URL_VEDTAK, 01016600000", "$URL_VEDTAK_YTELSE, 01019000000", "$URL_TP_YTELSER, 14087459887")
     fun `should return message from service with first record`(url: String, expected: String) {
         mockMvc.get("$url&antall=1") {
             headers {
@@ -70,14 +70,14 @@ internal class FeedControllerTest {
     }
 
     @ParameterizedTest(name = "Should return message from service with size check")
-    @CsvSource("/hendelser?tpnr=4000&side=0&antall=5, 3", "$URL_VEDTAK_YTELSE&antall=5, 1")
+    @CsvSource("/hendelser?tpnr=4000&side=0&antall=5, 3", "$URL_TP_YTELSER&antall=5, 2", "$URL_VEDTAK_YTELSE&antall=5, 1")
     fun `should return message from service with size check`(url: String, expected: String) {
         mockMvc.get(url) {
             headers {
                 setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
             }
         }.andExpect {
-            jsonPath("$.hendelser.size()") { expected.toInt() }
+            jsonPath("$.hendelser.size()") { value(expected.toInt()) }
         }
     }
 
@@ -97,6 +97,6 @@ internal class FeedControllerTest {
 
         private const val URL_VEDTAK = "/hendelser?tpnr=1000"
         private const val URL_VEDTAK_YTELSE = "/hendelser/vedtak/ytelse?tpnr=6000&ytelse=OMS"
-        private const val URL_TP_YTELSER = "/hendelser/tp/ytelser?tpnr=1000"
+        private const val URL_TP_YTELSER = "/hendelser/tp/ytelser?tpnr=3010"
     }
 }

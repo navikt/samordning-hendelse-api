@@ -35,7 +35,7 @@ class VarsleEndringTPYtelseListener(
             YtelseHendelse(
                 id = 0,
                 tpnr = ytelseHendelseDTO.tpnr,
-                fnr = ytelseHendelseDTO.fnr,
+                identifikator = ytelseHendelseDTO.identifikator,
                 hendelseType = ytelseHendelseDTO.hendelseType,
                 ytelseType = ytelseHendelseDTO.ytelseType,
                 datoBrukFom = ytelseHendelseDTO.datoFom,
