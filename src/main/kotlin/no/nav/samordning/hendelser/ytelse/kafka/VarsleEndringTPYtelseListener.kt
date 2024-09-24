@@ -10,6 +10,7 @@ import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
+import org.slf4j.MDC
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
@@ -30,6 +31,8 @@ class VarsleEndringTPYtelseListener(
 
         val ytelseHendelse: YtelseHendelse = try {
             logger.debug("hendelse json: $hendelse")
+            MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["uuid"].asText())
+
             val ytelseHendelseDTO = mapper.readValue<YtelseHendelseDTO>(hendelse)
 
             YtelseHendelse(

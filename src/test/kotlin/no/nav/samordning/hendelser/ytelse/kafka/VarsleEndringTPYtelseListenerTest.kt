@@ -20,7 +20,7 @@ class VarsleEndringTPYtelseListenerTest {
     private val ytelseHendelserRepository = mockk<YtelseHendelserRepository>(relaxed = true)
     private val listener = VarsleEndringTPYtelseListener(ytelseHendelserRepository)
 
-    private val hendelseJson = """{"sekvensnummer":1,"tpnr":"3010","fnr":"14087412334","hendelseType":"OPPRETT","ytelseType":"UFORE","datoFom":"2024-01-01 12:12:12","datoTom":null}"""
+    private val hendelseJson = """{"uuid":"41383630-3243-3644-3837-314334384332","sent":false,"sekvensnummer":1,"tpnr":"3010","fnr":"14087412334","hendelseType":"OPPRETT","ytelseType":"UFORE","datoFom":"2024-01-01 12:12:12","datoTom":null}"""
 
     @Test
     fun testingAvConsumer() {
