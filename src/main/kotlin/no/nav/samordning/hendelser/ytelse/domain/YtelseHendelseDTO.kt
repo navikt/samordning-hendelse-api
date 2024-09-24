@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.ytelse.domain
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
@@ -10,6 +11,7 @@ import java.time.LocalDateTime
 class YtelseHendelseDTO(
     val sekvensnummer: Long,
     val tpnr: String,
+    @JsonAlias("fnr")
     val identifikator: String,
     val hendelseType: HendelseTypeCode,
     val ytelseType: YtelseTypeCode,

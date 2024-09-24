@@ -1,8 +1,5 @@
 package no.nav.samordning.hendelser.ytelse.kafka
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -23,6 +20,8 @@ class VarsleEndringTPYtelseListenerTest {
     private val ytelseHendelserRepository = mockk<YtelseHendelserRepository>(relaxed = true)
     private val listener = VarsleEndringTPYtelseListener(ytelseHendelserRepository)
 
+    private val hendelseJson = """{"sekvensnummer":1,"tpnr":"3010","fnr":"14087412334","hendelseType":"OPPRETT","ytelseType":"UFORE","datoFom":"2024-01-01 12:12:12","datoTom":null}"""
+
     @Test
     fun testingAvConsumer() {
         val ytelseHendelseDto = mockYtelseHendelse()
@@ -30,7 +29,7 @@ class VarsleEndringTPYtelseListenerTest {
 
         every { ytelseHendelserRepository.saveAndFlush(any()) } returns ytelseHendelse
 
-        listener.listener(ytelseHendelseDto.toJson(), mockk(relaxed = true), acknowledgment)
+        listener.listener(hendelseJson, mockk(relaxed = true), acknowledgment)
 
         verify(exactly = 1) { acknowledgment.acknowledge() }
         verify(exactly = 1) { ytelseHendelserRepository.saveAndFlush(any()) }
@@ -42,7 +41,7 @@ class VarsleEndringTPYtelseListenerTest {
         every { ytelseHendelserRepository.saveAndFlush(any()) } throws IOException("IO error")
 
         assertThrows<IOException> {
-            listener.listener(mockYtelseHendelse().toJson(), mockk(relaxed = true), acknowledgment)
+            listener.listener(hendelseJson, mockk(relaxed = true), acknowledgment)
         }
 
         verify(exactly = 0) { acknowledgment.acknowledge()  }
@@ -62,5 +61,3 @@ class VarsleEndringTPYtelseListenerTest {
         )
 
 }
-
-fun YtelseHendelseDTO.toJson(): String = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule()).writeValueAsString(this)
