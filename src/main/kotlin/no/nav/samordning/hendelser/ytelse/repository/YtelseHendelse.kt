@@ -5,7 +5,6 @@ import jakarta.persistence.GenerationType.IDENTITY
 import no.nav.samordning.hendelser.ytelse.LocalDateTimeAttributeConverter
 import no.nav.samordning.hendelser.ytelse.domain.HendelseTypeCode
 import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
-import no.nav.samordning.hendelser.ytelse.domain.YtelseTypeCode
 import java.time.LocalDateTime
 
 @Entity
@@ -25,8 +24,7 @@ data class YtelseHendelse(
     @Enumerated(EnumType.STRING)
     val hendelseType: HendelseTypeCode,
     @Column(name = "YTELSE_TYPE", nullable = false)
-    @Enumerated(EnumType.STRING)
-    val ytelseType: YtelseTypeCode,
+    val ytelseType: String,
     @Column(name = "DATO_BRUK_FOM", nullable = false)
     @Convert(converter = LocalDateTimeAttributeConverter::class)
     val datoBrukFom: LocalDateTime,

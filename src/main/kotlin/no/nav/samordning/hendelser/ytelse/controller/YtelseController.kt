@@ -40,7 +40,7 @@ class YtelseController(
 
     @Timed
     @Valid
-    @GetMapping(path = ["/hendelser/tp/ytelser"])
+    @GetMapping(path = ["/hendelser/ytelser"])
     @Maskinporten("nav:pensjon/v1/samordning", TpConfigOrgNoValidator::class)
     fun hendelserTpYtelser(
         @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,

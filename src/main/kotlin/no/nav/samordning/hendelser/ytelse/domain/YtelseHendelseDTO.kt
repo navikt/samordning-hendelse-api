@@ -17,7 +17,7 @@ class YtelseHendelseDTO(
     val identifikator: String,
     val hendelseType: HendelseTypeCode,
     @JsonAlias("tpArt")
-    val ytelseType: YtelseTypeCode,
+    val ytelseType: String,
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Oslo")
     @JsonSerialize(using = LocalDateTimeSerializer::class)
     @JsonDeserialize(using = LocalDateTimeDeserializer::class)

@@ -5,7 +5,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.nav.samordning.hendelser.ytelse.domain.HendelseTypeCode
 import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
-import no.nav.samordning.hendelser.ytelse.domain.YtelseTypeCode
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
 import org.junit.jupiter.api.Test
@@ -55,7 +54,7 @@ class VarsleEndringTPYtelseListenerTest {
             "3010",
             "14087412334",
             HendelseTypeCode.OPPRETT,
-            YtelseTypeCode.UFORE,
+            "UFORE",
             LocalDateTime.of(2024,1,1, 12, 12, 12),
             null
         )
