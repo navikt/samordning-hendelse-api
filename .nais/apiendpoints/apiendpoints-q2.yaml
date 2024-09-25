@@ -16,7 +16,7 @@ spec:
     maxRate: 100
     every: 60s
   endpoints:
-    - path: /hendelser/vedtak
+    - path: /samordning/hendelser/vedtak
       method: GET
       timeout: 60s
       forwardHeaders:
@@ -63,7 +63,7 @@ spec:
     maxRate: 100
     every: 60s
   endpoints:
-    - path: /hendelser/ytelser
+    - path: /samordning/hendelser/ytelser
       method: GET
       timeout: 60s
       forwardHeaders:
