@@ -18,9 +18,9 @@ class YtelseHendelserRepositoryTest {
 
     @Test
     fun `when getFirstByTpnrOrderBySekvensnummerDesc then return siste hendelse`() {
-        val expectedYtelseHendelse = YtelseHendelse(id = 3L, sekvensnummer = 2L,  tpnr = "3010", identifikator = "14087459999", hendelseType = HendelseTypeCode.OPPRETT, ytelseType = "ALDER", datoBrukFom = LocalDateTime.of(2024, 1, 1, 12, 12,12), datoBrukTom = null)
+        val expectedYtelseHendelse = YtelseHendelse(id = 3L, sekvensnummer = 2L,  tpnr = "3200", mottaker = "3010", identifikator = "14087459999", hendelseType = HendelseTypeCode.OPPRETT, ytelseType = "ALDER", datoBrukFom = LocalDateTime.of(2024, 1, 1, 12, 12,12), datoBrukTom = null)
 
-        val actualHendelse = ytelseHendelserRepository.getFirstByTpnrOrderBySekvensnummerDesc("3010")
+        val actualHendelse = ytelseHendelserRepository.getFirstByMottakerOrderBySekvensnummerDesc("3010")
 
         assertNotNull(actualHendelse)
         assertEquals(expectedYtelseHendelse, actualHendelse)
@@ -31,7 +31,7 @@ class YtelseHendelserRepositoryTest {
     fun `when countAllByTpnr then return correct count`() {
         val expectedCount = 2L
 
-        val actualCount = ytelseHendelserRepository.countAllByTpnr("3010")
+        val actualCount = ytelseHendelserRepository.countAllByMottaker("3010")
 
         assertNotNull(actualCount)
         assertEquals(expectedCount, actualCount)

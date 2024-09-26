@@ -4,7 +4,6 @@ import jakarta.persistence.*
 import jakarta.persistence.GenerationType.IDENTITY
 import no.nav.samordning.hendelser.ytelse.LocalDateTimeAttributeConverter
 import no.nav.samordning.hendelser.ytelse.domain.HendelseTypeCode
-import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
 import java.time.LocalDateTime
 
 @Entity
@@ -18,6 +17,8 @@ data class YtelseHendelse(
     var sekvensnummer: Long = 0,
     @Column(name = "TPNR", nullable = false)
     val tpnr: String,
+    @Column(name = "MOTTAKER", nullable = false)
+    val mottaker: String,
     @Column(name = "IDENTIFIKATOR", nullable = false)
     val identifikator: String,
     @Column(name = "HENDELSE_TYPE", nullable = false)
@@ -33,15 +34,4 @@ data class YtelseHendelse(
     val datoBrukTom: LocalDateTime?
 
 
-) {
-    constructor(ytelseHendelseDTO: YtelseHendelseDTO) : this(
-        id = 0L,
-        sekvensnummer = ytelseHendelseDTO.sekvensnummer,
-        tpnr = ytelseHendelseDTO.tpnr,
-        identifikator = ytelseHendelseDTO.identifikator,
-        hendelseType = ytelseHendelseDTO.hendelseType,
-        ytelseType = ytelseHendelseDTO.ytelseType,
-        datoBrukFom = ytelseHendelseDTO.datoFom,
-        datoBrukTom = ytelseHendelseDTO.datoTom
-    )
-}
+)

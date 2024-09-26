@@ -29,21 +29,25 @@ class VarsleEndringTPYtelseListener(
     fun listener(hendelse: String, cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
         logger.info("*** Innkommende YtelseHendelse (VarsleEndringTPYtelse). Offset: ${cr.offset()}, Partition: ${cr.partition()}, Key: ${cr.key()}")
 
-        val ytelseHendelse: YtelseHendelse = try {
+        val ytelseHendelser: List<YtelseHendelse> = try {
             logger.debug("hendelse json: $hendelse")
             MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["uuid"].asText())
 
             val ytelseHendelseDTO = mapper.readValue<YtelseHendelseDTO>(hendelse)
 
-            YtelseHendelse(
-                id = 0,
-                tpnr = ytelseHendelseDTO.tpnr,
-                identifikator = ytelseHendelseDTO.identifikator,
-                hendelseType = ytelseHendelseDTO.hendelseType,
-                ytelseType = ytelseHendelseDTO.ytelseType,
-                datoBrukFom = ytelseHendelseDTO.datoFom,
-                datoBrukTom = ytelseHendelseDTO.datoTom
-            )
+            mapper.readTree(hendelse)["mottakere"].asIterable().map { mottaker ->
+                YtelseHendelse(
+                    id = 0,
+                    tpnr = ytelseHendelseDTO.tpnr,
+                    mottaker = mottaker.asText(),
+                    identifikator = ytelseHendelseDTO.identifikator,
+                    hendelseType = ytelseHendelseDTO.hendelseType,
+                    ytelseType = ytelseHendelseDTO.ytelseType,
+                    datoBrukFom = ytelseHendelseDTO.datoFom,
+                    datoBrukTom = ytelseHendelseDTO.datoTom
+                )
+
+            }
 
         } catch (e: Exception) {
             acknowledgment.acknowledge()
@@ -52,17 +56,24 @@ class VarsleEndringTPYtelseListener(
         }
 
         try {
-            val entity = ytelseHendelserRepository.saveAndFlush(ytelseHendelse)
+            val mottakere = mutableMapOf<String, Long>()
+            val entities = ytelseHendelser.map { ytelseHendelse ->
+                val sekvensnummer = ytelseHendelserRepository.getFirstByMottakerOrderBySekvensnummerDesc(ytelseHendelse.mottaker)
+                    ?.sekvensnummer ?: 0
+                ytelseHendelse.sekvensnummer = sekvensnummer + 1
+                mottakere[ytelseHendelse.mottaker] = ytelseHendelse.sekvensnummer
+                ytelseHendelserRepository.save(ytelseHendelse)
+            }
+            ytelseHendelserRepository.flush()
+            val entity = entities.first()
 
-            logger.info("Lagrer med hendelseType: ${entity.hendelseType}, tpnr: ${entity.tpnr}, sekvensummer: ${entity.sekvensnummer}, ytelseTypeCode: ${entity.ytelseType}")
+            logger.info("Lagrer med hendelseType: ${entity.hendelseType}, tpnr: ${entity.tpnr}, mottaker-sekvensnummer: ${mottakere}, ytelseTypeCode: ${entity.ytelseType}.")
             acknowledgment.acknowledge()
             logger.info("*** Acket melding ferdig")
-
         } catch (e: Exception) {
             logger.error("Feilet ved lagre varsleSamordning, melding: ${e.message}", e)
             Thread.sleep(3000L) //sleep 3sek..
             throw e
         }
     }
-
 }

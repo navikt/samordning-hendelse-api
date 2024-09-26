@@ -23,7 +23,7 @@ class YtelseService(
     }
 
     fun latestSekvensnummer(tpnr: String) = try {
-        ytelseHendelserRepository.countAllByTpnr(tpnr)
+        ytelseHendelserRepository.countAllByMottaker(tpnr)
     } catch (e: Exception) {
         log.warn(e.message)
         1L
@@ -32,7 +32,7 @@ class YtelseService(
 
     fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Int): List<YtelseHendelseDTO> {
         val offset = sekvensnummer.coerceAtLeast(1) + (side * antall) - 1L
-        return ytelseHendelserRepository.findByTpnrAndSekvensnummerBetween(
+        return ytelseHendelserRepository.findByMottakerAndSekvensnummerBetween(
             tpnr, 
             offset,
             offset + antall
