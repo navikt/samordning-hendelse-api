@@ -16,6 +16,20 @@ spec:
     maxRate: 100
     every: 60s
   endpoints:
+    - path: /samordning/hendelser/vedtak
+      method: GET
+      timeout: 60s
+      forwardHeaders:
+        - Authorization
+        - Content-Type
+        - X-Request-Id
+      queryParams:
+        - tpnr
+        - side
+        - antall
+        - sekvensnummer
+      backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
+      backendPath: /hendelser/vedtak
     - path: /samordning/hendelser
       method: GET
       timeout: 60s
@@ -34,7 +48,7 @@ spec:
 apiVersion: krakend.nais.io/v1
 kind: ApiEndpoints
 metadata:
-  name: samordning-hendelser-ytelse
+  name: samordning-hendelser-ytelser
   namespace: pensjonsamhandling
   labels:
     team: pensjonsamhandling
@@ -49,7 +63,7 @@ spec:
     maxRate: 100
     every: 60s
   endpoints:
-    - path: /samordning/hendelser/ytelse
+    - path: /samordning/hendelser/ytelser
       method: GET
       timeout: 60s
       forwardHeaders:
@@ -58,9 +72,8 @@ spec:
         - X-Request-Id
       queryParams:
         - tpnr
-        - ytelse
         - side
         - antall
         - sekvensnummer
       backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
-      backendPath: /hendelser/ytelse
+      backendPath: /hendelser/ytelser
