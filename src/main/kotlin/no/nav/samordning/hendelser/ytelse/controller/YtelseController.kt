@@ -67,7 +67,7 @@ class YtelseController(
         if (service.getNumberOfPages(
                 tpnr, sekvensnummer, antall
             ) > side + 1
-        ) "$nextBaseUrl/hendelser/tp/ytelser?tpnr=$tpnr&sekvensnummer=$sekvensnummer&antall=$antall&side=${side + 1}"
+        ) "$nextBaseUrl/hendelser/ytelser?tpnr=$tpnr&sekvensnummer=$sekvensnummer&antall=$antall&side=${side + 1}"
         else null
 
 }
