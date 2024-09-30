@@ -26,3 +26,15 @@ jobs:
           IMAGE: "docker.pkg.github.com/${{ github.repository }}/samordning-hendelse-api:${{ github.event.inputs.version }}"
           TEAM: pensjonsamhandling
 
+      - name: Deploy krakenD config
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: .nais/apiendpoints/krakend-prod.yaml
+
+      - name: Deploy apiEndpoints config
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: .nais/apiendpoints/apiendpoints-prod.yaml
+

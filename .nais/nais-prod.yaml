@@ -9,6 +9,7 @@ spec:
   image: {{image}}
   port: 8080
   ingresses:
+    - https://samordning-hendelse-api.prod-fss-pub.nais.io
     - https://samordning-hendelse-api.nais.adeo.no
     - https://samordning-hendelse-api.intern.nav.no
   webproxy: true
