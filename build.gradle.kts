@@ -34,7 +34,7 @@ repositories {
 dependencies {
     implementation(kotlin("reflect"))
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.17.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.0")
     implementation("io.micrometer", "micrometer-core", "1.13.4")
     implementation("io.micrometer", "micrometer-registry-prometheus", "1.13.4")
     implementation("no.nav", "vault-jdbc" ,"1.3.10")
