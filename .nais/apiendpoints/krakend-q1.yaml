@@ -1,7 +1,7 @@
 apiVersion: krakend.nais.io/v1
 kind: Krakend
 metadata:
-  name: pensjon-samordning
+  name: pensjon-samordning-q1
   namespace: pensjonsamhandling
   labels:
     team: pensjonsamhandling

@@ -6,7 +6,7 @@ metadata:
   labels:
     team: pensjonsamhandling
 spec:
-  krakend: pensjon-samordning
+  krakend: pensjon-samordning-q1
   auth:
     name: maskinporten
     cache: true
@@ -39,7 +39,7 @@ metadata:
   labels:
     team: pensjonsamhandling
 spec:
-  krakend: pensjon-samordning
+  krakend: pensjon-samordning-q1
   auth:
     name: maskinporten
     cache: true

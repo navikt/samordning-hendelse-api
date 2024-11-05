@@ -19,3 +19,7 @@ spec:
         paths:
           - path: /samordning/
             pathType: ImplementationSpecific
+      - host: pensjon-q2-gw.ekstern.dev.nav.no
+        paths:
+          - path: /samordning/
+            pathType: ImplementationSpecific
