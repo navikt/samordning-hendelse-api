@@ -3,11 +3,10 @@ package no.nav.samordning.hendelser.metrics
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
+import jakarta.annotation.PostConstruct
 import no.nav.samordning.hendelser.database.HendelseService
 import no.nav.samordning.hendelser.ytelse.service.YtelseService
 import org.slf4j.LoggerFactory.getLogger
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -29,14 +28,12 @@ class AppMetrics(private val registry: MeterRegistry,
         Gauge.builder("samordning_hendelser_tp_ytelser_total", ::totalAntallHendelserTpYtelser).register(registry)
     }
 
-    @Bean
-    fun totalHendelserCount() {
-        scheduleTask { totalAntallHendelser = hendelseService.totalHendelser }
-    }
-
-    @Bean
-    fun totalHendelserTpYtelserCount() {
-        scheduleTask { totalAntallHendelserTpYtelser = ytelseService.totalHendelsertpYtelser }
+    @PostConstruct
+    fun initMetrics() {
+        scheduleTask {
+            totalAntallHendelser = hendelseService.totalHendelser
+            totalAntallHendelserTpYtelser = ytelseService.totalHendelsertpYtelser
+        }
     }
 
     private fun scheduleTask(task: TimerTask.() -> Unit) {

@@ -6,17 +6,17 @@ description = "samordning-hendelse-api"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 val logstashEncoderVersion = "8.0"
-val springkafkaVersion= "3.2.3"
+val springkafkaVersion= "3.3.0"
 val jakartaAnnotationApiVersion = "3.0.0"
 val jakartaInjectApiVersion = "2.0.1"
 val junitplatformVersion = "1.11.0"
 val mockkVersion = "1.13.12"
 
 plugins {
-    kotlin("jvm") version "2.0.20"
-    kotlin("plugin.spring") version "2.0.20"
-    kotlin("plugin.jpa") version "2.0.20"
-    id("org.springframework.boot") version "3.3.3"
+    kotlin("jvm") version "2.0.21"
+    kotlin("plugin.spring") version "2.0.21"
+    kotlin("plugin.jpa") version "2.0.21"
+    id("org.springframework.boot") version "3.4.0"
     id("io.spring.dependency-management") version "1.1.6"
 }
 
@@ -34,13 +34,13 @@ repositories {
 dependencies {
     implementation(kotlin("reflect"))
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.17.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.1")
     implementation("io.micrometer", "micrometer-core", "1.13.4")
     implementation("io.micrometer", "micrometer-registry-prometheus", "1.13.4")
     implementation("no.nav", "vault-jdbc" ,"1.3.10")
     implementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring", "2.0.3")
     implementation("net.logstash.logback", "logstash-logback-encoder", logstashEncoderVersion)
-    implementation("org.postgresql", "postgresql", "42.6.0")
+    implementation("org.postgresql", "postgresql", "42.7.4")
     implementation("org.hibernate.validator", "hibernate-validator", "8.0.1.Final")
     implementation("org.springframework.boot", "spring-boot-starter-web")
     implementation("org.springframework.boot", "spring-boot-starter-webflux")
