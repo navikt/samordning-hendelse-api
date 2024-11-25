@@ -25,6 +25,8 @@ spec:
     initialDelay: 45
     periodSeconds: 1
     failureThreshold: 60
+  envFrom:
+    - secret: samordning-hendelse-api
   vault:
     enabled: true
   replicas:
