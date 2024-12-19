@@ -4,7 +4,7 @@ import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import jakarta.annotation.PostConstruct
-import no.nav.samordning.hendelser.database.HendelseService
+import no.nav.samordning.hendelser.service.HendelseService
 import no.nav.samordning.hendelser.ytelse.service.YtelseService
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.stereotype.Component
