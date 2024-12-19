@@ -1,7 +1,8 @@
-package no.nav.samordning.hendelser.database
+package no.nav.samordning.hendelser.service
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import no.nav.samordning.hendelser.database.DatabaseConfig
 import no.nav.samordning.hendelser.hendelse.HendelseRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -9,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest(classes = [DatabaseConfig::class, HendelseService::class])
-class EmptyHendelseServiceTests {
+class EmptyHendelseServiceTest {
 
     @MockkBean
     private lateinit var hendelseRepository: HendelseRepository

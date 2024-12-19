@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.PositiveOrZero
 import no.nav.pensjonsamhandling.maskinporten.validation.annotation.Maskinporten
-import no.nav.samordning.hendelser.database.HendelseService
+import no.nav.samordning.hendelser.service.HendelseService
 import no.nav.samordning.hendelser.hendelse.Hendelse
 import no.nav.samordning.hendelser.metrics.AppMetrics
 import no.nav.samordning.hendelser.security.TpConfigOrgNoValidator
