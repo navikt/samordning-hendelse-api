@@ -30,12 +30,12 @@ class YtelseService(
     }
 
 
-    fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Int): List<YtelseHendelseDTO> {
-        val offset = sekvensnummer.coerceAtLeast(1) + (side * antall) - 1L
+    fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Long): List<YtelseHendelseDTO> {
+        val offset = sekvensnummer.coerceAtLeast(1) + (side * antall)
         return ytelseHendelserRepository.findByMottakerAndSekvensnummerBetween(
             tpnr, 
             offset,
-            offset + antall
+            antall
         ).map { entity -> YtelseHendelseDTO(
             entity.sekvensnummer,
             entity.tpnr,
