@@ -14,6 +14,7 @@ spec:
       - nav:pensjon/v1/samordning
   rateLimit:
     maxRate: 100
+    clientMaxRate: 200
     every: 60s
   endpoints:
     - path: /samordning/hendelser/vedtak
@@ -61,6 +62,7 @@ spec:
       - nav:pensjon/v1/samordning
   rateLimit:
     maxRate: 100
+    clientMaxRate: 200
     every: 60s
   endpoints:
     - path: /samordning/hendelser/ytelser
