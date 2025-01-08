@@ -44,9 +44,9 @@ class YtelseController(
     @Maskinporten("nav:pensjon/v1/samordning", TpConfigOrgNoValidator::class)
     fun hendelserTpYtelser(
         @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
-        @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,
-        @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Int,
-        @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Int
+        @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Long,
+        @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Long,
+        @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Long
     ): Feed<YtelseHendelseDTO> {
         val ytelseHendelser = service.fetchSeqAndYtelseHendelser(tpnr, sekvensnummer, side, antall)
         log.debug(objectMapper.writeValueAsString(ytelseHendelser))
@@ -63,7 +63,7 @@ class YtelseController(
 
     }
 
-    private fun nextUrl(tpnr: String, sekvensnummer: Int, antall: Int, side: Int) =
+    private fun nextUrl(tpnr: String, sekvensnummer: Long, antall: Long, side: Long) =
         if (service.getNumberOfPages(
                 tpnr, sekvensnummer, antall
             ) > side + 1
