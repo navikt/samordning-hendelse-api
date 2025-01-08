@@ -15,8 +15,8 @@ class YtelseService(
     val totalHendelsertpYtelser: Long
         get() = ytelseHendelserRepository.count()
 
-    fun getNumberOfPages(tpnr: String, sekvensnummer: Int, antall: Int) = try {
-        latestSekvensnummer(tpnr).minus(sekvensnummer - 1).div(antall.toDouble()).let(::ceil).toInt()
+    fun getNumberOfPages(tpnr: String, sekvensnummer: Long, antall: Long) = try {
+        latestSekvensnummer(tpnr).minus(sekvensnummer - 1).div(antall.toDouble()).let(::ceil).toLong()
     } catch (e: Exception) {
         log.warn(e.message)
         0
@@ -30,12 +30,12 @@ class YtelseService(
     }
 
 
-    fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Int, side: Int, antall: Int): List<YtelseHendelseDTO> {
-        val offset = sekvensnummer.coerceAtLeast(1) + (side * antall) - 1L
+    fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Long, side: Long, antall: Long): List<YtelseHendelseDTO> {
+        val start = sekvensnummer.coerceAtLeast(1) + (side * antall)
         return ytelseHendelserRepository.findByMottakerAndSekvensnummerBetween(
             tpnr, 
-            offset,
-            offset + antall
+            start,
+            start + antall
         ).map { entity -> YtelseHendelseDTO(
             entity.sekvensnummer,
             entity.tpnr,
