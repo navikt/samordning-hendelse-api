@@ -6,7 +6,7 @@ metadata:
   labels:
     team: pensjonsamhandling
 spec:
-  krakend: pensjon-samordning
+  krakend: pensjon-samordning-q2
   auth:
     name: maskinporten
     cache: true
@@ -17,20 +17,20 @@ spec:
     clientMaxRate: 200
     every: 60s
   endpoints:
-    - path: /samordning/hendelser/vedtak
-      method: GET
-      timeout: 60s
-      forwardHeaders:
-        - Authorization
-        - Content-Type
-        - X-Request-Id
-      queryParams:
-        - tpnr
-        - side
-        - antall
-        - sekvensnummer
-      backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
-      backendPath: /hendelser/vedtak
+#    - path: /samordning/hendelser/vedtak
+#      method: GET
+#      timeout: 60s
+#      forwardHeaders:
+#        - Authorization
+#        - Content-Type
+#        - X-Request-Id
+#      queryParams:
+#        - tpnr
+#        - side
+#        - antall
+#        - sekvensnummer
+#      backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
+#      backendPath: /hendelser/vedtak
     - path: /samordning/hendelser
       method: GET
       timeout: 60s
@@ -54,7 +54,7 @@ metadata:
   labels:
     team: pensjonsamhandling
 spec:
-  krakend: pensjon-samordning
+  krakend: pensjon-samordning-q2
   auth:
     name: maskinporten
     cache: true

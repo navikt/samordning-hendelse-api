@@ -1,7 +1,7 @@
 apiVersion: krakend.nais.io/v1
 kind: ApiEndpoints
 metadata:
-  name: samordning-hendelser
+  name: samordning-hendelser-vedtak
   namespace: pensjonsamhandling
   labels:
     team: pensjonsamhandling
@@ -34,7 +34,7 @@ spec:
 apiVersion: krakend.nais.io/v1
 kind: ApiEndpoints
 metadata:
-  name: samordning-hendelser-ytelse
+  name: samordning-hendelser-ytelser
   namespace: pensjonsamhandling
   labels:
     team: pensjonsamhandling
@@ -49,7 +49,7 @@ spec:
     maxRate: 100
     every: 60s
   endpoints:
-    - path: /samordning/hendelser/ytelse
+    - path: /samordning/hendelser/ytelser
       method: GET
       timeout: 60s
       forwardHeaders:
@@ -63,4 +63,4 @@ spec:
         - antall
         - sekvensnummer
       backendHost: https://samordning-hendelse-api-q1.dev-fss-pub.nais.io
-      backendPath: /hendelser/ytelse
+      backendPath: /hendelser/ytelser
