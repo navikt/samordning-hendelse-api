@@ -1,7 +1,7 @@
 apiVersion: krakend.nais.io/v1
 kind: ApiEndpoints
 metadata:
-  name: samordning-hendelser
+  name: samordning-hendelser-q1
   namespace: pensjonsamhandling
   labels:
     team: pensjonsamhandling
@@ -34,7 +34,7 @@ spec:
 apiVersion: krakend.nais.io/v1
 kind: ApiEndpoints
 metadata:
-  name: samordning-hendelser-ytelser
+  name: samordning-hendelser-ytelser-q1
   namespace: pensjonsamhandling
   labels:
     team: pensjonsamhandling
