@@ -1,7 +1,7 @@
 apiVersion: krakend.nais.io/v1
 kind: ApiEndpoints
 metadata:
-  name: samordning-hendelser-vedtak
+  name: samordning-hendelser
   namespace: pensjonsamhandling
   labels:
     team: pensjonsamhandling
