@@ -32,8 +32,8 @@ class VarsleEndringTPYtelseListenerTest {
     @Autowired
     private lateinit var listener : VarsleEndringTPYtelseListener
 
-    private val hendelseJson = """{"uuid":"41383630-3243-3644-3837-314334384332","sent":false,"tpnr":"3010","mottakere":["3200", "3060"],"fnr":"14087412334","hendelseType":"OPPRETT","ytelseType":"UFORE","datoFom":"2024-01-01 12:12:12","datoTom":null}"""
-    private val hendelseJson1 = """{"uuid":"41383630-3243-3644-3837-314334384333","sent":false,"tpnr":"3200","mottakere":["3010", "3060"],"fnr":"14087412334","hendelseType":"OPPRETT","ytelseType":"SAERALDER","datoFom":"2024-01-01 12:12:12","datoTom":null}"""
+    private val hendelseJson = """{"uuid":"41383630-3243-3644-3837-314334384332","sent":false,"tpnr":"3010","mottakere":["3200", "3060"],"fnr":"14087412334","hendelseType":"OPPRETT","ytelseType":"UFORE","datoFom":"2024-01-01","datoTom":null}"""
+    private val hendelseJson1 = """{"uuid":"41383630-3243-3644-3837-314334384333","sent":false,"tpnr":"3200","mottakere":["3010", "3060"],"fnr":"14087412334","hendelseType":"OPPRETT","ytelseType":"SAERALDER","datoFom":"2024-01-01","datoTom":null}"""
 
     @BeforeEach
     fun setup() {

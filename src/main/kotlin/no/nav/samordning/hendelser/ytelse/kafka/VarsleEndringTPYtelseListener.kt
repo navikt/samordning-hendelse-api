@@ -43,8 +43,8 @@ class VarsleEndringTPYtelseListener(
                     identifikator = kafkaHendelse.identifikator,
                     hendelseType = kafkaHendelse.hendelseType,
                     ytelseType = kafkaHendelse.ytelseType,
-                    datoBrukFom = kafkaHendelse.datoFom,
-                    datoBrukTom = kafkaHendelse.datoTom
+                    datoBrukFom = kafkaHendelse.datoFom.atStartOfDay(),
+                    datoBrukTom = kafkaHendelse.datoTom?.atStartOfDay(),
                 )
 
             }
