@@ -1,6 +1,6 @@
 package no.nav.samordning.hendelser.ytelse.service
 
-import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
+import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseResponse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.stereotype.Service
@@ -30,20 +30,20 @@ class YtelseService(
     }
 
 
-    fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Long, side: Long, antall: Long): List<YtelseHendelseDTO> {
+    fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Long, side: Long, antall: Long): List<YtelseHendelseResponse> {
         val start = sekvensnummer.coerceAtLeast(1) + (side * antall)
         return ytelseHendelserRepository.findByMottakerAndSekvensnummerBetween(
             tpnr, 
             start,
             start + antall
-        ).map { entity -> YtelseHendelseDTO(
+        ).map { entity -> YtelseHendelseResponse(
             entity.sekvensnummer,
             entity.tpnr,
             entity.identifikator,
             entity.hendelseType,
             entity.ytelseType,
-            entity.datoBrukFom,
-            entity.datoBrukTom)
+            entity.datoBrukFom.toLocalDate(),
+            entity.datoBrukTom?.toLocalDate())
         }.toList()
     }
     

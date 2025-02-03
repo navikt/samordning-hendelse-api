@@ -11,7 +11,7 @@ import no.nav.pensjonsamhandling.maskinporten.validation.annotation.Maskinporten
 import no.nav.samordning.hendelser.feed.Feed
 import no.nav.samordning.hendelser.metrics.AppMetrics
 import no.nav.samordning.hendelser.security.TpConfigOrgNoValidator
-import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
+import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseResponse
 import no.nav.samordning.hendelser.ytelse.service.YtelseService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,7 +47,7 @@ class YtelseController(
         @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Long,
         @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Long,
         @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Long
-    ): Feed<YtelseHendelseDTO> {
+    ): Feed<YtelseHendelseResponse> {
         val ytelseHendelser = service.fetchSeqAndYtelseHendelser(tpnr, sekvensnummer, side, antall)
         log.debug(objectMapper.writeValueAsString(ytelseHendelser))
         val latestReadSNR = ytelseHendelser.maxOfOrNull { it.sekvensnummer } ?: 1

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import java.time.LocalDate
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-class YtelseHendelseDTO(
+class YtelseHendelseResponse(
     val sekvensnummer: Long,
     val tpnr: String,
     @JsonAlias("fnr")

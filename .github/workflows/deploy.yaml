@@ -30,19 +30,18 @@ jobs:
         run: ./gradlew clean build
 
       # Build image
-      - name: Login to Github Package Registry
-        env:
-          DOCKER_USERNAME: token
-          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
-      - name: Create Docker tag
-        run: |
-          echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"samordning-hendelse-api" > .docker_image
-          echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
-      - name: Build Docker image
-        run: |
-          docker build -t $(cat .docker_image):$(cat .docker_tag) .
-          echo "IMAGE=$(cat .docker_image):$(cat .docker_tag)" >> $GITHUB_ENV
-      - name: Push Docker image
-        run: "docker push $(cat .docker_image):$(cat .docker_tag)"
+      - name: Create tag
+        run: echo "TAG=$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Login to GHCR
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}/samordning-hendelse-api:${{ env.TAG }}
+

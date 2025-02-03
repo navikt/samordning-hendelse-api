@@ -15,7 +15,8 @@ jobs:
       id-token: "write"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # Checkout
+      - uses: actions/checkout@v4
       - name: Input
         run: echo "version = ${{ github.event.inputs.version }}"
       - name: Deploy to dev-fss
@@ -23,7 +24,7 @@ jobs:
         env:
           CLUSTER: dev-fss
           RESOURCE: .nais/nais-q2.yaml
-          IMAGE: "docker.pkg.github.com/${{ github.repository }}/samordning-hendelse-api:${{ github.event.inputs.version }}"
+          IMAGE: ghcr.io/${{ github.repository }}/samordning-hendelse-api:${{ github.event.inputs.version }}
           TEAM: pensjonsamhandling
 
       - name: Deploy krakenD config

@@ -33,18 +33,18 @@ class VarsleEndringTPYtelseListener(
             logger.debug("hendelse json: $hendelse")
             MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["uuid"].asText())
 
-            val ytelseHendelseDTO = mapper.readValue<YtelseHendelseDTO>(hendelse)
+            val kafkaHendelse = mapper.readValue<YtelseHendelseDTO>(hendelse)
 
             mapper.readTree(hendelse)["mottakere"].asIterable().map { mottaker ->
                 YtelseHendelse(
                     id = 0,
-                    tpnr = ytelseHendelseDTO.tpnr,
+                    tpnr = kafkaHendelse.tpnr,
                     mottaker = mottaker.asText(),
-                    identifikator = ytelseHendelseDTO.identifikator,
-                    hendelseType = ytelseHendelseDTO.hendelseType,
-                    ytelseType = ytelseHendelseDTO.ytelseType,
-                    datoBrukFom = ytelseHendelseDTO.datoFom,
-                    datoBrukTom = ytelseHendelseDTO.datoTom
+                    identifikator = kafkaHendelse.identifikator,
+                    hendelseType = kafkaHendelse.hendelseType,
+                    ytelseType = kafkaHendelse.ytelseType,
+                    datoBrukFom = kafkaHendelse.datoFom.atStartOfDay(),
+                    datoBrukTom = kafkaHendelse.datoTom?.atStartOfDay(),
                 )
 
             }
@@ -56,18 +56,18 @@ class VarsleEndringTPYtelseListener(
         }
 
         try {
-            val mottakere = mutableMapOf<String, Long>()
-            val entities = ytelseHendelser.map { ytelseHendelse ->
-                val sekvensnummer = ytelseHendelserRepository.getFirstByMottakerOrderBySekvensnummerDesc(ytelseHendelse.mottaker)
+            val mottakereLog = mutableMapOf<String, Long>()
+            val entitiesLog = ytelseHendelser.map { ytelseHendelse ->
+                val sisteSekvensnummer = ytelseHendelserRepository.getFirstByMottakerOrderBySekvensnummerDesc(ytelseHendelse.mottaker)
                     ?.sekvensnummer ?: 0
-                ytelseHendelse.sekvensnummer = sekvensnummer + 1
-                mottakere[ytelseHendelse.mottaker] = ytelseHendelse.sekvensnummer
+                ytelseHendelse.sekvensnummer = sisteSekvensnummer + 1
+                mottakereLog[ytelseHendelse.mottaker] = ytelseHendelse.sekvensnummer
                 ytelseHendelserRepository.save(ytelseHendelse)
             }
             ytelseHendelserRepository.flush()
-            val entity = entities.first()
+            val entity = entitiesLog.first()
 
-            logger.info("Lagrer med hendelseType: ${entity.hendelseType}, tpnr: ${entity.tpnr}, mottaker-sekvensnummer: ${mottakere}, ytelseTypeCode: ${entity.ytelseType}.")
+            logger.info("Lagrer med hendelseType: ${entity.hendelseType}, tpnr: ${entity.tpnr}, mottaker-sekvensnummer: ${mottakereLog}, ytelseTypeCode: ${entity.ytelseType}.")
             acknowledgment.acknowledge()
             logger.info("*** Acket melding ferdig")
         } catch (e: Exception) {
