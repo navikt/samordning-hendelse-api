@@ -31,7 +31,7 @@ class VarsleEndringTPYtelseListener(
 
         val ytelseHendelser: List<YtelseHendelse> = try {
             logger.debug("hendelse json: $hendelse")
-            MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["uuid"].asText())
+            MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["id"].asText())
 
             val kafkaHendelse = mapper.readValue<YtelseHendelseDTO>(hendelse)
 
