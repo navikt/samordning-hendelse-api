@@ -34,11 +34,11 @@ spec:
     max: 2
   resources:
     limits:
-      cpu: 1000m
-      memory: 512Mi
+      cpu: 600m
+      memory: 1024Mi
     requests:
       cpu: 500m
-      memory: 256Mi
+      memory: 512Mi
   prometheus:
     enabled: true
     path: actuator/prometheus
