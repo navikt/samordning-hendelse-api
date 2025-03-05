@@ -20,14 +20,13 @@ on:
 
 jobs:
   deployAppToQ1:
-    name: Deploy to Dev
+    name: Deploy to Q1
     if: inputs.q1
     permissions:
       contents: "read"
       id-token: "write"
     runs-on: ubuntu-latest
     steps:
-      # Checkout
       - uses: actions/checkout@v4
       - name: Input
         run: echo "version = ${{ inputs.version }}"
@@ -38,6 +37,16 @@ jobs:
           RESOURCE: .nais/nais-q1.yaml
           IMAGE: ghcr.io/${{ github.repository }}/samordning-hendelse-api:${{ inputs.version }}
           TEAM: pensjonsamhandling
+
+  deployKrakenDtoQ1:
+    name: Deploy krakenD to Q1
+    needs: deployAppToQ1
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Deploy krakenD config
         uses: nais/deploy/actions/deploy@v2
         env:
@@ -58,7 +67,6 @@ jobs:
       id-token: "write"
     runs-on: ubuntu-latest
     steps:
-      # Checkout
       - uses: actions/checkout@v4
       - name: Input
         run: echo "version = ${{ inputs.version }}"
@@ -69,6 +77,17 @@ jobs:
           RESOURCE: .nais/nais-q2.yaml
           IMAGE: ghcr.io/${{ github.repository }}/samordning-hendelse-api:${{ inputs.version }}
           TEAM: pensjonsamhandling
+
+
+  deployKrakenDtoQ2:
+    name: Deploy krakenD to Q2
+    needs: deployAppToQ2
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Deploy krakenD config
         uses: nais/deploy/actions/deploy@v2
         env:
