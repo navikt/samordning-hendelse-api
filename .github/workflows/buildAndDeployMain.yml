@@ -40,10 +40,10 @@ jobs:
           team: pensjonsamhandling
           tag: ${{ github.event.repository.name }}-main
 
-      - name: Deploy to prod-gcp
+      - name: Deploy to prod-fss
         uses: nais/deploy/actions/deploy@v2
         env:
-          CLUSTER: prod-gcp
+          CLUSTER: prod-fss
           RESOURCE: nais/prod.yaml
           IMAGE: ${{ steps.docker-build-push.outputs.image }}
           TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}

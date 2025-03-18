@@ -41,10 +41,10 @@ jobs:
           tag: ${{ github.event.repository.name }}-sandbox
 
       # Deploy
-      - name: Deploy to dev-gcp
+      - name: Deploy to dev-fss
         uses: nais/deploy/actions/deploy@v2
         env:
-          CLUSTER: dev-gcp
+          CLUSTER: dev-fss
           RESOURCE: nais/dev.yaml
           IMAGE: ${{ steps.docker-build-push.outputs.image }}
           TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
