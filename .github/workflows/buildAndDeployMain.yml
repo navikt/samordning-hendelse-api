@@ -31,6 +31,8 @@ jobs:
           gradle-version: current
       - name: Build with Gradle
         run: gradle build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Build image
       - name: Nais docker-build
