@@ -6,17 +6,17 @@ description = "samordning-hendelse-api"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 val logstashEncoderVersion = "8.0"
-val springkafkaVersion= "3.3.1"
+val springkafkaVersion= "3.3.4"
 val jakartaAnnotationApiVersion = "3.0.0"
 val jakartaInjectApiVersion = "2.0.1"
 val junitplatformVersion = "1.11.0"
 val mockkVersion = "1.13.12"
 
 plugins {
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.spring") version "2.1.10"
-    kotlin("plugin.jpa") version "2.1.0"
-    id("org.springframework.boot") version "3.4.3"
+    kotlin("jvm") version "2.1.20"
+    kotlin("plugin.spring") version "2.1.20"
+    kotlin("plugin.jpa") version "2.1.20"
+    id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -34,7 +34,7 @@ repositories {
 dependencies {
     implementation(kotlin("reflect"))
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.17.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.3")
     implementation("io.micrometer", "micrometer-core", "1.13.4")
     implementation("io.micrometer", "micrometer-registry-prometheus", "1.13.4")
     implementation("no.nav", "vault-jdbc" ,"1.3.10")
@@ -59,7 +59,7 @@ dependencies {
     testImplementation("io.zonky.test", "embedded-database-spring-test", "2.5.1")
     testImplementation("io.zonky.test", "embedded-postgres", "2.0.7")
     testImplementation("jakarta.el", "jakarta.el-api", "6.0.1")
-    testImplementation("com.ninja-squad", "springmockk", "3.1.0")
+    testImplementation("com.ninja-squad", "springmockk", "4.0.2")
     testImplementation("org.mock-server", "mockserver-spring-test-listener-no-dependencies", "5.15.0")
     //testImplementation("org.junit.platform:junit-platform-suite-api:$junitplatformVersion")
     testImplementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring-test", "2.0.3")
