@@ -6,17 +6,17 @@ description = "samordning-hendelse-api"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 val logstashEncoderVersion = "8.0"
-val springkafkaVersion= "3.3.4"
+val springkafkaVersion= "3.3.6"
 val jakartaAnnotationApiVersion = "3.0.0"
 val jakartaInjectApiVersion = "2.0.1"
 val junitplatformVersion = "1.11.0"
 val mockkVersion = "1.13.12"
 
 plugins {
-    kotlin("jvm") version "2.1.20"
-    kotlin("plugin.spring") version "2.1.20"
-    kotlin("plugin.jpa") version "2.1.20"
-    id("org.springframework.boot") version "3.4.4"
+    kotlin("jvm") version "2.1.21"
+    kotlin("plugin.spring") version "2.1.21"
+    kotlin("plugin.jpa") version "2.1.21"
+    id("org.springframework.boot") version "3.5.0"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -34,7 +34,7 @@ repositories {
 dependencies {
     implementation(kotlin("reflect"))
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.17.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.3")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
     implementation("io.micrometer", "micrometer-core", "1.13.4")
     implementation("io.micrometer", "micrometer-registry-prometheus", "1.13.4")
     implementation("no.nav", "vault-jdbc" ,"1.3.10")
