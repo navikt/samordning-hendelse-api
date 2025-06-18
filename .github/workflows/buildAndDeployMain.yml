@@ -1,6 +1,8 @@
 name: Build and Deploy Main
 
 on:
+  workflow_run:
+    workflows: [ "Auto-merge Dependabot Patch Updates" ]
   push:
     branches:
       - main
@@ -8,6 +10,11 @@ on:
 
 jobs:
   build-and-deploy-main:
+    if: ${{ (github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]') ||
+      github.event.workflow_run.actor.login == 'push' ||
+      github.event_name == 'workflow_dispatch' }}
     name: Build and Deploy Main
     permissions:
       contents: read

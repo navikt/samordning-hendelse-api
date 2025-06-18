@@ -5,6 +5,10 @@ updates:
     schedule:
       interval: daily
     open-pull-requests-limit: 10
+    allow:
+      - dependency-type: "direct"
+    commit-message:
+      prefix: "deps"
   - package-ecosystem: docker
     directory: "/"
     schedule:
