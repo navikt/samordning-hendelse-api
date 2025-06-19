@@ -65,3 +65,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Failed auto-merge
+        if: steps.check.outputs.patch_update == 'false' || steps.label_check.outputs.has_dependencies_label == 'false'
+        run: exit 1
