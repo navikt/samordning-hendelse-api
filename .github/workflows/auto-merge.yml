@@ -13,6 +13,9 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Check for dependencies label
         id: label_check
         run: |
@@ -26,28 +29,39 @@ jobs:
         id: check
         run: |
           title="${{ github.event.pull_request.title }}"
-          
+          echo "PR Title: $title"
           # Match title like: Bump xxx from x.y.z to x.y.w (same x and y, z != w)
           if [[ "$title" =~ ^(B|b)ump\ .*\ from\ ([0-9]+)\.([0-9]+)\.([0-9]+)\ to\ ([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-            from_major=${BASH_REMATCH[1]}
-            from_minor=${BASH_REMATCH[2]}
-            from_patch=${BASH_REMATCH[3]}
-            to_major=${BASH_REMATCH[4]}
-            to_minor=${BASH_REMATCH[5]}
-            to_patch=${BASH_REMATCH[6]}
+          from_major=${BASH_REMATCH[2]}
+          from_minor=${BASH_REMATCH[3]}
+          from_patch=${BASH_REMATCH[4]}
+          to_major=${BASH_REMATCH[5]}
+          to_minor=${BASH_REMATCH[6]}
+          to_patch=${BASH_REMATCH[7]}
 
+            echo "Parsed version bump:"
+            echo "  From: $from_major.$from_minor.$from_patch"
+            echo "  To:   $to_major.$to_minor.$to_patch"
+          
             if [[ "$from_major" == "$to_major" && "$from_minor" == "$to_minor" && "$from_patch" != "$to_patch" ]]; then
               echo "patch_update=true" >> $GITHUB_OUTPUT
             else
               echo "patch_update=false" >> $GITHUB_OUTPUT
             fi
           else
+            echo "No match for patch update regex"
             echo "patch_update=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Enable auto-merge
-        if: steps.check.outputs.patch_update == 'true' && steps.label_check.outputs.has_dependencies_label == 'true'
-        run: gh pr merge "$PR_URL" --auto --merge
+      - name: Debug PR Info
+        run: gh pr view "$PR_NUMBER" --json state,number,title,author,mergeable
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Enable auto-merge
+        if: steps.check.outputs.patch_update == 'true' && steps.label_check.outputs.has_dependencies_label == 'true'
+        run: gh pr merge "$PR_NUMBER" --auto --merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
