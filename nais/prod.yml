@@ -25,6 +25,11 @@ spec:
     initialDelay: 45
     periodSeconds: 1
     failureThreshold: 60
+  startup:
+    path: actuator/health/readiness
+    initialDelay: 45
+    failureThreshold: 60
+    periodSeconds: 5
   envFrom:
     - secret: samordning-hendelse-api
   vault:

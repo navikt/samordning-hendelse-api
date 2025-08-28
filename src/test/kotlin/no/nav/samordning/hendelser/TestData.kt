@@ -1,7 +1,7 @@
 package no.nav.samordning.hendelser
 
-import no.nav.samordning.hendelser.hendelse.Hendelse
-import no.nav.samordning.hendelser.hendelse.HendelseContainer
+import no.nav.samordning.hendelser.vedtak.hendelse.Hendelse
+import no.nav.samordning.hendelser.vedtak.hendelse.HendelseContainer
 import java.time.LocalDate
 
 object TestData {

@@ -8,9 +8,9 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.PositiveOrZero
 import no.nav.pensjonsamhandling.maskinporten.validation.annotation.Maskinporten
-import no.nav.samordning.hendelser.feed.Feed
-import no.nav.samordning.hendelser.metrics.AppMetrics
-import no.nav.samordning.hendelser.security.TpConfigOrgNoValidator
+import no.nav.samordning.hendelser.common.feed.Feed
+import no.nav.samordning.hendelser.common.metrics.AppMetrics
+import no.nav.samordning.hendelser.common.security.TpConfigOrgNoValidator
 import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseResponse
 import no.nav.samordning.hendelser.ytelse.service.YtelseService
 import org.slf4j.LoggerFactory
