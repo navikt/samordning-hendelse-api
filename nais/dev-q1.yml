@@ -51,7 +51,7 @@ spec:
     - name: BOOTSTRAP_APPNAME
       value: samordning-hendelse-api/pensjonsamhandling
     - name: SPRING_PROFILES_ACTIVE
-      value: q1
+      value: dev,q1
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
     - name: "OTEL_RESOURCE_ATTRIBUTES"

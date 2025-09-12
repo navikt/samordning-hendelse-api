@@ -49,7 +49,6 @@ class YtelseController(
         @RequestParam(value = "sekvensnummer", required = false, defaultValue = "1") @Min(1) sekvensnummer: Long
     ): Feed<YtelseHendelseResponse> {
         val ytelseHendelser = service.fetchSeqAndYtelseHendelser(tpnr, sekvensnummer, side, antall)
-        log.debug(objectMapper.writeValueAsString(ytelseHendelser))
         val latestReadSNR = ytelseHendelser.maxOfOrNull { it.sekvensnummer } ?: 1
         log.debug("tpnr = $tpnr, ytelseHendelser.size = ${ytelseHendelser.size}")
         metrics.incHendelserTpYtelserLest(tpnr, ytelseHendelser.size.toDouble())
