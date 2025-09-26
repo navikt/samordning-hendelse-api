@@ -38,7 +38,7 @@ dependencies {
     implementation("io.micrometer", "micrometer-core", "1.13.4")
     implementation("io.micrometer", "micrometer-registry-prometheus", "1.13.4")
     implementation("no.nav", "vault-jdbc" ,"1.3.10")
-    implementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring", "2.0.3")
+    implementation("no.nav.pensjonsamhandling:maskinporten-validation-spring:2.0.4")
     implementation("net.logstash.logback", "logstash-logback-encoder", logstashEncoderVersion)
     implementation("org.postgresql", "postgresql", "42.7.4")
     implementation("org.hibernate.validator", "hibernate-validator", "8.0.1.Final")
