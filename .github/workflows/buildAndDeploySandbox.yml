@@ -50,12 +50,3 @@ jobs:
           RESOURCE: nais/dev.yml
           IMAGE: ${{ steps.docker-build-push.outputs.image }}
           TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
-
-      # Deploy
-      - name: Deploy to dev-fss Q1
-        uses: nais/deploy/actions/deploy@v2
-        env:
-          CLUSTER: dev-fss
-          RESOURCE: nais/dev-q1.yml
-          IMAGE: ${{ steps.docker-build-push.outputs.image }}
-          TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
