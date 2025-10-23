@@ -13,7 +13,7 @@ val junitplatformVersion = "1.11.0"
 val mockkVersion = "1.13.12"
 
 plugins {
-    kotlin("jvm") version "2.2.20"
+    kotlin("jvm") version "2.2.21"
     kotlin("plugin.spring") version "2.2.20"
     kotlin("plugin.jpa") version "2.2.20"
     id("org.springframework.boot") version "3.5.6"
