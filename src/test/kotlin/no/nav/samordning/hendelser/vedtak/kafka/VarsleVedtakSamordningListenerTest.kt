@@ -40,6 +40,20 @@ internal class VarsleVedtakSamordningListenerTest {
 
     }
 
+    @Test
+    fun testingAvConsumerMed_UFORE_SAERALDERP() {
+
+        val samHendelse = mockSamHendelse("UFORE_SAERALDERP")
+
+        val container = HendelseContainerDO(samHendelse)
+
+        every { hendelseRepository.saveAndFlush(any()) } returns container
+        listener.listener(samHendelse.toJson(), mockk(relaxed = true), acknowledgment)
+        verify(exactly = 1) { acknowledgment.acknowledge()  }
+        verify(exactly = 1) { hendelseRepository.saveAndFlush(any()) }
+
+    }
+
 
     @Test
     fun testingAvConsumerFeilerVedLagring() {
@@ -55,10 +69,10 @@ internal class VarsleVedtakSamordningListenerTest {
 
     }
 
-    private fun mockSamHendelse() =
+    private fun mockSamHendelse(ytelse: String = "ALDER") =
         SamHendelse(
         "3030",
-        "ALDER",
+        ytelse,
         "12345678901",
         "123123","32321",
         "2022-10-09",

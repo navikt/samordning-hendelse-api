@@ -27,7 +27,7 @@ internal class FeedControllerTest {
     private lateinit var mockMvc: MockMvc
 
     @ParameterizedTest(name = "Valid requests returns ok with content")
-    @ValueSource(strings = [URL_VEDTAK, URL_TP_YTELSER])
+    @ValueSource(strings = [URL_VEDTAK, URL_TP_YTELSER, URL_VEDTAK_UFOSAER])
     fun `valid requests returns ok with content`(url: String) {
         mockMvc.get(url) {
             headers {
@@ -39,6 +39,7 @@ internal class FeedControllerTest {
             content { contentType(MediaType.APPLICATION_JSON) }
         }
     }
+
 
     @ParameterizedTest(name = "Service should not accept too large requests")
     @ValueSource(strings = [URL_VEDTAK, URL_TP_YTELSER])
@@ -95,6 +96,7 @@ internal class FeedControllerTest {
 
     companion object {
 
+        private const val URL_VEDTAK_UFOSAER = "/hendelser/vedtak?tpnr=7000"
         private const val URL_VEDTAK = "/hendelser/vedtak?tpnr=1000"
         private const val URL_TP_YTELSER = "/hendelser/ytelser?tpnr=3010"
     }

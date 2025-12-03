@@ -6,10 +6,10 @@ Authorization: {{Tokenkey}}
 ###
 
 ### GET hendelser for ytelser
-GET https://pensjon-gw.ekstern.dev.nav.no/samordning/hendelser/ytelser?tpnr=3010&side=0&antall=10000&sekvensnummer=1
+GET https://pensjon-gw.ekstern.dev.nav.no/samordning/hendelser/ytelser?tpnr=3200&side=0&antall=10000&sekvensnummer=1
 accept: application/json;charset=UTF-8
 X-Request-Id: 123456-KrakenD-Ytelseshendelser
-Authorization: Bearer <token>
+Authorization: {{Tokenkey}}
 
 ###
 GET https://pensjon-gw.ekstern.dev.nav.no/samordning/hendelser/vedtak?antall=1&side=1&tpnr=4083&sekvensnummer=1

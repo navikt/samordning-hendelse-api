@@ -30,7 +30,7 @@ management:
 tpconfig.url: https://tp-q1.dev.intern.nav.no/api/tpconfig
 
 NEXT_BASE_URL: http://localhost
-DESIRED_YTELSESTYPER: AP,AAP,PT,GP,IP,ET
+DESIRED_YTELSESTYPER: AP,AAP,PT,GP,IP,ET,UFORE_SAERALDERP
 
 maskinporten.validation:
   permit-all: 889640782
