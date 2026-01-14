@@ -2,8 +2,6 @@ management:
   endpoint.prometheus.enabled: true
   endpoints.web.exposure.include: prometheus, health
 
-#spring.datasource.hikari.maximum-pool-size: ${MAX_POOL_SIZE}
-
 
 DESIRED_YTELSESTYPER: ALDER,AFP,OMS,AAP
 spring:
@@ -32,3 +30,8 @@ spring:
           location: ${KAFKA_KEYSTORE_PATH}
           password: ${KAFKA_CREDSTORE_PASSWORD}
         key.password: ${KAFKA_CREDSTORE_PASSWORD}
+vault:
+  postgres:
+    datasource:
+      max-pool-size: 50
+      url: ${SPRING_DATASOURCE_URL}
