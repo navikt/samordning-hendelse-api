@@ -6,7 +6,7 @@ description = "samordning-hendelse-api"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 val logstashEncoderVersion = "8.0"
-val springkafkaVersion= "3.3.10"
+val springkafkaVersion= "4.0.2"
 val jakartaAnnotationApiVersion = "3.0.0"
 val jakartaInjectApiVersion = "2.0.1"
 val junitplatformVersion = "1.11.0"
