@@ -15,4 +15,6 @@ interface PersonEndringRepository: JpaRepository<PersonEndring, Long> {
 
     fun findByTpnrAndSekvensnummerBetween(tpnr: String, offset: Long, limit: Long): List<PersonEndring>
 
+    fun getFirstByTpnrOrderBySekvensnummerDesc(tpnr: String): PersonEndring?
+
 }

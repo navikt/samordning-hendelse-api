@@ -3,9 +3,12 @@ package no.nav.samordning.hendelser.person.repository
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.IdClass
 import jakarta.persistence.Table
+import no.nav.samordning.hendelser.person.domain.Meldingskode
 import java.io.Serializable
 import java.time.LocalDateTime
 
@@ -19,11 +22,12 @@ data class PersonHendelse(
 
     @Id
     @Column(name = "MELDINGSKODE", nullable = false)
-    val meldingskode: String,
+    @Enumerated(EnumType.STRING)
+    val meldingskode: Meldingskode,
 
     @Column(name = "OPPRETTET_TIDSPUNKT", nullable = false)
     val timestamp: LocalDateTime = LocalDateTime.now(),
 )
 
 @Embeddable
-data class PersonHendelseID(val hendelseId: String, val meldingskode: String): Serializable
+data class PersonHendelseID(val hendelseId: String, val meldingskode: Meldingskode): Serializable

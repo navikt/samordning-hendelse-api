@@ -25,14 +25,18 @@ data class PersonEndring(
     @Column(name = "FNR", nullable = false)
     val fnr: String,
     @Column(name = "FNR_GAMMELT")
-    val fnrGammelt: String,
+    val fnrGammelt: String?,
     @Column(name = "SIVILSTAND")
-    val sivilstand: String,
+    val sivilstand: String?,
     @Column(name = "SIVILSTAND_DATO")
-    val sivilstandDato: LocalDate,
+    val sivilstandDato: LocalDate?,
     @Column(name = "DOEDSDATO")
-    val doedsdato: LocalDate,
+    val doedsdato: LocalDate?,
     @Column(name = "MELDINGSKODE", nullable = false)
     @Enumerated(EnumType.STRING)
     val meldingskode: Meldingskode,
+
+    //just temperory
+    val hendelseId: String
+
 )
