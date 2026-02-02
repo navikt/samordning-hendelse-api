@@ -58,13 +58,14 @@ class PersonEndringListener(
             }
 
         } catch (e: Exception) {
+            // TODO: Finn ut om hendelse burde ackes
             acknowledgment.acknowledge()
             logger.error("Feilet ved deserializering, Acket, melding må sendes på nytt, melding: ${e.message}", e)
             return
         }
 
         try {
-            //hvis døsfall finnes.. på fnr.. fra så sletter recod..
+            // TODO: Burde vi håndtere annullering/opphør (av dødsfall)?
             val personEndring = personEndringHendelser.map { personEndring ->
                 val sisteSekvensnummer = personEndringRepository.getFirstByTpnrOrderBySekvensnummerDesc(personEndring.tpnr) ?.sekvensnummer ?: 0
                 personEndring.sekvensnummer = sisteSekvensnummer + 1
