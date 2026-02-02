@@ -36,7 +36,8 @@ data class PersonEndring(
     @Enumerated(EnumType.STRING)
     val meldingskode: Meldingskode,
 
-    //just temperory
+    //brukt for lagre personHendelse lenger ned i kafkalisner
+    @Transient
     val hendelseId: String
 
 )

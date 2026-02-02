@@ -35,16 +35,18 @@ class PersonEndringListener(
 
         val personEndringHendelser: List<PersonEndring> = try {
             logger.debug("hendelse json: $hendelse")
-            MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["id"].asText())
+            MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["hendelseId"].asText())
             val kafkaHendelse = mapper.readValue<PersonEndringKafkaHendelse>(hendelse)
+
             if (personHendelseRepository.existsByHendelseIdAndMeldingskode(kafkaHendelse.hendelseId, kafkaHendelse.meldingsKode) ) {
+                logger.info("PersonEndringHendelse med hendelseId: ${kafkaHendelse.hendelseId} allerede lagret, ignorerer melding.")
                 acknowledgment.acknowledge()
                 return
             }
-            mapper.readTree(hendelse)["tpnr"].asIterable().map { tpnr ->
+            mapper.readTree(hendelse)["tpNr"].asIterable().map { tpNr ->
                 PersonEndring(
                     id = 0,
-                    tpnr = tpnr.asText(),
+                    tpnr = tpNr.asText(),
                     fnr = kafkaHendelse.fnr,
                     fnrGammelt = kafkaHendelse.oldFnr,
                     sivilstand = kafkaHendelse.sivilstand,
@@ -62,6 +64,7 @@ class PersonEndringListener(
         }
 
         try {
+            //hvis døsfall finnes.. på fnr.. fra så sletter recod..
             val personEndring = personEndringHendelser.map { personEndring ->
                 val sisteSekvensnummer = personEndringRepository.getFirstByTpnrOrderBySekvensnummerDesc(personEndring.tpnr) ?.sekvensnummer ?: 0
                 personEndring.sekvensnummer = sisteSekvensnummer + 1
@@ -73,6 +76,7 @@ class PersonEndringListener(
             logger.info("Lagrer med meldingskode: ${entity}, tpnr: ${entity.tpnr}.")
 
             personHendelseRepository.saveAndFlush(PersonHendelse(entity.hendelseId, entity.meldingskode))
+            logger.info("Lagrer med hendelseId: ${entity.hendelseId}, meldingskode: ${entity.meldingskode}.")
 
             acknowledgment.acknowledge()
             logger.info("*** Acket melding ferdig")
@@ -86,7 +90,7 @@ class PersonEndringListener(
     }
 }
 
-private data class PersonEndringKafkaHendelse(
+data class PersonEndringKafkaHendelse(
     val hendelseId: String,
     val tpNr: List<String>,
     val fnr: String,
