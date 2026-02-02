@@ -8,7 +8,7 @@ import kotlin.math.ceil
 
 @Service
 class PersonService(
-    private val personHendelseRepository: PersonEndringRepository,
+    private val personEndringRepository: PersonEndringRepository,
 ) {
 
     private val log = getLogger(javaClass)
@@ -21,7 +21,7 @@ class PersonService(
     }
 
     fun latestSekvensnummer(tpnr: String) = try {
-        personHendelseRepository.countAllByTpnr(tpnr)
+        personEndringRepository.countAllByTpnr(tpnr)
     } catch (e: Exception) {
         log.warn(e.message)
         1L
@@ -30,7 +30,7 @@ class PersonService(
 
     fun fetchSeqAndPersonEndringHendelser(tpnr: String, sekvensnummer: Long, side: Long, antall: Long): List<PersonResponse> {
         val start = sekvensnummer.coerceAtLeast(1) + (side * antall)
-        return personHendelseRepository.findByTpnrAndSekvensnummerBetween(
+        return personEndringRepository.findByTpnrAndSekvensnummerBetween(
             tpnr,
             start,
             start + antall
