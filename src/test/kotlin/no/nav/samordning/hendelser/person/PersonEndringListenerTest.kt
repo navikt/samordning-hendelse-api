@@ -1,8 +1,5 @@
 package no.nav.samordning.hendelser.person
 
-import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.core.read.ListAppender
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -15,32 +12,23 @@ import no.nav.samordning.hendelser.person.kafka.PersonEndringKafkaHendelse
 import no.nav.samordning.hendelser.person.kafka.PersonEndringListener
 import no.nav.samordning.hendelser.person.repository.PersonEndringRepository
 import no.nav.samordning.hendelser.person.repository.PersonHendelseRepository
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.slf4j.LoggerFactory
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.support.Acknowledgment
-import java.io.IOException
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
 class PersonEndringListenerTest {
-
-    private val mapper : ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule())
-    private val debugLogger: Logger = LoggerFactory.getLogger("no.nav.samordning.hendelser") as Logger
-    private val listAppender = ListAppender<ILoggingEvent>()
-
-    private val acknowledgment: Acknowledgment = mockk(relaxed = true)
-
-    @Autowired
-    private lateinit var listener : PersonEndringListener
 
     @Autowired
     private lateinit var personEndringRepository: PersonEndringRepository
@@ -48,81 +36,260 @@ class PersonEndringListenerTest {
     @Autowired
     private lateinit var personHendelseRepository: PersonHendelseRepository
 
+    private lateinit var listener: PersonEndringListener
+    private lateinit var objectMapper: ObjectMapper
+    private lateinit var acknowledgment: Acknowledgment
+
     @BeforeEach
     fun setup() {
-        listAppender.start()
-        debugLogger.addAppender(listAppender)
+        listener = PersonEndringListener(personEndringRepository, personHendelseRepository)
+        objectMapper = ObjectMapper()
+            .registerModule(KotlinModule.Builder().build())
+            .registerModule(JavaTimeModule())
+        acknowledgment = mockk(relaxed = true)
+
+        personEndringRepository.deleteAll()
+        personHendelseRepository.deleteAll()
     }
 
     @AfterEach
-    fun cleanup() {
-        listAppender.stop()
+    fun teardown() {
+        personEndringRepository.deleteAll()
+        personHendelseRepository.deleteAll()
     }
 
     @Test
-    fun `test av hendelse med et tpnr i seg`() {
-        val personEndringHendelse =  mockPersonEndringKafkaHendelse(tpnr = listOf("3090"))
-        val personEndringHendelseJson = mapper.writeValueAsString(personEndringHendelse)
+    fun `skal lagre personendring med enkelt tpnr`() {
+        val hendelseId = UUID.randomUUID().toString()
+        val fnr = "12345678901"
+        val tpnr = "123"
+        val meldingskode = Meldingskode.SIVILSTAND
 
-        listener.listener(personEndringHendelseJson, mockk(relaxed = true), acknowledgment)
+        val hendelse = PersonEndringKafkaHendelse(
+            hendelseId = hendelseId,
+            tpNr = listOf(tpnr),
+            fnr = fnr,
+            meldingsKode = meldingskode,
+            sivilstand = "GIFT",
+            sivilstandDato = LocalDate.now()
+        )
 
-        assertEquals(1, personEndringRepository.countAllByTpnr("3090"))
-        assertEquals(true, personHendelseRepository.existsByHendelseIdAndMeldingskode(personEndringHendelse.hendelseId, personEndringHendelse.meldingsKode))
+        val hendelseJson = objectMapper.writeValueAsString(hendelse)
+        val consumerRecord = mockConsumerRecord(hendelseJson)
 
-        //test på skal ikke behandles på nytt. (samme hendelseid)
-        listener.listener(personEndringHendelseJson, mockk(relaxed = true), acknowledgment)
-        assertEquals(1, personEndringRepository.countAllByTpnr("3090"))
+        listener.listener(hendelseJson, consumerRecord, acknowledgment)
+
+        val saved = personEndringRepository.findAll()
+        assertEquals(1, saved.size)
+        assertEquals(fnr, saved[0].fnr)
+        assertEquals(tpnr, saved[0].tpnr)
+        assertEquals(meldingskode, saved[0].meldingskode)
+        assertEquals(1L, saved[0].sekvensnummer)
+
+        verify { acknowledgment.acknowledge() }
+    }
+
+    @Test
+    fun `skal lagre personendring med flere tpnr`() {
+        val hendelseId = UUID.randomUUID().toString()
+        val fnr = "12345678901"
+        val tpnrList = listOf("123", "456", "789")
+        val meldingskode = Meldingskode.FODSELSNUMMER
+
+        val hendelse = PersonEndringKafkaHendelse(
+            hendelseId = hendelseId,
+            tpNr = tpnrList,
+            fnr = fnr,
+            oldFnr = "98765432101",
+            meldingsKode = meldingskode
+        )
+
+        val hendelseJson = objectMapper.writeValueAsString(hendelse)
+        val consumerRecord = mockConsumerRecord(hendelseJson)
+
+        listener.listener(hendelseJson, consumerRecord, acknowledgment)
+
+        val saved = personEndringRepository.findAll()
+        assertEquals(3, saved.size)
+        tpnrList.forEach { tpnr ->
+            assertTrue(saved.any { it.tpnr == tpnr })
+        }
+
+        verify { acknowledgment.acknowledge() }
+    }
+
+    @Test
+    fun `skal sette sekvensnummer basert på siste sekvensnummer for tpnr`() {
+        val tpnr = "123"
+        val fnr = "12345678901"
+
+        // Lagre to tidligere hendelser
+        repeat(2) { i ->
+            val hendelse = PersonEndringKafkaHendelse(
+                hendelseId = UUID.randomUUID().toString(),
+                tpNr = listOf(tpnr),
+                fnr = fnr,
+                meldingsKode = Meldingskode.SIVILSTAND
+            )
+            val hendelseJson = objectMapper.writeValueAsString(hendelse)
+            val consumerRecord = mockConsumerRecord(hendelseJson)
+            listener.listener(hendelseJson, consumerRecord, acknowledgment)
+        }
+
+        // Lagre ny hendelse
+        val hendelseId = UUID.randomUUID().toString()
+        val hendelse = PersonEndringKafkaHendelse(
+            hendelseId = hendelseId,
+            tpNr = listOf(tpnr),
+            fnr = fnr,
+            meldingsKode = Meldingskode.DOEDSFALL,
+            dodsdato = LocalDate.now()
+        )
+
+        val hendelseJson = objectMapper.writeValueAsString(hendelse)
+        val consumerRecord = mockConsumerRecord(hendelseJson)
+
+        listener.listener(hendelseJson, consumerRecord, acknowledgment)
+
+        val saved = personEndringRepository.getFirstByTpnrOrderBySekvensnummerDesc(tpnr)
+        assertNotNull(saved)
+        assertEquals(3L, saved.sekvensnummer)
+    }
+
+    @Test
+    fun `skal ignorere duplikat hendelse basert på hendelseId og meldingskode`() {
+        val hendelseId = UUID.randomUUID().toString()
+        val fnr = "12345678901"
+        val tpnr = "123"
+        val meldingskode = Meldingskode.SIVILSTAND
+
+        val hendelse = PersonEndringKafkaHendelse(
+            hendelseId = hendelseId,
+            tpNr = listOf(tpnr),
+            fnr = fnr,
+            meldingsKode = meldingskode
+        )
+
+        val hendelseJson = objectMapper.writeValueAsString(hendelse)
+        val consumerRecord = mockConsumerRecord(hendelseJson)
+
+        // Lagre første gang
+        listener.listener(hendelseJson, consumerRecord, acknowledgment)
+        assertEquals(1, personEndringRepository.findAll().size)
+
+        // Lagre samme hendelse igjen
+        listener.listener(hendelseJson, consumerRecord, acknowledgment)
+
+        val saved = personEndringRepository.findAll()
+        assertEquals(1, saved.size)
 
         verify(exactly = 2) { acknowledgment.acknowledge() }
     }
 
     @Test
-    fun `test av hendelser med flere tpnr i seg`() {
-        val personEndringHendelser1 =  mockPersonEndringKafkaHendelse(tpnr = listOf("3010", "3200", "3400"))
-        val personEndringHendelser2 =  mockPersonEndringKafkaHendelse(tpnr = listOf("3200", "3400"))
-        val personEndringHendelse1Json = mapper.writeValueAsString(personEndringHendelser1)
-        val personEndringHendelse2Json = mapper.writeValueAsString(personEndringHendelser2)
+    fun `skal lagre personHendelse med hendelseId og meldingskode`() {
+        val hendelseId = UUID.randomUUID().toString()
+        val fnr = "12345678901"
+        val tpnr = "123"
+        val meldingskode = Meldingskode.ADRESSE
 
-        listener.listener(personEndringHendelse1Json, mockk(relaxed = true), acknowledgment)
-        listener.listener(personEndringHendelse2Json, mockk(relaxed = true), acknowledgment)
+        val hendelse = PersonEndringKafkaHendelse(
+            hendelseId = hendelseId,
+            tpNr = listOf(tpnr),
+            fnr = fnr,
+            meldingsKode = meldingskode
+        )
 
-        assertEquals(1, personEndringRepository.countAllByTpnr("3010"))
-        assertEquals(2, personEndringRepository.countAllByTpnr("3200"))
-        assertEquals(2, personEndringRepository.countAllByTpnr("3400"))
-        assertEquals(true, personHendelseRepository.existsByHendelseIdAndMeldingskode(personEndringHendelser1.hendelseId, personEndringHendelser1.meldingsKode))
-        assertEquals(true, personHendelseRepository.existsByHendelseIdAndMeldingskode(personEndringHendelser2.hendelseId, personEndringHendelser2.meldingsKode))
+        val hendelseJson = objectMapper.writeValueAsString(hendelse)
+        val consumerRecord = mockConsumerRecord(hendelseJson)
 
-        verify(exactly = 2) { acknowledgment.acknowledge() }
+        listener.listener(hendelseJson, consumerRecord, acknowledgment)
+
+        assertTrue(personHendelseRepository.existsByHendelseIdAndMeldingskode(hendelseId, meldingskode))
+
+        verify { acknowledgment.acknowledge() }
     }
 
     @Test
     fun `verifiser at hendelsen ikke ackes ved database-feil`() {
-        val personEndringHendelse =  mockPersonEndringKafkaHendelse(tpnr = listOf("3010"))
-        val personEndringHendelseJson = mapper.writeValueAsString(personEndringHendelse)
+        val hendelseId = UUID.randomUUID().toString()
+        val fnr = "12345678901"
+        val tpnr = "123"
 
-        val personEndringRepository = mockk<PersonEndringRepository>(relaxed = true)
-        val personEndringListener = PersonEndringListener(personEndringRepository, mockk(relaxed = true))
-        every { personEndringRepository.save(any()) } returnsArgument 0
-        every { personEndringRepository.flush() } throws IOException("IO error")
+        val hendelse = PersonEndringKafkaHendelse(
+            hendelseId = hendelseId,
+            tpNr = listOf(tpnr),
+            fnr = fnr,
+            meldingsKode = Meldingskode.SIVILSTAND
+        )
 
-        assertThrows<IOException> {
-            personEndringListener.listener(personEndringHendelseJson, mockk(relaxed = true), acknowledgment)
+        val hendelseJson = objectMapper.writeValueAsString(hendelse)
+        val consumerRecord = mockConsumerRecord(hendelseJson)
+
+        // Mock repository for å kaste exception
+        val failingRepository = mockk<PersonEndringRepository>()
+        val failingListener = PersonEndringListener(failingRepository, personHendelseRepository)
+
+        every { failingRepository.getFirstByTpnrOrderBySekvensnummerDesc(any()) } throws RuntimeException("Database error")
+
+        assertThrows<RuntimeException> {
+            failingListener.listener(hendelseJson, consumerRecord, acknowledgment)
         }
 
-        verify(exactly = 0) { acknowledgment.acknowledge()  }
-        verify(exactly = 1) { personEndringRepository.save(any()) }
-        verify(exactly = 1) { personEndringRepository.flush() }
+        verify(exactly = 0) { acknowledgment.acknowledge() }
     }
 
+    @Test
+    fun `skal håndtere invalid JSON med ack`() {
+        val invalidJson = "{ invalid json }"
+        val consumerRecord = mockConsumerRecord(invalidJson)
 
-    fun mockPersonEndringKafkaHendelse(tpnr: List<String>, fnr: String = "1001010101") = PersonEndringKafkaHendelse(
-        hendelseId = UUID.randomUUID().toString(),
-        tpNr = tpnr,
-        fnr = fnr,
-        sivilstand = "GIFT",
-        sivilstandDato = LocalDate.now(),
-        meldingsKode = Meldingskode.SIVILSTAND
+        listener.listener(invalidJson, consumerRecord, acknowledgment)
 
+        verify { acknowledgment.acknowledge() }
 
-    )
+        val saved = personEndringRepository.findAll()
+        assertEquals(0, saved.size)
+    }
+
+    @Test
+    fun `skal lagre alle meldingskoder`() {
+        val fnr = "12345678901"
+        val tpnr = "123"
+
+        Meldingskode.values().forEach { meldingskode ->
+            val hendelseId = UUID.randomUUID().toString()
+            val hendelse = PersonEndringKafkaHendelse(
+                hendelseId = hendelseId,
+                tpNr = listOf(tpnr),
+                fnr = fnr,
+                meldingsKode = meldingskode,
+                sivilstand = if (meldingskode == Meldingskode.SIVILSTAND) "GIFT" else null,
+                sivilstandDato = if (meldingskode == Meldingskode.SIVILSTAND) LocalDate.now() else null,
+                dodsdato = if (meldingskode == Meldingskode.DOEDSFALL) LocalDate.now() else null
+            )
+
+            val hendelseJson = objectMapper.writeValueAsString(hendelse)
+            val consumerRecord = mockConsumerRecord(hendelseJson)
+
+            listener.listener(hendelseJson, consumerRecord, acknowledgment)
+        }
+
+        val saved = personEndringRepository.findAll()
+        assertEquals(4, saved.size)
+
+        Meldingskode.values().forEach { meldingskode ->
+            assertTrue(saved.any { it.meldingskode == meldingskode })
+        }
+    }
+
+    private fun mockConsumerRecord(value: String): ConsumerRecord<String, String> {
+        return ConsumerRecord(
+            "PERSON_ENDRING",
+            0,
+            1L,
+            UUID.randomUUID().toString(),
+            value
+        )
+    }
 }
