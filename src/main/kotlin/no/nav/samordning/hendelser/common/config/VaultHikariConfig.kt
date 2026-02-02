@@ -18,7 +18,7 @@ class VaultHikariConfig(
 
     private val hikariConfig = HikariConfig().apply {
         jdbcUrl = vault.datasource.url
-        minimumIdle = 0
+        minimumIdle = 1
         maxLifetime = 30001
         maximumPoolSize = vault.datasource.maxPoolSize
         connectionTimeout = 250
