@@ -1,25 +1,25 @@
 package no.nav.samordning.hendelser.vedtak.hendelse
 
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 import org.postgresql.util.PGobject
+import tools.jackson.core.JacksonException
+import tools.jackson.databind.ObjectMapper
 import java.io.IOException
 import java.sql.SQLException
 
 
 @Converter
-class JpaConverterJson : AttributeConverter<Hendelse, PGobject> {
+class JpaConverterJson(
+    private val objectMapper: ObjectMapper
+) : AttributeConverter<Hendelse, PGobject> {
     override fun convertToDatabaseColumn(meta: Hendelse): PGobject {
         return try {
             val pGobject = PGobject()
             pGobject.type = "jsonb"
             pGobject.value = objectMapper.writeValueAsString(meta)
             pGobject
-        } catch (e: JsonProcessingException) {
+        } catch (e: JacksonException) {
             throw RuntimeException(e)
         } catch (e: SQLException) {
             println(e.message)
@@ -33,11 +33,5 @@ class JpaConverterJson : AttributeConverter<Hendelse, PGobject> {
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
-    }
-
-    companion object {
-        private val objectMapper: ObjectMapper = ObjectMapper()
-            .registerModule(KotlinModule.Builder().build())
-            .registerModule(JavaTimeModule())
     }
 }

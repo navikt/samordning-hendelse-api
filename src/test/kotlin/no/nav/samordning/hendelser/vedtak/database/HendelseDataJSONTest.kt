@@ -1,6 +1,5 @@
 package no.nav.samordning.hendelser.vedtak.database
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.samordning.hendelser.vedtak.hendelse.Hendelse
 import org.hamcrest.MatcherAssert.assertThat
@@ -9,6 +8,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import tools.jackson.databind.ObjectMapper
 import java.time.LocalDate
 
 @SpringBootTest
