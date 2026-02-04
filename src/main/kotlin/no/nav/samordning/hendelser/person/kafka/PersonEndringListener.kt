@@ -1,9 +1,6 @@
 package no.nav.samordning.hendelser.person.kafka
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.samordning.hendelser.person.repository.PersonEndring
 import no.nav.samordning.hendelser.person.repository.PersonEndringRepository
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -18,15 +15,17 @@ import java.time.LocalDate
 import no.nav.samordning.hendelser.person.domain.Meldingskode
 import no.nav.samordning.hendelser.person.repository.PersonHendelse
 import no.nav.samordning.hendelser.person.repository.PersonHendelseRepository
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.readValue
 
 @Service
 @Transactional
 class PersonEndringListener(
     private val personEndringRepository: PersonEndringRepository,
-    private val personHendelseRepository: PersonHendelseRepository
+    private val personHendelseRepository: PersonHendelseRepository,
+    private val mapper: ObjectMapper,
 )  {
 
-    private val mapper : ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule())
     private val logger: Logger = getLogger(javaClass)
 
     @KafkaListener(topics = ["\${PERSON_ENDRING_KAFKA_TOPIC}"])
@@ -97,7 +96,9 @@ data class PersonEndringKafkaHendelse(
     val fnr: String,
     val oldFnr: String? = null,
     val sivilstand: String? = null,
+    @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val sivilstandDato: LocalDate? = null,
+    @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val dodsdato: LocalDate? = null,
     val meldingsKode: Meldingskode
 )

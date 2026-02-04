@@ -5,7 +5,6 @@ import io.mockk.every
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
-import no.nav.samordning.hendelser.common.security.support.SCOPE_SAMORDNING
 import no.nav.samordning.hendelser.person.domain.Meldingskode
 import no.nav.samordning.hendelser.person.domain.PersonResponse
 import no.nav.samordning.hendelser.person.service.PersonService
@@ -14,8 +13,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
@@ -395,9 +394,7 @@ internal class PersonFeedControllerTest {
             jsonPath("$.hendelser[0].fnr") { value("01016600000") }
             jsonPath("$.hendelser[0].fnrGammelt") { value("01016600001") }
             jsonPath("$.hendelser[0].sivilstand") { value("SAMBOER") }
-            jsonPath("$.hendelser[0].sivilstandDato[0]") { value(2021) }
-            jsonPath("$.hendelser[0].sivilstandDato[1]") { value(5) }
-            jsonPath("$.hendelser[0].sivilstandDato[2]") { value(15) }
+            jsonPath("$.hendelser[0].sivilstandDato") { value("2021-05-15") }
             jsonPath("$.hendelser[0].doedsdato") { doesNotExist() }
             jsonPath("$.hendelser[0].meldingskode") { value("SIVILSTAND") }
         }
@@ -459,9 +456,7 @@ internal class PersonFeedControllerTest {
                 setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
             }
         }.andExpect {
-            jsonPath("$.hendelser[0].doedsdato[0]") { value(2023) }
-            jsonPath("$.hendelser[0].doedsdato[1]") { value(12) }
-            jsonPath("$.hendelser[0].doedsdato[2]") { value(25) }
+            jsonPath("$.hendelser[0].doedsdato") { value("2023-12-25") }
         }
     }
 

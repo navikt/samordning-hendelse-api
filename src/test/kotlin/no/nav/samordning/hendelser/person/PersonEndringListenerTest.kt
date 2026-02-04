@@ -1,8 +1,5 @@
 package no.nav.samordning.hendelser.person
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -20,6 +17,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.support.Acknowledgment
+import tools.jackson.databind.ObjectMapper
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -36,16 +34,15 @@ class PersonEndringListenerTest {
     @Autowired
     private lateinit var personHendelseRepository: PersonHendelseRepository
 
-    private lateinit var listener: PersonEndringListener
+    @Autowired
     private lateinit var objectMapper: ObjectMapper
+
+    private lateinit var listener: PersonEndringListener
     private lateinit var acknowledgment: Acknowledgment
 
     @BeforeEach
     fun setup() {
-        listener = PersonEndringListener(personEndringRepository, personHendelseRepository)
-        objectMapper = ObjectMapper()
-            .registerModule(KotlinModule.Builder().build())
-            .registerModule(JavaTimeModule())
+        listener = PersonEndringListener(personEndringRepository, personHendelseRepository, objectMapper)
         acknowledgment = mockk(relaxed = true)
 
         personEndringRepository.deleteAll()
@@ -228,7 +225,7 @@ class PersonEndringListenerTest {
 
         // Mock repository for å kaste exception
         val failingRepository = mockk<PersonEndringRepository>()
-        val failingListener = PersonEndringListener(failingRepository, personHendelseRepository)
+        val failingListener = PersonEndringListener(failingRepository, personHendelseRepository, objectMapper)
 
         every { failingRepository.getFirstByTpnrOrderBySekvensnummerDesc(any()) } throws RuntimeException("Database error")
 
