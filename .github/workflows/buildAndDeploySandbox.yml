@@ -50,3 +50,15 @@ jobs:
           RESOURCE: nais/dev.yml
           IMAGE: ${{ steps.docker-build-push.outputs.image }}
           TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
+      - name: Deploy KrakenD config
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: nais/apiendpoints/krakend-q2.yaml
+      - name: Deploy apiEndpoints config
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: nais/apiendpoints/apiendpoints-q2.yaml
+
+
