@@ -1,6 +1,5 @@
 package no.nav.samordning.hendelser.ytelse.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.micrometer.core.annotation.Timed
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Digits
@@ -20,6 +19,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.databind.ObjectMapper
 
 @RestController
 @Validated

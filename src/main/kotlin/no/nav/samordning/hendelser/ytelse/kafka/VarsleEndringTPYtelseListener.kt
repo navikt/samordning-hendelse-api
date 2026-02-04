@@ -1,9 +1,5 @@
 package no.nav.samordning.hendelser.ytelse.kafka
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
@@ -15,14 +11,16 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.readValue
 
 @Service
 @Transactional
 class VarsleEndringTPYtelseListener(
-    private val ytelseHendelserRepository: YtelseHendelserRepository
+    private val ytelseHendelserRepository: YtelseHendelserRepository,
+    private val mapper: ObjectMapper
 )  {
 
-    private val mapper : ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule())
     private val logger: Logger = getLogger(javaClass)
 
     @KafkaListener(topics = ["\${YTELSE_HENDELSE_KAFKA_TOPIC}"])
@@ -31,7 +29,7 @@ class VarsleEndringTPYtelseListener(
 
         val ytelseHendelser: List<YtelseHendelse> = try {
             logger.debug("hendelse json: $hendelse")
-            MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["id"].asText())
+            MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["id"].asString())
 
             val kafkaHendelse = mapper.readValue<YtelseHendelseDTO>(hendelse)
 
@@ -39,7 +37,7 @@ class VarsleEndringTPYtelseListener(
                 YtelseHendelse(
                     id = 0,
                     tpnr = kafkaHendelse.tpnr,
-                    mottaker = mottaker.asText(),
+                    mottaker = mottaker.asString(),
                     identifikator = kafkaHendelse.identifikator,
                     hendelseType = kafkaHendelse.hendelseType,
                     ytelseType = kafkaHendelse.ytelseType,
