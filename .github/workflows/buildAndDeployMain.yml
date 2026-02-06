@@ -58,3 +58,10 @@ jobs:
           RESOURCE: nais/prod.yml
           IMAGE: ${{ steps.docker-build-push.outputs.image }}
           TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
+
+      - name: Deploy Topic
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: nais/topic/person-endring-prod.yml
+          TEAM: pensjonsamhandling
