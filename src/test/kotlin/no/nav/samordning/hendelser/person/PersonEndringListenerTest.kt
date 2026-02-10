@@ -237,13 +237,13 @@ class PersonEndringListenerTest {
     }
 
     @Test
-    fun `skal håndtere invalid JSON med ack`() {
+    fun `skal ikke acke invalid JSON`() {
         val invalidJson = "{ invalid json }"
         val consumerRecord = mockConsumerRecord(invalidJson)
 
         listener.listener(invalidJson, consumerRecord, acknowledgment)
 
-        verify { acknowledgment.acknowledge() }
+        verify(exactly = 0) { acknowledgment.acknowledge() }
 
         val saved = personEndringRepository.findAll()
         assertEquals(0, saved.size)
