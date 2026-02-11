@@ -1,10 +1,10 @@
 package no.nav.samordning.hendelser.vedtak.hendelse
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
+import tools.jackson.databind.annotation.JsonDeserialize
+import tools.jackson.databind.annotation.JsonSerialize
+import tools.jackson.datatype.jsr310.deser.LocalDateDeserializer
+import tools.jackson.datatype.jsr310.ser.LocalDateSerializer
 import java.io.Serializable
 import java.time.LocalDate
 
@@ -24,4 +24,3 @@ class Hendelse(
     var tom: LocalDate? = null
 ) : Serializable {
 }
-

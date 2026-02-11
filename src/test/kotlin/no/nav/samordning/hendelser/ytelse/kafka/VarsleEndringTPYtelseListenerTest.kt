@@ -13,10 +13,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.LoggerFactory
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.support.Acknowledgment
+import tools.jackson.datatype.jsr310.JavaTimeModule
+import tools.jackson.module.kotlin.jacksonMapperBuilder
 import java.io.IOException
 import kotlin.test.assertTrue
 
@@ -60,7 +61,7 @@ class VarsleEndringTPYtelseListenerTest {
     @Test
     fun testingAvConsumerFeilerVedLagring() {
         val ytelseHendelserRepository = mockk<YtelseHendelserRepository>(relaxed = true)
-        val listener2 = VarsleEndringTPYtelseListener(ytelseHendelserRepository)
+        val listener2 = VarsleEndringTPYtelseListener(ytelseHendelserRepository, jacksonMapperBuilder().addModule(JavaTimeModule()).build())
         every { ytelseHendelserRepository.save(any()) } returnsArgument 0
         every { ytelseHendelserRepository.flush() } throws IOException("IO error")
 

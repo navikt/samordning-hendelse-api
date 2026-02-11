@@ -1,15 +1,18 @@
 package no.nav.samordning.hendelser.ytelse.repository
 
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase
+import no.nav.samordning.hendelser.vedtak.config.DatabaseConfig
 import no.nav.samordning.hendelser.ytelse.domain.HendelseTypeCode
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
+import org.springframework.context.annotation.Import
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 @DataJpaTest
+@Import(DatabaseConfig::class)
 @AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
 class YtelseHendelserRepositoryTest {
 

@@ -1,9 +1,5 @@
 package no.nav.samordning.hendelser.vedtak.kafka
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseContainerDO
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseRepositoryDO
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -13,13 +9,16 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.readValue
 
 @Service
 @Transactional
 class VarsleVedtakSamordningListener(
-    private val hendelseRepository: HendelseRepositoryDO
+    private val hendelseRepository: HendelseRepositoryDO,
+    private val mapper: ObjectMapper
 ) {
-    private val mapper : ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule())
+
     private val LOG: Logger = getLogger(javaClass)
 
     @KafkaListener(topics = ["\${VEDTAK_HENDELSE_KAFKA_TOPIC}"])
