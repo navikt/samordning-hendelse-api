@@ -68,3 +68,10 @@ jobs:
         env:
           CLUSTER: prod-gcp
           RESOURCE: nais/apiendpoints/apiendpoints-prod.yaml
+
+      - name: Deploy Topic
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: nais/topic/person-endring-prod.yml
+          TEAM: pensjonsamhandling

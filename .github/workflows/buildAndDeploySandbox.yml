@@ -62,3 +62,10 @@ jobs:
           RESOURCE: nais/apiendpoints/apiendpoints-q2.yaml
 
 
+
+      - name: Deploy Topic Q2
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: nais/topic/person-endring-dev.yml
+          TEAM: pensjonsamhandling

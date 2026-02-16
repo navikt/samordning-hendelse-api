@@ -1,13 +1,13 @@
 package no.nav.samordning.hendelser.vedtak.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.samordning.hendelser.vedtak.config.DatabaseConfig
 import no.nav.samordning.hendelser.vedtak.hendelse.Hendelse
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseRepository
 import no.nav.samordning.hendelser.vedtak.hendelse.YtelseType
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.stereotype.Service
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.readValue
 import kotlin.math.ceil
 
 @Service

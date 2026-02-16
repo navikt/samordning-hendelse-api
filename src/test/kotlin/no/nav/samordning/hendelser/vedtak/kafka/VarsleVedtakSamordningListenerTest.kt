@@ -1,8 +1,5 @@
 package no.nav.samordning.hendelser.vedtak.kafka
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -12,14 +9,17 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.kafka.support.Acknowledgment
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.datatype.jsr310.JavaTimeModule
+import tools.jackson.module.kotlin.jacksonMapperBuilder
 import java.io.IOException
 
 internal class VarsleVedtakSamordningListenerTest {
 
     private val acknowledgment: Acknowledgment = mockk(relaxed = true)
     private val hendelseRepository = mockk<HendelseRepositoryDO>(relaxed = true)
-    private val mapper : ObjectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule())
-    private val listener =  VarsleVedtakSamordningListener(hendelseRepository)
+    private val mapper : ObjectMapper = jacksonMapperBuilder().addModule(JavaTimeModule()).build()
+    private val listener =  VarsleVedtakSamordningListener(hendelseRepository, mapper)
 
     @BeforeEach
     fun setup() {
@@ -66,7 +66,6 @@ internal class VarsleVedtakSamordningListenerTest {
     )
 
 
+    fun SamHendelse.toJson() = mapper.writeValueAsString(this)
 
 }
-
-fun SamHendelse.toJson() = ObjectMapper().registerModule(KotlinModule.Builder().build() ).registerModule(JavaTimeModule()).writeValueAsString(this)
