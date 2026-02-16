@@ -62,10 +62,16 @@ jobs:
           RESOURCE: nais/apiendpoints/apiendpoints-q2.yaml
 
 
-
-      - name: Deploy Topic Q2
+      - name: Deploy person-endring Topic Q2
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
           RESOURCE: nais/topic/person-endring-dev.yml
+          TEAM: pensjonsamhandling
+
+      - name: Deploy manglende-refusjonskrav Topic Q2
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: nais/topic/manglende-refusjonskrav-dev.yml
           TEAM: pensjonsamhandling

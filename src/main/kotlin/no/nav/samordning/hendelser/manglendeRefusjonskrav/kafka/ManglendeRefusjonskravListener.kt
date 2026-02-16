@@ -1,21 +1,18 @@
 package no.nav.samordning.hendelser.manglendeRefusjonskrav.kafka
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import no.nav.samordning.hendelser.manglendeRefusjonskrav.domain.Meldingskode
 import no.nav.samordning.hendelser.manglendeRefusjonskrav.repository.ManglendeRefusjonskrav
 import no.nav.samordning.hendelser.manglendeRefusjonskrav.repository.ManglendeRefusjonskravRepository
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
-import org.slf4j.MDC
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
 import tools.jackson.databind.ObjectMapper
 import tools.jackson.module.kotlin.readValue
-import kotlin.collections.map
+import java.time.LocalDate
 
 @Service
 @Transactional
@@ -32,7 +29,7 @@ class ManglendeRefusjonskravListener(
 
         val manglendeRefusjonskrav: ManglendeRefusjonskrav = try {
             logger.debug("hendelse json: $hendelse")
-            MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["hendelseId"].asText())
+
             val kafkaHendelse = mapper.readValue<ManglendeRefusjonskravKafkaHendelse>(hendelse)
 
             ManglendeRefusjonskrav(
@@ -65,7 +62,6 @@ class ManglendeRefusjonskravListener(
 }
 
 data class ManglendeRefusjonskravKafkaHendelse(
-    val hendelseId: String,
     val tpNr: String,
     val fnr: String,
     val samId: String,

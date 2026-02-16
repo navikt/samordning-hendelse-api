@@ -4,8 +4,8 @@ import io.mockk.mockk
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
-import no.nav.samordning.hendelser.manglendeRefusjonskrav.kafka.ManglendeRefusjonskravListener
 import no.nav.samordning.hendelser.manglendeRefusjonskrav.kafka.ManglendeRefusjonskravKafkaHendelse
+import no.nav.samordning.hendelser.manglendeRefusjonskrav.kafka.ManglendeRefusjonskravListener
 import no.nav.samordning.hendelser.manglendeRefusjonskrav.repository.ManglendeRefusjonskravRepository
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import tools.jackson.databind.ObjectMapper
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -59,14 +59,12 @@ class ManglendeRefusjonskravIntegrationTest {
 
     @Test
     fun `skal lagre innkommende melding og hente den via REST API`() {
-        val hendelseId = UUID.randomUUID().toString()
         val tpnr = "0129"
         val fnr = "12345678901"
         val samId = "98765432109"
         val svarfrist = LocalDate.of(2025, 12, 31)
 
         val hendelse = ManglendeRefusjonskravKafkaHendelse(
-            hendelseId = hendelseId,
             tpNr = tpnr,
             fnr = fnr,
             samId = samId,
@@ -113,7 +111,6 @@ class ManglendeRefusjonskravIntegrationTest {
         // Lagre 3 meldinger
         repeat(3) { i ->
             val hendelse = ManglendeRefusjonskravKafkaHendelse(
-                hendelseId = UUID.randomUUID().toString(),
                 tpNr = tpnr,
                 fnr = "1234567890${i}",
                 samId = "9876543210${i}",
@@ -155,7 +152,6 @@ class ManglendeRefusjonskravIntegrationTest {
         // Lagre 2 meldinger for tpnr1
         repeat(2) { i ->
             val hendelse = ManglendeRefusjonskravKafkaHendelse(
-                hendelseId = UUID.randomUUID().toString(),
                 tpNr = tpnr1,
                 fnr = "1111111111${i}",
                 samId = "9999999999${i}",
@@ -170,7 +166,6 @@ class ManglendeRefusjonskravIntegrationTest {
         // Lagre 3 meldinger for tpnr2
         repeat(3) { i ->
             val hendelse = ManglendeRefusjonskravKafkaHendelse(
-                hendelseId = UUID.randomUUID().toString(),
                 tpNr = tpnr2,
                 fnr = "2222222222${i}",
                 samId = "8888888888${i}",
@@ -211,7 +206,6 @@ class ManglendeRefusjonskravIntegrationTest {
         // Lagre 15 meldinger
         repeat(15) { i ->
             val hendelse = ManglendeRefusjonskravKafkaHendelse(
-                hendelseId = UUID.randomUUID().toString(),
                 tpNr = tpnr,
                 fnr = "1234567890${i.toString().padStart(2, '0')}",
                 samId = "9876543210${i.toString().padStart(2, '0')}",
@@ -252,7 +246,6 @@ class ManglendeRefusjonskravIntegrationTest {
 
         repeat(5) { i ->
             val hendelse = ManglendeRefusjonskravKafkaHendelse(
-                hendelseId = UUID.randomUUID().toString(),
                 tpNr = tpnr,
                 fnr = "1234567890${i}",
                 samId = "9876543210${i}",
