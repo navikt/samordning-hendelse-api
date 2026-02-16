@@ -38,7 +38,7 @@ dependencies {
     implementation("no.nav", "vault-jdbc" ,"1.3.10")
     implementation("no.nav.pensjonsamhandling", "maskinporten-validation-spring", "3.1.0")
     implementation("net.logstash.logback", "logstash-logback-encoder", logstashEncoderVersion)
-    implementation("org.postgresql", "postgresql", "42.7.9")
+    implementation("org.postgresql", "postgresql", "42.7.10")
     implementation("org.hibernate.validator", "hibernate-validator", "9.1.0.Final")
     implementation("org.springframework.boot", "spring-boot-starter-web")
     implementation("org.springframework.boot", "spring-boot-starter-webflux")
