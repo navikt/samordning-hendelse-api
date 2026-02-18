@@ -1,4 +1,5 @@
 package no.nav.samordning.hendelser.ytelse.kafka
+import no.nav.samordning.hendelser.config.IntegrationTest
 
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
@@ -6,7 +7,6 @@ import ch.qos.logback.core.read.ListAppender
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -14,15 +14,15 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.support.Acknowledgment
+import org.springframework.test.annotation.DirtiesContext
 import tools.jackson.datatype.jsr310.JavaTimeModule
 import tools.jackson.module.kotlin.jacksonMapperBuilder
 import java.io.IOException
 import kotlin.test.assertTrue
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
+@IntegrationTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class VarsleEndringTPYtelseListenerTest {
 
     private val debugLogger: Logger = LoggerFactory.getLogger("no.nav.samordning.hendelser") as Logger

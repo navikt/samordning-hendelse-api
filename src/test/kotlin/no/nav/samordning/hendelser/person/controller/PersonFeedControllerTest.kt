@@ -2,8 +2,6 @@ package no.nav.samordning.hendelser.person.controller
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase
-import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
 import no.nav.samordning.hendelser.person.domain.Meldingskode
 import no.nav.samordning.hendelser.person.domain.PersonResponse
@@ -13,17 +11,13 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import java.time.LocalDate
+import no.nav.samordning.hendelser.config.IntegrationTest
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMaskinportenValidator
-@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
-@AutoConfigureMockMvc
+@IntegrationTest
 internal class PersonFeedControllerTest {
 
     @Autowired

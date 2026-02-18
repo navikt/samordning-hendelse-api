@@ -1,8 +1,7 @@
 package no.nav.samordning.hendelser.vedtak.service
+import no.nav.samordning.hendelser.config.IntegrationTest
 
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.samordning.hendelser.TestData
-import no.nav.samordning.hendelser.vedtak.config.DatabaseConfig
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseContainerDO
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseRepositoryDO
 import no.nav.samordning.hendelser.vedtak.kafka.SamHendelse
@@ -11,13 +10,9 @@ import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
-import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
 
-@DataJpaTest
-@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
-@Import(DatabaseConfig::class, HendelseService::class)
+@IntegrationTest
 class HendelseServiceTest {
 
     @Autowired

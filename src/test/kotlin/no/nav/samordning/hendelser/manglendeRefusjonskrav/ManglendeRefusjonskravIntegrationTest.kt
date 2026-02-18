@@ -1,9 +1,8 @@
 package no.nav.samordning.hendelser.manglendeRefusjonskrav
 
 import io.mockk.mockk
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase
-import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
+import no.nav.samordning.hendelser.config.IntegrationTest
 import no.nav.samordning.hendelser.manglendeRefusjonskrav.kafka.ManglendeRefusjonskravKafkaHendelse
 import no.nav.samordning.hendelser.manglendeRefusjonskrav.kafka.ManglendeRefusjonskravListener
 import no.nav.samordning.hendelser.manglendeRefusjonskrav.repository.ManglendeRefusjonskravRepository
@@ -12,8 +11,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.web.servlet.MockMvc
@@ -24,10 +21,7 @@ import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMaskinportenValidator
-@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
-@AutoConfigureMockMvc
+@IntegrationTest
 class ManglendeRefusjonskravIntegrationTest {
 
     @Autowired

@@ -1,25 +1,19 @@
 package no.nav.samordning.hendelser.vedtak.feed
+import no.nav.samordning.hendelser.config.IntegrationTest
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase
-import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
 import no.nav.samordning.hendelser.common.consumer.TpConfigConsumer
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 
 /**
  * Tests authentication/authorization (maskinportenValidatorTokenGenerator) of the feed controller API.
  */
-@SpringBootTest
-@AutoConfigureMaskinportenValidator
-@AutoConfigureMockMvc
-@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
+@IntegrationTest
 internal class FeedControllerAuthTest {
 
     @Autowired
@@ -91,7 +85,6 @@ internal class FeedControllerAuthTest {
     }
 
     companion object {
-        private const val URL_VEDTAK = "/hendelser?tpnr=1000"
         private const val SCOPE_SAMORDNING = "nav:pensjon/v1/samordning"
         private const val ENDPOINT = "/hendelser"
         private const val TPNR_PARAM_NAME = "tpnr"

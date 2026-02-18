@@ -1,11 +1,12 @@
 spring:
   profiles.active: test
-  sql.init.mode: always
+  sql:
+    init:
+      mode: always
   jpa:
-    hibernate.ddl-auto: create-drop
     database: postgresql
-#    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    defer-datasource-initialization: true
+  flyway:
+    enabled: false
   kafka:
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
