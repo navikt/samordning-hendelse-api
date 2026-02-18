@@ -7,8 +7,4 @@ maskinporten.validation:
 VEDTAK_HENDELSE_KAFKA_TOPIC: pensjonsamhandling.sam-vedtak-hendelser-q2
 YTELSE_HENDELSE_KAFKA_TOPIC: pensjonsamhandling.tp-hendelser-q2
 PERSON_ENDRING_KAFKA_TOPIC: pensjonsamhandling.person-endring-q2
-
-spring:
-  jpa:
-    hibernate:
-      ddl-auto: update
+MANGLENDE_REFUSJONSKRAV_KAFKA_TOPIC: pensjonsamhandling.manglende-refusjonskrav-q2

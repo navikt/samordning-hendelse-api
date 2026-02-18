@@ -1,18 +1,16 @@
 package no.nav.samordning.hendelser.vedtak.database
 
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase
+import no.nav.samordning.hendelser.config.IntegrationTest
 import no.nav.samordning.hendelser.vedtak.hendelse.Hendelse
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import tools.jackson.databind.ObjectMapper
 import java.time.LocalDate
 
-@SpringBootTest
-@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
+@IntegrationTest
 class HendelseDataJSONTest {
 
     @Autowired

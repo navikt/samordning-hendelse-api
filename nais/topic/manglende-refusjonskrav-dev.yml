@@ -1,0 +1,19 @@
+---
+apiVersion: kafka.nais.io/v1
+kind: Topic
+metadata:
+  name: manglende-refusjonskrav-q2
+  namespace: pensjonsamhandling
+  labels:
+    team: pensjonsamhandling
+spec:
+  pool: nav-dev
+  config:
+    retentionHours: 900
+  acl:
+    - application: sam-q2
+      team: pensjonsamhandling
+      access: readwrite
+    - application: samordning-hendelse-api-q2
+      team: pensjonsamhandling
+      access: read

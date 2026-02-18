@@ -3,7 +3,9 @@ package no.nav.samordning.hendelser.common.config
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil
+import org.flywaydb.core.api.configuration.FluentConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.flyway.autoconfigure.FlywayConfigurationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -31,4 +33,11 @@ class VaultHikariConfig(
         vault.backend,
         vault.role
     )
+
+    @Bean
+    fun flywayConfig(): FlywayConfigurationCustomizer {
+        return FlywayConfigurationCustomizer { c: FluentConfiguration ->
+            c.initSql("SET ROLE \"${vault.role}\"")
+        }
+    }
 }

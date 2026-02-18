@@ -69,9 +69,16 @@ jobs:
           CLUSTER: prod-gcp
           RESOURCE: nais/apiendpoints/apiendpoints-prod.yaml
 
-      - name: Deploy Topic
+      - name: Deploy person-endring Topic
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: prod-gcp
           RESOURCE: nais/topic/person-endring-prod.yml
+          TEAM: pensjonsamhandling
+
+      - name: Deploy manglende-refusjonskrav Topic
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: nais/topic/manglende-refusjonskrav-prod.yml
           TEAM: pensjonsamhandling

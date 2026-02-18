@@ -1,7 +1,6 @@
 package no.nav.samordning.hendelser.vedtak.feed
+import no.nav.samordning.hendelser.config.IntegrationTest
 
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase
-import no.nav.pensjonsamhandling.maskinporten.validation.test.AutoConfigureMaskinportenValidator
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
 import no.nav.samordning.hendelser.common.security.support.SCOPE_SAMORDNING
 import org.junit.jupiter.api.Test
@@ -9,16 +8,11 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMaskinportenValidator
-@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
-@AutoConfigureMockMvc
+@IntegrationTest
 internal class FeedControllerTest {
 
     @Autowired

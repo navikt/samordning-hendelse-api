@@ -1,9 +1,9 @@
 package no.nav.samordning.hendelser.person
+import no.nav.samordning.hendelser.config.IntegrationTest
 
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import no.nav.samordning.hendelser.person.domain.Meldingskode
 import no.nav.samordning.hendelser.person.kafka.PersonEndringKafkaHendelse
 import no.nav.samordning.hendelser.person.kafka.PersonEndringListener
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.kafka.support.Acknowledgment
 import tools.jackson.databind.ObjectMapper
 import java.time.LocalDate
@@ -24,8 +23,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureEmbeddedDatabase(provider = AutoConfigureEmbeddedDatabase.DatabaseProvider.ZONKY)
+@IntegrationTest
 class PersonEndringListenerTest {
 
     @Autowired

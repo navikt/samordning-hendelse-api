@@ -9,6 +9,11 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+  flyway:
+    enabled: true
+    baselineOnMigrate: true
+    baselineVersion: 2
+
   kafka:
     listener:
       ack-mode: manual

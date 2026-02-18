@@ -12,3 +12,4 @@ oauth2:
 VEDTAK_HENDELSE_KAFKA_TOPIC: pensjonsamhandling.sam-vedtak-hendelser-p
 YTELSE_HENDELSE_KAFKA_TOPIC: pensjonsamhandling.tp-hendelser
 PERSON_ENDRING_KAFKA_TOPIC: pensjonsamhandling.person-endring
+MANGLENDE_REFUSJONSKRAV_KAFKA_TOPIC: pensjonsamhandling.manglende-refusjonskrav
