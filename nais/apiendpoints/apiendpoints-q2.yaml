@@ -137,7 +137,7 @@ spec:
 apiVersion: krakend.nais.io/v1
 kind: ApiEndpoints
 metadata:
-  name: samordning-hendelser-manglendeRefusjonskrav-q2
+  name: samordning-hendelser-manglende-refusjonskrav-q2
   namespace: pensjonsamhandling
   labels:
     team: pensjonsamhandling
