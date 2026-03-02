@@ -1,9 +1,10 @@
 package no.nav.samordning.hendelser.person
-import no.nav.samordning.hendelser.config.IntegrationTest
 
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.nav.samordning.hendelser.config.IntegrationTest
+import no.nav.samordning.hendelser.person.domain.Adresse
 import no.nav.samordning.hendelser.person.domain.Meldingskode
 import no.nav.samordning.hendelser.person.kafka.PersonEndringKafkaHendelse
 import no.nav.samordning.hendelser.person.kafka.PersonEndringListener
@@ -18,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.support.Acknowledgment
 import tools.jackson.databind.ObjectMapper
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -51,6 +52,46 @@ class PersonEndringListenerTest {
     fun teardown() {
         personEndringRepository.deleteAll()
         personHendelseRepository.deleteAll()
+    }
+
+    @Test
+    fun `skal lagre personendring med adresse med enkelt tpnr`() {
+        val hendelseId = UUID.randomUUID().toString()
+        val fnr = "12345678901"
+        val tpnr = "123"
+        val meldingskode = Meldingskode.ADRESSE
+
+        val hendelse = PersonEndringKafkaHendelse(
+            hendelseId = hendelseId,
+            tpNr = listOf(tpnr),
+            fnr = fnr,
+            meldingsKode = meldingskode,
+            adresse = Adresse(
+                adresselinje1 = "Adresselinje1",
+                adresselinje2 = "Adresselinje2",
+                adresselinje3 = "Adresselinje3",
+                postnr = "1234",
+                poststed = "Poststed",
+                land = "Land"
+            )
+        )
+
+        val hendelseJson = objectMapper.writeValueAsString(hendelse)
+        val consumerRecord = mockConsumerRecord(hendelseJson)
+
+        listener.listener(hendelseJson, consumerRecord, acknowledgment)
+
+        val saved = personEndringRepository.findAll()
+        assertEquals(1, saved.size)
+        assertEquals(fnr, saved[0].fnr)
+        assertEquals(tpnr, saved[0].tpnr)
+        assertEquals(meldingskode, saved[0].meldingskode)
+        assertEquals(1L, saved[0].sekvensnummer)
+
+        assertNotNull(saved[0].adresse)
+        assertEquals("Adresselinje2", saved[0].adresse?.adresselinje2)
+
+        verify { acknowledgment.acknowledge() }
     }
 
     @Test

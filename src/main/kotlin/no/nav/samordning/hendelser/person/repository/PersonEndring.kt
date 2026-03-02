@@ -1,15 +1,12 @@
 package no.nav.samordning.hendelser.person.repository
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
+import no.nav.samordning.hendelser.person.domain.Adresse
 import no.nav.samordning.hendelser.person.domain.Meldingskode
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes.JSON
 import java.time.LocalDate
+import kotlin.jvm.Transient
 
 @Entity
 @Table(name = "PERSON_ENDRING")
@@ -32,6 +29,9 @@ data class PersonEndring(
     val sivilstandDato: LocalDate?,
     @Column(name = "DOEDSDATO")
     val doedsdato: LocalDate?,
+    @JdbcTypeCode(JSON)
+    @Column(name = "ADRESSE")
+    val adresse: Adresse?,
     @Column(name = "MELDINGSKODE", nullable = false)
     @Enumerated(EnumType.STRING)
     val meldingskode: Meldingskode,

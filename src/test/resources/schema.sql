@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS PERSON_ENDRING
     SIVILSTAND          VARCHAR(20),
     SIVILSTAND_DATO     DATE,
     DOEDSDATO           DATE,
+    ADRESSE             JSON,
     MELDINGSKODE        VARCHAR(20) not null
     );
 

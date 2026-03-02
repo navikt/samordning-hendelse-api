@@ -35,14 +35,15 @@ class PersonService(
             start,
             start + antall
         ).map { entity -> PersonResponse(
-            entity.sekvensnummer,
-            entity.tpnr,
-            entity.fnr,
-            entity.fnrGammelt,
-            entity.sivilstand,
-            entity.sivilstandDato,
-            entity.doedsdato,
-            entity.meldingskode
+            sekvensnummer = entity.sekvensnummer,
+            tpnr = entity.tpnr,
+            fnr = entity.fnr,
+            fnrGammelt = entity.fnrGammelt,
+            sivilstand = entity.sivilstand,
+            sivilstandDato = entity.sivilstandDato,
+            doedsdato = entity.doedsdato,
+            adresse = entity.adresse,
+            meldingskode = entity.meldingskode
         )}.toList()
     }
 

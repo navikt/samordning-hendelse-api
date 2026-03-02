@@ -1,8 +1,12 @@
 package no.nav.samordning.hendelser.person.kafka
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import no.nav.samordning.hendelser.person.domain.Adresse
+import no.nav.samordning.hendelser.person.domain.Meldingskode
 import no.nav.samordning.hendelser.person.repository.PersonEndring
 import no.nav.samordning.hendelser.person.repository.PersonEndringRepository
+import no.nav.samordning.hendelser.person.repository.PersonHendelse
+import no.nav.samordning.hendelser.person.repository.PersonHendelseRepository
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
@@ -11,12 +15,9 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
-import no.nav.samordning.hendelser.person.domain.Meldingskode
-import no.nav.samordning.hendelser.person.repository.PersonHendelse
-import no.nav.samordning.hendelser.person.repository.PersonHendelseRepository
 import tools.jackson.databind.ObjectMapper
 import tools.jackson.module.kotlin.readValue
+import java.time.LocalDate
 
 @Service
 @Transactional
@@ -51,6 +52,7 @@ class PersonEndringListener(
                     sivilstand = kafkaHendelse.sivilstand,
                     sivilstandDato = kafkaHendelse.sivilstandDato,
                     doedsdato = kafkaHendelse.dodsdato,
+                    adresse = kafkaHendelse.adresse,
                     meldingskode = kafkaHendelse.meldingsKode,
                     hendelseId = kafkaHendelse.hendelseId
                 )
@@ -97,5 +99,6 @@ data class PersonEndringKafkaHendelse(
     val sivilstandDato: LocalDate? = null,
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val dodsdato: LocalDate? = null,
+    val adresse: Adresse? = null,
     val meldingsKode: Meldingskode
 )
