@@ -7,11 +7,12 @@ data class PersonResponse (
     var sekvensnummer: Long,
     val tpnr: String,
     val fnr: String,
-    val fnrGammelt: String?,
-    val sivilstand: String?,
+    val fnrGammelt: String? = null,
+    val sivilstand: String? = null,
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val sivilstandDato: LocalDate?,
+    val sivilstandDato: LocalDate? = null,
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val doedsdato: LocalDate?,
+    val doedsdato: LocalDate? = null,
+    val adresse: Adresse? = null,
     val meldingskode: Meldingskode,
 )
