@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 20
       - id: sandbox-exists
-        uses: GuillaumeFalourd/branch-exists@v1.1
+        uses: GuillaumeFalourd/branch-exists@v1.2
         with:
           branch: sandbox
       - name: Create sandbox
@@ -58,7 +58,7 @@ jobs:
         with:
           fetch-depth: 20
       - id: sandbox-exists
-        uses: GuillaumeFalourd/branch-exists@v1.1
+        uses: GuillaumeFalourd/branch-exists@v1.2
         with:
           branch: sandbox
       - name: Delete sandbox
