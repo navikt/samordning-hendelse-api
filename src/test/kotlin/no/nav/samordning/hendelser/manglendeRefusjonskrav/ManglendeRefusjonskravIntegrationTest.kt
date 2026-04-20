@@ -98,6 +98,41 @@ class ManglendeRefusjonskravIntegrationTest {
     }
 
     @Test
+    fun `skal innkommende meding purring samid finnes tidligere skal ikke lagres igjen`() {
+        val tpnr = "0129"
+        val fnr = "12345678901"
+        val samId = "98765432109"
+        val svarfrist = LocalDate.of(2025, 12, 31)
+        val hendelse = ManglendeRefusjonskravKafkaHendelse(
+            tpNr = tpnr,
+            fnr = fnr,
+            samId = samId,
+            svarfrist = svarfrist
+        )
+
+        val hendelseJson = objectMapper.writeValueAsString(hendelse)
+        val consumerRecord = mockConsumerRecord(hendelseJson)
+
+        // 2. Listener mottar og lagrer melding
+        listener.listener(hendelseJson, consumerRecord, acknowledgment)
+        listener.listener(hendelseJson, consumerRecord, acknowledgment)
+
+        // 3. Verifiser at data ikke er lagret doublet i databasen
+
+        val saved = manglendeRefusjonskravRepository.findAll()
+        assertEquals(1, saved.size)
+
+        val lagretData = saved[0]
+        assertEquals(fnr, lagretData.fnr)
+        assertEquals(tpnr, lagretData.tpnr)
+        assertEquals(samId, lagretData.samId)
+        assertEquals(svarfrist, lagretData.svarfrist)
+        assertEquals(1L, lagretData.sekvensnummer)
+
+    }
+
+
+    @Test
     fun `skal lagre flere meldinger med inkrementert sekvensnummer`() {
         val tpnr = "0129"
         val svarfrist = LocalDate.of(2025, 12, 31)
