@@ -3,7 +3,8 @@ management:
   endpoints.web.exposure.include: prometheus, health
 
 
-DESIRED_YTELSESTYPER: ALDER,AFP,OMS,AAP
+DESIRED_YTELSESTYPER: ALDER,AFP,OMS,AAP,GJENLEV,KRIGP,GAM_YRK,UFOREP
+
 spring:
   jpa:
     database: postgresql
