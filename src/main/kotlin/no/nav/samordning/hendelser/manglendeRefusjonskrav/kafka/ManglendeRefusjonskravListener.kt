@@ -32,6 +32,12 @@ class ManglendeRefusjonskravListener(
 
             val kafkaHendelse = mapper.readValue<ManglendeRefusjonskravKafkaHendelse>(hendelse)
 
+            if (manglendeRefusjonskravRepository.findBySamId(kafkaHendelse.samId) != null) {
+                logger.warn("Kafka hendelse med samId: ${kafkaHendelse.samId}, finnes fra før. Avlutter og ack")
+                acknowledgment.acknowledge()
+                return
+            }
+
             ManglendeRefusjonskrav(
                     tpnr = kafkaHendelse.tpNr,
                     fnr = kafkaHendelse.fnr,
@@ -45,6 +51,7 @@ class ManglendeRefusjonskravListener(
         }
 
         try {
+
             val sisteSekvensnummer = manglendeRefusjonskravRepository.getFirstByTpnrOrderBySekvensnummerDesc(manglendeRefusjonskrav.tpnr) ?.sekvensnummer ?: 0
             manglendeRefusjonskrav.sekvensnummer = sisteSekvensnummer + 1
             manglendeRefusjonskravRepository.saveAndFlush(manglendeRefusjonskrav)
