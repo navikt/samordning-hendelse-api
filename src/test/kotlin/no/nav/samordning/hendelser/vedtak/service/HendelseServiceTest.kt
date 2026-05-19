@@ -1,7 +1,7 @@
 package no.nav.samordning.hendelser.vedtak.service
-import no.nav.samordning.hendelser.config.IntegrationTest
 
 import no.nav.samordning.hendelser.TestData
+import no.nav.samordning.hendelser.config.IntegrationTest
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseContainerDO
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseRepositoryDO
 import no.nav.samordning.hendelser.vedtak.kafka.SamHendelse
@@ -30,6 +30,19 @@ class HendelseServiceTest {
 
         assertNotNull(hendelseContainer)
         assertEquals("7000", response.tpnr)
+
+    }
+
+    @Test
+    @Transactional
+    fun hendelse_store_and_fetch_uforeperioderMedGrad() {
+        val samHendelse = SamHendelse("7500", "uforeperioderMedGrad", "01016700000", "8", "1122", "2023-12-01",null)
+        val hendelseContainer = HendelseContainerDO(samHendelse)
+        val response = hendelseRepository.saveAndFlush(hendelseContainer)
+
+        assertNotNull(hendelseContainer)
+        assertEquals("7500", response.tpnr)
+        println("output respone: ${response.hendelseData.samId}, ${response.hendelseData.ytelsesType}")
 
     }
 
