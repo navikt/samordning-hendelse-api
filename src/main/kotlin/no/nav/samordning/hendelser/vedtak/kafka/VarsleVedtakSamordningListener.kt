@@ -35,10 +35,8 @@ class VarsleVedtakSamordningListener(
         }
 
         try {
-            val container = HendelseContainerDO(samHendelse)
-            val id = hendelseRepository.saveAndFlush(container).id
-            val hendelse = container.hendelseData
-            LOG.info("Lagrer $id med tpnr='${container.tpnr}' og Hendelse{identifikator='*****', vedtakId='${hendelse.vedtakId}', samId='${hendelse.samId}', ytelsesType='${hendelse.ytelsesType}', fom='${hendelse.fom}', tom='${hendelse.tom}'")
+            val hendelse = hendelseRepository.saveAndFlush(HendelseContainerDO(samHendelse))
+            LOG.info("Lagrer ${hendelse.id} med tpnr='${hendelse.tpnr}', identifikator='*****', vedtakId='${hendelse.vedtakId}', samId='${hendelse.samId}', ytelsesType='${hendelse.ytelsesType}', fom='${hendelse.fom}', tom='${hendelse.tom}'")
             acknowledgment.acknowledge()
             LOG.info("*** Acket melding ferdig")
 

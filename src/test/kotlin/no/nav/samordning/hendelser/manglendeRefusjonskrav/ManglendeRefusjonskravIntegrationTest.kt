@@ -2,6 +2,7 @@ package no.nav.samordning.hendelser.manglendeRefusjonskrav
 
 import io.mockk.mockk
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
+import no.nav.samordning.hendelser.common.security.support.SCOPE_SAMORDNING
 import no.nav.samordning.hendelser.config.IntegrationTest
 import no.nav.samordning.hendelser.manglendeRefusjonskrav.kafka.ManglendeRefusjonskravKafkaHendelse
 import no.nav.samordning.hendelser.manglendeRefusjonskrav.kafka.ManglendeRefusjonskravListener
@@ -258,7 +259,7 @@ class ManglendeRefusjonskravIntegrationTest {
     }
 
     @Test
-    fun `skal håndtere ugyldig JSON og ikke lagre`() {
+    fun `skal haandtere ugyldig JSON og ikke lagre`() {
         val invalidJson = "{ invalid json }"
         val consumerRecord = mockConsumerRecord(invalidJson)
 
@@ -306,7 +307,6 @@ class ManglendeRefusjonskravIntegrationTest {
     }
 
     companion object {
-        private const val SCOPE_SAMORDNING = "nav:pensjon/v1/samordning"
         private const val PERMITTED_ORG_NO = "889640782"
     }
 }

@@ -3,22 +3,26 @@ package no.nav.samordning.hendelser.person.controller
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
+import no.nav.samordning.hendelser.common.OffsetPageRequest
+import no.nav.samordning.hendelser.common.security.support.SCOPE_SAMORDNING
+import no.nav.samordning.hendelser.config.IntegrationTest
 import no.nav.samordning.hendelser.person.domain.Meldingskode
-import no.nav.samordning.hendelser.person.domain.PersonResponse
+import no.nav.samordning.hendelser.person.repository.PersonEndring
 import no.nav.samordning.hendelser.person.service.PersonService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import java.time.LocalDate
-import no.nav.samordning.hendelser.config.IntegrationTest
 
 @IntegrationTest
-internal class PersonFeedControllerTest {
+internal class PersonVedtakFeedControllerTest {
 
     @Autowired
     private lateinit var maskinportenValidatorTokenGenerator: MaskinportenValidatorTokenGenerator
@@ -34,9 +38,7 @@ internal class PersonFeedControllerTest {
     @Test
     fun `gyldig request skal returnere 200 OK`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -52,7 +54,10 @@ internal class PersonFeedControllerTest {
     @Test
     fun `gyldig request skal returnere JSON respons med hendelser`() {
         val tpnr = "2000"
-        val personResponse = PersonResponse(
+        val personResponse = PersonEndring(
+            id = 0,
+            adresse = null,
+            hendelseId = "",
             sekvensnummer = 1L,
             tpnr = tpnr,
             fnr = "01016600000",
@@ -63,9 +68,11 @@ internal class PersonFeedControllerTest {
             meldingskode = Meldingskode.SIVILSTAND
         )
 
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns listOf(personResponse)
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } answers { PageImpl(
+            listOf(personResponse),
+            OffsetPageRequest(arg(1), arg(2), arg(3)),
+            1L
+        ) }
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -119,9 +126,7 @@ internal class PersonFeedControllerTest {
     @Test
     fun `side verdi 0 skal aksepteres`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr&side=0") {
             headers {
@@ -147,9 +152,7 @@ internal class PersonFeedControllerTest {
     @Test
     fun `antall verdi 0 skal aksepteres`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 0L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 0L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 0) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr&antall=0") {
             headers {
@@ -174,9 +177,7 @@ internal class PersonFeedControllerTest {
     @Test
     fun `antall verdi 10000 skal aksepteres`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr&antall=10000") {
             headers {
@@ -202,9 +203,7 @@ internal class PersonFeedControllerTest {
     @Test
     fun `sekvensnummer verdi 1 skal aksepteres`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr&sekvensnummer=1") {
             headers {
@@ -218,11 +217,9 @@ internal class PersonFeedControllerTest {
     // ============ Standardverdier ============
 
     @Test
-    fun `default verdier side skal være 0`() {
+    fun `default verdier side skal vaere 0`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -234,11 +231,9 @@ internal class PersonFeedControllerTest {
     }
 
     @Test
-    fun `default verdier antall skal være 10000`() {
+    fun `default verdier antall skal vaere 10000`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -250,11 +245,9 @@ internal class PersonFeedControllerTest {
     }
 
     @Test
-    fun `default verdier sekvensnummer skal være 1`() {
+    fun `default verdier sekvensnummer skal vaere 1`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -270,9 +263,7 @@ internal class PersonFeedControllerTest {
     @Test
     fun `respons skal inneholde hendelser liste`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -286,9 +277,7 @@ internal class PersonFeedControllerTest {
     @Test
     fun `respons skal inneholde sisteLesteSekvensNummer`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -302,10 +291,12 @@ internal class PersonFeedControllerTest {
     @Test
     fun `respons skal inneholde nyesteSekvensNummer`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 50L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
-
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(
+            emptyList(),
+            Pageable.unpaged(),
+            50L
+        )
+        
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
                 setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
@@ -318,9 +309,7 @@ internal class PersonFeedControllerTest {
     @Test
     fun `tom hendelsesliste skal returnere next som null`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -334,7 +323,10 @@ internal class PersonFeedControllerTest {
     @Test
     fun `hendelsesliste med flere sider skal inneholde next link`() {
         val tpnr = "1000"
-        val personResponse = PersonResponse(
+        val personResponse = PersonEndring(
+            id = 0,
+            adresse = null,
+            hendelseId = "",
             sekvensnummer = 1L,
             tpnr = tpnr,
             fnr = "01016600000",
@@ -345,9 +337,11 @@ internal class PersonFeedControllerTest {
             meldingskode = Meldingskode.SIVILSTAND
         )
 
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 1000L) } returns listOf(personResponse)
-        every { personService.latestSekvensnummer(tpnr) } returns 5000L
-        every { personService.getNumberOfPages(tpnr, 1L, 1000L) } returns 5L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 1000) } answers { PageImpl(
+            listOf(personResponse),
+            OffsetPageRequest(arg(1), arg(2), arg(3)),
+            5000L
+        ) }
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr&antall=1000&side=0") {
             headers {
@@ -363,7 +357,10 @@ internal class PersonFeedControllerTest {
     @Test
     fun `hendelse skal inneholde alle felter`() {
         val tpnr = "1000"
-        val personResponse = PersonResponse(
+        val personResponse = PersonEndring(
+            id = 0,
+            adresse = null,
+            hendelseId = "",
             sekvensnummer = 42L,
             tpnr = tpnr,
             fnr = "01016600000",
@@ -374,9 +371,11 @@ internal class PersonFeedControllerTest {
             meldingskode = Meldingskode.SIVILSTAND
         )
 
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns listOf(personResponse)
-        every { personService.latestSekvensnummer(tpnr) } returns 42L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } answers { PageImpl(
+            listOf(personResponse),
+            OffsetPageRequest(arg(1), arg(2), arg(3)),
+            1L
+        ) }
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -403,7 +402,10 @@ internal class PersonFeedControllerTest {
     )
     fun `alle meldingskoder skal mappes korrekt`(meldingskode: String) {
         val tpnr = "1000"
-        val personResponse = PersonResponse(
+        val personResponse = PersonEndring(
+            id = 0,
+            adresse = null,
+            hendelseId = "",
             sekvensnummer = 1L,
             tpnr = tpnr,
             fnr = "01016600000",
@@ -414,9 +416,11 @@ internal class PersonFeedControllerTest {
             meldingskode = Meldingskode.valueOf(meldingskode)
         )
 
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns listOf(personResponse)
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } answers { PageImpl(
+            listOf(personResponse),
+            OffsetPageRequest(arg(1), arg(2), arg(3)),
+            1L
+        ) }
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -430,7 +434,10 @@ internal class PersonFeedControllerTest {
     @Test
     fun `hendelse med doedsdato skal inneholde felt`() {
         val tpnr = "1000"
-        val personResponse = PersonResponse(
+        val personResponse = PersonEndring(
+            id = 0,
+            adresse = null,
+            hendelseId = "",
             sekvensnummer = 1L,
             tpnr = tpnr,
             fnr = "01016600000",
@@ -441,9 +448,11 @@ internal class PersonFeedControllerTest {
             meldingskode = Meldingskode.DOEDSFALL
         )
 
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns listOf(personResponse)
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } answers { PageImpl(
+            listOf(personResponse),
+            OffsetPageRequest(arg(1), arg(2), arg(3)),
+            1L
+        ) }
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -457,11 +466,9 @@ internal class PersonFeedControllerTest {
     // ============ Paginering ============
 
     @Test
-    fun `side parameter skal påvirke pagination`() {
+    fun `side parameter skal paavirke pagination`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 1L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 1, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr&side=1") {
             headers {
@@ -473,11 +480,9 @@ internal class PersonFeedControllerTest {
     }
 
     @Test
-    fun `sekvensnummer parameter skal påvirke resultat`() {
+    fun `sekvensnummer parameter skal paavirke resultat`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 100L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 100L
-        every { personService.getNumberOfPages(tpnr, 100L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 100L, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr&sekvensnummer=100") {
             headers {
@@ -489,9 +494,12 @@ internal class PersonFeedControllerTest {
     }
 
     @Test
-    fun `antall parameter skal påvirke resultatsett størrelse`() {
+    fun `antall parameter skal paavirke resultatsett stoerrelse`() {
         val tpnr = "1000"
-        val personResponse = PersonResponse(
+        val personResponse = PersonEndring(
+            id = 0,
+            adresse = null,
+            hendelseId = "",
             sekvensnummer = 1L,
             tpnr = tpnr,
             fnr = "01016600000",
@@ -502,9 +510,11 @@ internal class PersonFeedControllerTest {
             meldingskode = Meldingskode.SIVILSTAND
         )
 
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 5L) } returns listOf(personResponse)
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 5L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 5) } answers { PageImpl(
+            listOf(personResponse),
+            OffsetPageRequest(arg(1), arg(2), arg(3)),
+            1L
+        ) }
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr&antall=5") {
             headers {
@@ -518,9 +528,7 @@ internal class PersonFeedControllerTest {
     @Test
     fun `tom liste skal returnere tom hendelser array`() {
         val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns emptyList()
-        every { personService.latestSekvensnummer(tpnr) } returns 1L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } returns PageImpl(emptyList())
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -534,7 +542,10 @@ internal class PersonFeedControllerTest {
     @Test
     fun `multiple hendelser skal returneres i liste`() {
         val tpnr = "1000"
-        val person1 = PersonResponse(
+        val person1 = PersonEndring(
+            id = 0,
+            adresse = null,
+            hendelseId = "",
             sekvensnummer = 1L,
             tpnr = tpnr,
             fnr = "01016600000",
@@ -544,7 +555,10 @@ internal class PersonFeedControllerTest {
             doedsdato = null,
             meldingskode = Meldingskode.SIVILSTAND
         )
-        val person2 = PersonResponse(
+        val person2 = PersonEndring(
+            id = 1,
+            adresse = null,
+            hendelseId = "",
             sekvensnummer = 2L,
             tpnr = tpnr,
             fnr = "02016600000",
@@ -555,9 +569,11 @@ internal class PersonFeedControllerTest {
             meldingskode = Meldingskode.SIVILSTAND
         )
 
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, 1L, 0L, 10000L) } returns listOf(person1, person2)
-        every { personService.latestSekvensnummer(tpnr) } returns 2L
-        every { personService.getNumberOfPages(tpnr, 1L, 10000L) } returns 0L
+        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 10000) } answers { PageImpl(
+            listOf(person1, person2),
+            OffsetPageRequest(arg(1), arg(2), arg(3)),
+            2L
+        ) }
 
         mockMvc.get("/hendelser/personer?tpnr=$tpnr") {
             headers {
@@ -568,9 +584,5 @@ internal class PersonFeedControllerTest {
             jsonPath("$.hendelser[0].fnr") { value("01016600000") }
             jsonPath("$.hendelser[1].fnr") { value("02016600000") }
         }
-    }
-
-    companion object {
-        private const val SCOPE_SAMORDNING = "nav:pensjon/v1/samordning"
     }
 }

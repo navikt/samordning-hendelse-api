@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 
 @IntegrationTest
-internal class FeedControllerTest {
+internal class VedtakFeedControllerTest {
 
     @Autowired
     private lateinit var maskinportenValidatorTokenGenerator: MaskinportenValidatorTokenGenerator
@@ -78,7 +78,7 @@ internal class FeedControllerTest {
 
     @Test
     fun bad_parameters_return_400() {
-        mockMvc.get("/hendelser?tpnr=4000&side=-1") {
+        mockMvc.get("/hendelser/vedtak?tpnr=4000&side=-1") {
             headers {
                 setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
             }

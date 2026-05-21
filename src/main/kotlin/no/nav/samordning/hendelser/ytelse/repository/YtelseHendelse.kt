@@ -2,19 +2,30 @@ package no.nav.samordning.hendelser.ytelse.repository
 
 import jakarta.persistence.*
 import jakarta.persistence.GenerationType.IDENTITY
+import no.nav.samordning.hendelser.common.feed.SequentialDO
+import no.nav.samordning.hendelser.common.security.support.SEKVENSNUMMER_DEFINITION
 import no.nav.samordning.hendelser.ytelse.LocalDateTimeAttributeConverter
 import no.nav.samordning.hendelser.ytelse.domain.HendelseTypeCode
+import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseResponse
+import org.hibernate.annotations.Generated
+import org.hibernate.generator.EventType
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "YTELSE_HENDELSER")
-data class YtelseHendelse(
+class YtelseHendelse(
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(columnDefinition = "SERIAL")
     val id: Long,
-    @Column(name = "SEKVENSNUMMER", nullable = false)
-    var sekvensnummer: Long = 0,
+    @Generated(event = [EventType.INSERT])
+    @Column(
+        nullable = false,
+        insertable = false,
+        updatable = false,
+        columnDefinition = SEKVENSNUMMER_DEFINITION
+    )
+    override val sekvensnummer: Long = 0,
     @Column(name = "TPNR", nullable = false)
     val tpnr: String,
     @Column(name = "MOTTAKER", nullable = false)
@@ -32,6 +43,15 @@ data class YtelseHendelse(
     @Column(name = "DATO_BRUK_TOM", nullable = true)
     @Convert(converter = LocalDateTimeAttributeConverter::class)
     val datoBrukTom: LocalDateTime?
+): SequentialDO<YtelseHendelseResponse> {
 
-
-)
+    override fun toDTO() = YtelseHendelseResponse(
+        sekvensnummer,
+        tpnr,
+        identifikator,
+        hendelseType,
+        ytelseType,
+        datoBrukFom.toLocalDate(),
+        datoBrukTom?.toLocalDate()
+    )
+}

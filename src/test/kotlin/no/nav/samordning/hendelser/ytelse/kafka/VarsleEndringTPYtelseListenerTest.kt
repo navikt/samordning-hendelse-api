@@ -7,6 +7,7 @@ import ch.qos.logback.core.read.ListAppender
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -62,17 +63,14 @@ class VarsleEndringTPYtelseListenerTest {
     fun testingAvConsumerFeilerVedLagring() {
         val ytelseHendelserRepository = mockk<YtelseHendelserRepository>(relaxed = true)
         val listener2 = VarsleEndringTPYtelseListener(ytelseHendelserRepository, jacksonMapperBuilder().addModule(JavaTimeModule()).build())
-        every { ytelseHendelserRepository.save(any()) } returnsArgument 0
-        every { ytelseHendelserRepository.flush() } throws IOException("IO error")
+        every { ytelseHendelserRepository.saveAllAndFlush(any<List<YtelseHendelse>>()) } throws IOException("IO error")
 
         assertThrows<IOException> {
             listener2.listener(hendelseJson, mockk(relaxed = true), acknowledgment)
         }
 
         verify(exactly = 0) { acknowledgment.acknowledge()  }
-        verify(exactly = 2) {
-            ytelseHendelserRepository.save(any()) }
-        verify(exactly = 1) { ytelseHendelserRepository.flush() }
+        verify(exactly = 1) { ytelseHendelserRepository.saveAllAndFlush(any<List<YtelseHendelse>>()) }
     }
 
     private fun sjekkLoggingFinnes(keywords: String): Boolean {

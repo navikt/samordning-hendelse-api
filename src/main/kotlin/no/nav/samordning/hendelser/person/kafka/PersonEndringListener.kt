@@ -35,7 +35,7 @@ class PersonEndringListener(
 
         val personEndringHendelser: List<PersonEndring> = try {
             logger.debug("hendelse json: $hendelse")
-            MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["hendelseId"].asText())
+            MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["hendelseId"].asString())
             val kafkaHendelse = mapper.readValue<PersonEndringKafkaHendelse>(hendelse)
 
             if (personHendelseRepository.existsByHendelseIdAndMeldingskode(kafkaHendelse.hendelseId, kafkaHendelse.meldingsKode) ) {
@@ -46,7 +46,7 @@ class PersonEndringListener(
             mapper.readTree(hendelse)["tpNr"].asIterable().map { tpNr ->
                 PersonEndring(
                     id = 0,
-                    tpnr = tpNr.asText(),
+                    tpnr = tpNr.asString(),
                     fnr = kafkaHendelse.fnr,
                     fnrGammelt = kafkaHendelse.oldFnr,
                     sivilstand = kafkaHendelse.sivilstand,
@@ -64,12 +64,7 @@ class PersonEndringListener(
         }
 
         try {
-            val personEndring = personEndringHendelser.map { personEndring ->
-                val sisteSekvensnummer = personEndringRepository.getFirstByTpnrOrderBySekvensnummerDesc(personEndring.tpnr) ?.sekvensnummer ?: 0
-                personEndring.sekvensnummer = sisteSekvensnummer + 1
-                personEndringRepository.save(personEndring)
-            }
-            personEndringRepository.flush()
+            val personEndring = personEndringRepository.saveAllAndFlush(personEndringHendelser)
 
             val entity = personEndring.first()
             logger.info("Lagrer med meldingskode: ${entity}, tpnr: ${entity.tpnr}.")

@@ -1,10 +1,11 @@
 package no.nav.samordning.hendelser.person.service
 
-import no.nav.samordning.hendelser.person.domain.PersonResponse
+import no.nav.samordning.hendelser.common.OffsetPageRequest
+import no.nav.samordning.hendelser.person.repository.PersonEndring
 import no.nav.samordning.hendelser.person.repository.PersonEndringRepository
 import org.slf4j.LoggerFactory.getLogger
+import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
-import kotlin.math.ceil
 
 @Service
 class PersonService(
@@ -13,39 +14,9 @@ class PersonService(
 
     private val log = getLogger(javaClass)
 
-    fun getNumberOfPages(tpnr: String, sekvensnummer: Long, antall: Long) = try {
-        latestSekvensnummer(tpnr).minus(sekvensnummer - 1).div(antall.toDouble()).let(::ceil).toLong()
-    } catch (e: Exception) {
-        log.warn(e.message)
-        0
-    }
-
-    fun latestSekvensnummer(tpnr: String) = try {
-        personEndringRepository.countAllByTpnr(tpnr)
-    } catch (e: Exception) {
-        log.warn(e.message)
-        1L
-    }
-
-
-    fun fetchSeqAndPersonEndringHendelser(tpnr: String, sekvensnummer: Long, side: Long, antall: Long): List<PersonResponse> {
-        val start = sekvensnummer.coerceAtLeast(1) + (side * antall)
-        return personEndringRepository.findByTpnrAndSekvensnummerBetween(
+    fun fetchSeqAndPersonEndringHendelser(tpnr: String, sekvensnummer: Long?, side: Int, antall: Int): Page<PersonEndring> =
+        personEndringRepository.findByTpnr(
             tpnr,
-            start,
-            start + antall
-        ).map { entity -> PersonResponse(
-            sekvensnummer = entity.sekvensnummer,
-            tpnr = entity.tpnr,
-            fnr = entity.fnr,
-            fnrGammelt = entity.fnrGammelt,
-            sivilstand = entity.sivilstand,
-            sivilstandDato = entity.sivilstandDato,
-            doedsdato = entity.doedsdato,
-            adresse = entity.adresse,
-            meldingskode = entity.meldingskode
-        )}.toList()
-    }
-
-
+            OffsetPageRequest(sekvensnummer?.minus(1)?.coerceAtLeast(0), side, antall)
+        )
 }

@@ -2,6 +2,7 @@ package no.nav.samordning.hendelser.ytelse.domain
 
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
+import no.nav.samordning.hendelser.common.feed.SequentialDTO
 import tools.jackson.databind.annotation.JsonDeserialize
 import tools.jackson.databind.annotation.JsonSerialize
 import tools.jackson.datatype.jsr310.deser.LocalDateDeserializer
@@ -9,7 +10,7 @@ import tools.jackson.datatype.jsr310.ser.LocalDateSerializer
 import java.time.LocalDate
 
 class YtelseHendelseResponse(
-    val sekvensnummer: Long = 0,
+    override val sekvensnummer: Long = 0,
     val tpnr: String,
     @JsonAlias("fnr")
     val identifikator: String,
@@ -24,4 +25,4 @@ class YtelseHendelseResponse(
     @JsonSerialize(using = LocalDateSerializer::class)
     @JsonDeserialize(using = LocalDateDeserializer::class)
     val datoTom: LocalDate?
-)
+): SequentialDTO

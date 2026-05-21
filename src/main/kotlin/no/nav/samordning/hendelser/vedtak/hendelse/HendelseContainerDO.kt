@@ -3,22 +3,30 @@ package no.nav.samordning.hendelser.vedtak.hendelse
 import jakarta.persistence.*
 import jakarta.persistence.GenerationType.IDENTITY
 import no.nav.samordning.hendelser.vedtak.kafka.SamHendelse
-import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.type.SqlTypes.JSON
+import java.time.LocalDate
 
 @Entity
-@Table(name = "HENDELSER")
+@Table(name = "VEDTAK_HENDELSE")
 class HendelseContainerDO(
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(columnDefinition = "SERIAL")
     val id: Long,
     val tpnr: String,
-    @JdbcTypeCode(JSON)
-    @Column(name = "HENDELSE_DATA")
-    val hendelseData: HendelseDO
+    val ytelsesType: String,
+    val identifikator: String,
+    val vedtakId: String,
+    var samId: String? = null,
+    val fom: LocalDate,
+    var tom: LocalDate? = null
 ) {
-    constructor(samHendelse: SamHendelse) : this(
-        id = 0L, tpnr = samHendelse.tpNr,
-        hendelseData = HendelseDO(samHendelse)
+    constructor(hendelse: SamHendelse) : this(
+        id = 0L,
+        tpnr = hendelse.tpNr,
+        ytelsesType = hendelse.ytelsesType,
+        identifikator = hendelse.identifikator,
+        vedtakId = hendelse.vedtakId,
+        samId = hendelse.samId,
+        fom = LocalDate.parse(hendelse.fom),
+        tom = hendelse.tom?.let { LocalDate.parse(it) }
     )
 }
