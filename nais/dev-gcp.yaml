@@ -1,0 +1,73 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: samordning-hendelse-api-q2
+  namespace: pensjonsamhandling
+  labels:
+    team: pensjonsamhandling
+spec:
+  image: {{image}}
+  port: 8080
+  ingresses:
+    - https://samordning-hendelse-api-q2.ekstern.dev.nav.no
+  maskinporten:
+    enabled: true
+  liveness:
+    path: actuator/health/liveness
+    initialDelay: 45
+    periodSeconds: 1
+    failureThreshold: 60
+  readiness:
+    path: actuator/health/readiness
+    initialDelay: 45
+    periodSeconds: 1
+    failureThreshold: 60
+  startup:
+    path: actuator/health/readiness
+    initialDelay: 45
+    failureThreshold: 60
+    periodSeconds: 5
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_18
+        tier: db-f1-micro
+        databases:
+          - name: samordning-hendelser
+  accessPolicy:
+    inbound:
+      rules:
+        - application: pensjon-samordning-q2
+    outbound:
+      external:
+        - host: tp-q2.dev-fss-pub.nais.io
+  replicas:
+    min: 2
+    max: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: dev
+    - name: LOGGING_CONFIG
+      value: classpath:logback-json.xml
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "deployment.environment.name=q2"
+    - name: NEXT_BASE_URL
+      value: https://pensjon-gw.ekstern.dev.nav.no/samordning
+  kafka:
+    pool: nav-dev
+  prometheus:
+    enabled: true
+    path: actuator/prometheus
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
