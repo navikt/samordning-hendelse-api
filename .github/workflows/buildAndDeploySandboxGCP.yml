@@ -1,4 +1,4 @@
-name: Build and Deploy Sandbox
+name: Build and Deploy Sandbox GCP
 
 on:
   push:
@@ -59,6 +59,7 @@ jobs:
           RESOURCE: nais/dev-gcp.yaml
           IMAGE: ${{ steps.docker-build-push.outputs.image }}
           TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
+          TIMEOUT: 20m
 
       - name: Deploy person-endring Topic Q2
         uses: nais/deploy/actions/deploy@v2
