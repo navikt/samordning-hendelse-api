@@ -4,16 +4,6 @@ on:
   push:
     branches:
       - sandboxgcp
-  workflow_dispatch:
-    inputs:
-      switch_traffic:
-        description: 'Flytt trafikk til GCP (kjør etter DB-migrering)'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - 'false'
-          - 'true'
 
 jobs:
   build-and-deploy-sandbox:
@@ -75,9 +65,7 @@ jobs:
           RESOURCE: nais/topic/manglende-refusjonskrav-dev.yml
           TEAM: pensjonsamhandling
 
-      # Trafikkswitch — kjøres kun manuelt etter at DB-migrering er fullført
-      - name: Switch traffic to GCP (KrakenD + ApiEndpoints)
-        if: ${{ github.event.inputs.switch_traffic == 'true' }}
+      - name: Deploy KrakenD + ApiEndpoints
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
