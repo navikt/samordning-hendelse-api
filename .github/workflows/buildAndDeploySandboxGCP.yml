@@ -6,8 +6,8 @@ on:
       - sandboxgcp
 
 jobs:
-  build-and-deploy-sandbox:
-    name: Build and Deploy Sandbox gcp
+  build-and-deploy-sandbox-gcp:
+    name: Build and Deploy Sandbox GCP
     permissions:
       contents: read
       id-token: write
