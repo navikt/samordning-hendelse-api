@@ -29,7 +29,7 @@ spec:
         - side
         - antall
         - sekvensnummer
-      backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
+      backendHost: http://samordning-hendelse-api-q2.pensjonsamhandling
       backendPath: /hendelser
 ---
 apiVersion: krakend.nais.io/v1
@@ -63,7 +63,7 @@ spec:
         - side
         - antall
         - sekvensnummer
-      backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
+      backendHost: http://samordning-hendelse-api-q2.pensjonsamhandling
       backendPath: /hendelser/vedtak
 ---
 apiVersion: krakend.nais.io/v1
@@ -97,7 +97,7 @@ spec:
         - side
         - antall
         - sekvensnummer
-      backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
+      backendHost: http://samordning-hendelse-api-q2.pensjonsamhandling
       backendPath: /hendelser/ytelser
 ---
 apiVersion: krakend.nais.io/v1
@@ -131,7 +131,7 @@ spec:
         - side
         - antall
         - sekvensnummer
-      backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
+      backendHost: http://samordning-hendelse-api-q2.pensjonsamhandling
       backendPath: /hendelser/personer
 ---
 apiVersion: krakend.nais.io/v1
@@ -150,6 +150,7 @@ spec:
       - nav:pensjon/v1/samordning
   rateLimit:
     maxRate: 100
+    clientMaxRate: 200
     every: 60s
   endpoints:
     - path: /samordning/hendelser/manglendeRefusjonskrav
@@ -164,5 +165,5 @@ spec:
         - side
         - antall
         - sekvensnummer
-      backendHost: https://samordning-hendelse-api-q2.dev-fss-pub.nais.io
+      backendHost: http://samordning-hendelse-api-q2.pensjonsamhandling
       backendPath: /hendelser/manglendeRefusjonskrav

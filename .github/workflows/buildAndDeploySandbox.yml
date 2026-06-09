@@ -1,14 +1,13 @@
-name: Build and Deploy Sandbox
+name: Build and Deploy Sandbox GCP
 
 on:
   push:
     branches:
       - sandbox
-  workflow_dispatch:
 
 jobs:
   build-and-deploy-sandbox:
-    name: Build and Deploy Sandbox
+    name: Build and Deploy Sandbox GCP
     permissions:
       contents: read
       id-token: write
@@ -42,25 +41,15 @@ jobs:
           team: pensjonsamhandling
           tag: ${{ github.event.repository.name }}-sandbox
 
-      # Deploy
-      - name: Deploy to dev-fss Q2
+      # Deploy app
+      - name: Deploy to dev-gcp
         uses: nais/deploy/actions/deploy@v2
         env:
-          CLUSTER: dev-fss
-          RESOURCE: nais/dev.yml
+          CLUSTER: dev-gcp
+          RESOURCE: nais/dev.yaml
           IMAGE: ${{ steps.docker-build-push.outputs.image }}
           TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
-      - name: Deploy KrakenD config
-        uses: nais/deploy/actions/deploy@v2
-        env:
-          CLUSTER: dev-gcp
-          RESOURCE: nais/apiendpoints/krakend-q2.yaml
-      - name: Deploy apiEndpoints config
-        uses: nais/deploy/actions/deploy@v2
-        env:
-          CLUSTER: dev-gcp
-          RESOURCE: nais/apiendpoints/apiendpoints-q2.yaml
-
+          TIMEOUT: 20m
 
       - name: Deploy person-endring Topic Q2
         uses: nais/deploy/actions/deploy@v2
@@ -75,3 +64,9 @@ jobs:
           CLUSTER: dev-gcp
           RESOURCE: nais/topic/manglende-refusjonskrav-dev.yml
           TEAM: pensjonsamhandling
+
+      - name: Deploy KrakenD + ApiEndpoints
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: nais/apiendpoints/krakend-dev.yaml,nais/apiendpoints/apiendpoints-dev-gcp.yaml

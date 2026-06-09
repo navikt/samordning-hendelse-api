@@ -35,8 +35,4 @@ spring:
           location: ${KAFKA_KEYSTORE_PATH}
           password: ${KAFKA_CREDSTORE_PASSWORD}
         key.password: ${KAFKA_CREDSTORE_PASSWORD}
-vault:
-  postgres:
-    datasource:
-      max-pool-size: 50
-      url: ${SPRING_DATASOURCE_URL}
+
