@@ -1,0 +1,94 @@
+name: Build and Deploy Main GCP
+
+on:
+  workflow_run:
+    workflows: [ "Auto-merge Dependabot Patch Updates" ]
+    types:
+      - completed
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      switch_traffic:
+        description: 'Flytt trafikk til GCP (kjør etter DB-migrering)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  build-and-deploy-main:
+    if: >
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.actor.login == 'dependabot[bot]') ||
+      (github.event_name == 'push') ||
+      (github.event_name == 'workflow_dispatch')
+    name: Build and Deploy Main GCP
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout
+      - uses: actions/checkout@v5
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: gradle
+
+      # Build
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: current
+      - name: Build with Gradle
+        run: gradle build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build image
+      - name: Nais docker-build
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: pensjonsamhandling
+          tag: ${{ github.event.repository.name }}-main
+
+      - name: Deploy to prod-gcp
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: nais/prod.yml
+          IMAGE: ${{ steps.docker-build-push.outputs.image }}
+          TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
+
+      - name: Deploy person-endring Topic
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: nais/topic/person-endring-prod.yml
+          TEAM: pensjonsamhandling
+
+      - name: Deploy manglende-refusjonskrav Topic
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: nais/topic/manglende-refusjonskrav-prod.yml
+          TEAM: pensjonsamhandling
+
+      # Trafikkswitch — kjøres kun manuelt etter at DB-migrering er fullført
+      - name: Deploy KrakenD + ApiEndpoints
+        if: ${{ github.event.inputs.switch_traffic == 'true' }}
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: nais/apiendpoints/krakend-prod.yaml,nais/apiendpoints/apiendpoints-prod-gcp.yaml
+
