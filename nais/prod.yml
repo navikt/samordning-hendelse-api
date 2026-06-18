@@ -34,8 +34,16 @@ spec:
         highAvailability: true
         diskSize: 5
         diskAutoresize: true
+        pointInTimeRecovery: true
         databases:
           - name: samordning-hendelser
+        flags:
+          - name: cloudsql.enable_pgaudit
+            value: "on"
+          - name: pgaudit.log_parameter
+            value: "on"
+          - name: pgaudit.log
+            value: "write,ddl,role,read"
   accessPolicy:
     outbound:
       external:
@@ -45,7 +53,7 @@ spec:
     max: 0
   resources:
     limits:
-      memory: 800Mi
+      memory: 1024Mi
     requests:
       memory: 700Mi
   prometheus:
