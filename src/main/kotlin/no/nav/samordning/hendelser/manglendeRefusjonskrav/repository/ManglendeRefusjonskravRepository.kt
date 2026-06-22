@@ -15,6 +15,8 @@ interface ManglendeRefusjonskravRepository: JpaRepository<ManglendeRefusjonskrav
 
     fun findByTpnrAndSekvensnummerBetween(tpnr: String, offset: Long, limit: Long): List<ManglendeRefusjonskrav>
 
+    fun findBySamId(samId: String): ManglendeRefusjonskrav?
+
     fun getFirstByTpnrOrderBySekvensnummerDesc(tpnr: String): ManglendeRefusjonskrav?
 
 }
