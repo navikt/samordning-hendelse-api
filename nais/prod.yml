@@ -9,7 +9,10 @@ spec:
   image: {{image}}
   port: 8080
   ingresses:
-    - https://samordning-hendelse-api.ekstern.nav.no
+    - https://samordning-hendelse-api.prod-fss-pub.nais.io
+    - https://samordning-hendelse-api.nais.adeo.no
+    - https://samordning-hendelse-api.intern.nav.no
+  webproxy: true
   maskinporten:
     enabled: true
   liveness:
@@ -27,15 +30,10 @@ spec:
     initialDelay: 45
     failureThreshold: 60
     periodSeconds: 5
-  gcp:
-    sqlInstances:
-      - type: POSTGRES_18
-        databases:
-          - name: samordning-hendelser
-  accessPolicy:
-    outbound:
-      external:
-        - host: tp.prod-fss-pub.nais.io
+  envFrom:
+    - secret: samordning-hendelse-api
+  vault:
+    enabled: true
   replicas:
     min: 2
     max: 2
@@ -50,11 +48,13 @@ spec:
     enabled: true
     path: actuator/prometheus
   env:
+    - name: BOOTSTRAP_APPNAME
+      value: samordning-hendelse-api/pensjonsamhandling
     - name: SPRING_PROFILES_ACTIVE
       value: prod
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
-    - name: OTEL_RESOURCE_ATTRIBUTES
+    - name: "OTEL_RESOURCE_ATTRIBUTES"
       value: "deployment.environment.name=p"
   kafka:
     pool: nav-prod
@@ -62,7 +62,9 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
+      destinations:
+        - id: grafana-lgtm
+        - id: elastic-apm
     logging:
       destinations:
-        - id: elastic
         - id: loki
