@@ -45,7 +45,9 @@ spec:
     max: 2
   resources:
     requests:
-      memory: 512Mi
+      memory: 650Mi
+    limits:
+      memory: 700Mi
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: dev
