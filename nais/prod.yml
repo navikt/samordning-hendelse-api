@@ -9,7 +9,7 @@ spec:
   image: {{image}}
   port: 8080
   ingresses:
-    - https://samordning-hendelse-api.nav.no
+    - https://samordning-hendelse-api.ekstern.nav.no
   maskinporten:
     enabled: true
   liveness:
@@ -30,10 +30,6 @@ spec:
   gcp:
     sqlInstances:
       - type: POSTGRES_18
-        tier: db-custom-1-3840
-        highAvailability: true
-        diskSize: 5
-        diskAutoresize: true
         databases:
           - name: samordning-hendelser
   accessPolicy:
@@ -41,8 +37,8 @@ spec:
       external:
         - host: tp.prod-fss-pub.nais.io
   replicas:
-    min: 0
-    max: 0
+    min: 2
+    max: 2
   resources:
     limits:
       cpu: 600m
