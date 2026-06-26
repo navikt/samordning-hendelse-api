@@ -32,7 +32,7 @@ internal class AppMetricsTests {
             status {isOk() }
         }
 
-        verify(exactly = 1) { appMetrics.incHendelserLest(eq("1000"), any()) }
+        verify(exactly = 1) { appMetrics.incrementLestCounter(eq("1000"), any(), "samordning_hendelser_lest") }
     }
 
     companion object {

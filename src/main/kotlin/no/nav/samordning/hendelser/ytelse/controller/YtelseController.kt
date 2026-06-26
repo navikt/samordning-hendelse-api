@@ -50,8 +50,7 @@ class YtelseController(
     ): Feed<YtelseHendelseResponse> {
         val ytelseHendelser = service.fetchSeqAndYtelseHendelser(tpnr, sekvensnummer, side, antall)
         val latestReadSNR = ytelseHendelser.maxOfOrNull { it.sekvensnummer } ?: 1
-        log.debug("tpnr = $tpnr, ytelseHendelser.size = ${ytelseHendelser.size}")
-        metrics.incHendelserTpYtelserLest(tpnr, ytelseHendelser.size.toDouble())
+        metrics.incrementLestCounter(tpnr, ytelseHendelser.size.toDouble(), "samordning_hendelser_tp_ytelser_lest")
 
         return Feed(
             ytelseHendelser,
