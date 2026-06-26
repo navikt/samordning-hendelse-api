@@ -1,0 +1,89 @@
+name: Rebase Sandbox onto Main
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  sandbox-exists:
+    name: Check if sandbox exists
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - id: sandbox-exists
+        uses: GuillaumeFalourd/branch-exists@v1.1
+        with:
+          branch: sandbox
+    outputs:
+      sandbox-exists: ${{ steps.sandbox-exists.outputs.exists }}
+
+  rebase-sandbox-onto-main:
+    name: Rebase sandbox onto main
+    runs-on: ubuntu-latest
+    needs: sandbox-exists
+    if: needs.sandbox-exists.outputs.sandbox-exists == 'true'
+    permissions:
+      contents: write
+      checks: write
+      id-token: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: sandbox
+      - name: Rebase sandbox onto main
+        run: |
+          git fetch origin
+          git rebase origin/${{ github.ref_name }} sandbox
+          git push --force-with-lease origin sandbox
+
+  delete-sandbox:
+    name: Delete incompatible sandbox
+    runs-on: ubuntu-latest
+    needs: rebase-sandbox-onto-main
+    if: ${{ failure() }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Delete sandbox
+        run: git push -d origin sandbox
+
+  regenerate-sandbox:
+    name: Regenerate sandbox
+    runs-on: ubuntu-latest
+    needs:
+      - sandbox-exists
+      - delete-sandbox
+    if: always() && (needs.sandbox-exists.outputs.sandbox-exists == 'false' || needs.delete-sandbox.result == 'success')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Regenerate sandbox
+        run: |
+          git checkout -b sandbox
+          git push -u origin sandbox
+
+  trigger-build-and-deploy:
+    name: Trigger build and deploy
+    runs-on: ubuntu-latest
+    needs:
+      - rebase-sandbox-onto-main
+      - regenerate-sandbox
+    if: always() && (needs.rebase-sandbox-onto-main.result == 'success' || needs.regenerate-sandbox.result == 'success')
+    permissions:
+      actions: write
+    steps:
+      - run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/buildAndDeploySandbox.yml/dispatches \
+            -d '{"ref":"sandbox"}' \
+            --fail
