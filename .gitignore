@@ -7,3 +7,6 @@ target/
 /.gradle/
 /build/
 /out/
+
+# Generated ROS PDF (regenerate with: cd docs/ros && python3 generate-pdf.py)
+docs/ros/*.pdf
