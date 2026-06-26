@@ -45,7 +45,7 @@ class FeedController {
         val hendelseMap = hendelseService.fetchSeqAndHendelser(tpnr, sekvensnummer, side, antall)
         val latestReadSNR = hendelseMap.keys.lastOrNull() ?: 1
 
-        metrics.incHendelserLest(tpnr, hendelseMap.size.toDouble())
+        metrics.incrementLestCounter(tpnr, hendelseMap.size.toDouble(), "samordning_hendelser_lest")
 
         return Feed(
             hendelseMap.values.toList(),
