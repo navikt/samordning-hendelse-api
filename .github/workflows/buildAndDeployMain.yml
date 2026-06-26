@@ -1,10 +1,6 @@
 name: Build and Deploy Main
 
 on:
-  workflow_run:
-    workflows: [ "Auto-merge Dependabot Patch Updates" ]
-    types:
-      - completed
   push:
     branches:
       - main
@@ -12,11 +8,6 @@ on:
 
 jobs:
   build-and-deploy-main:
-    if: >
-      (github.event_name == 'workflow_run' &&
-       github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.actor.login == 'dependabot[bot]') ||
-      (github.event_name == 'push')
     name: Build and Deploy Main
     permissions:
       contents: read
@@ -42,6 +33,14 @@ jobs:
         run: gradle build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v3
+        if: success() || failure() # Reports even if some tests fail
+        with:
+          name: Gradle Tests
+          path: '**/build/test-results/**/*.xml' # Default Gradle test output path
+          reporter: java-junit
 
       # Build image
       - name: Nais docker-build

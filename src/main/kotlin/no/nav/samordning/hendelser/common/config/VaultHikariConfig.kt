@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 @EnableConfigurationProperties(VaultProperties::class)
-@Profile("!test")
+@Profile("prod")   // ← kun FSS, ikke GCP
 class VaultHikariConfig(
     private val vault: VaultProperties
 ) {
