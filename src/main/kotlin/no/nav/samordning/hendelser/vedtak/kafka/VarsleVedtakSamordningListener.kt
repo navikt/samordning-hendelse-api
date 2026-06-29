@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.vedtak.kafka
 
+import no.nav.samordning.hendelser.vedtak.config.DatabaseConfig
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseContainerDO
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseRepositoryDO
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -16,7 +17,8 @@ import tools.jackson.module.kotlin.readValue
 @Transactional
 class VarsleVedtakSamordningListener(
     private val hendelseRepository: HendelseRepositoryDO,
-    private val mapper: ObjectMapper
+    private val mapper: ObjectMapper,
+    private val databaseConfig: DatabaseConfig,
 ) {
 
     private val LOG: Logger = getLogger(javaClass)
@@ -34,7 +36,7 @@ class VarsleVedtakSamordningListener(
             return
         }
 
-        try {
+        if (samHendelse.ytelsesType in databaseConfig.ytelsesTyper) try {
             val container = HendelseContainerDO(samHendelse)
             val id = hendelseRepository.saveAndFlush(container).id
             val hendelse = container.hendelseData
@@ -46,7 +48,7 @@ class VarsleVedtakSamordningListener(
             LOG.error("Feilet ved lagre VedtakHendelse, melding: ${e.message}", e)
             Thread.sleep(3000L) //sleep 3sek..
             throw e
-        }
+        } else acknowledgment.acknowledge()
     }
 
 }
