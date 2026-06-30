@@ -3,6 +3,7 @@ package no.nav.samordning.hendelser.vedtak.kafka
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.nav.samordning.hendelser.vedtak.config.DatabaseConfig
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseContainerDO
 import no.nav.samordning.hendelser.vedtak.hendelse.HendelseRepositoryDO
 import org.junit.jupiter.api.BeforeEach
@@ -16,10 +17,12 @@ import java.io.IOException
 
 internal class VarsleVedtakSamordningListenerTest {
 
+
+    private val databaseConfig = DatabaseConfig(arrayOf("ALDER"))
     private val acknowledgment: Acknowledgment = mockk(relaxed = true)
     private val hendelseRepository = mockk<HendelseRepositoryDO>(relaxed = true)
     private val mapper : ObjectMapper = jacksonMapperBuilder().addModule(JavaTimeModule()).build()
-    private val listener =  VarsleVedtakSamordningListener(hendelseRepository, mapper)
+    private val listener =  VarsleVedtakSamordningListener(hendelseRepository, mapper, databaseConfig)
 
     @BeforeEach
     fun setup() {
