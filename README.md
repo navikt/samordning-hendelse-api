@@ -38,7 +38,7 @@ Alle endepunkter krever Maskinporten-token med scope `nav:pensjon/v1/samordning`
 | `GET` | `/hendelser/ytelser` | TP-ytelsehendelser fra TP-ordningene |
 | `GET` | `/hendelser/personer` | Personendringer fra samordning-personoppslag |
 | `GET` | `/hendelser/manglendeRefusjonskrav` | Manglende refusjonskrav (BSAM002) fra SAM |
-| `GET` | `/hendelser` | Alias for `/hendelser/vedtak` |
+| ~~`GET`~~ | ~~`/hendelser`~~ | ~~Alias for `/hendelser/vedtak` — deprecated~~ |
 
 ## Kafka-topics
 
