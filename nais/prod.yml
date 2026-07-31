@@ -45,6 +45,9 @@ spec:
           - name: pgaudit.log
             value: "write,ddl,role,read"
   accessPolicy:
+    inbound:
+      rules:
+        - application: pensjon-samordning
     outbound:
       external:
         - host: tp.prod-fss-pub.nais.io
@@ -67,6 +70,8 @@ spec:
       value: classpath:logback-json.xml
     - name: OTEL_RESOURCE_ATTRIBUTES
       value: "deployment.environment.name=p"
+    - name: NEXT_BASE_URL
+      value: https://pensjon-gw.nav.no/samordning
   kafka:
     pool: nav-prod
   observability:
