@@ -37,7 +37,7 @@ spec:
         pointInTimeRecovery: true
         autoBackupHour: 4
         retainedBackups: 14
-        transactionLogRetentionDays: 14
+        transactionLogRetentionDays: 7
         maintenance:
           day: 7
           hour: 2
