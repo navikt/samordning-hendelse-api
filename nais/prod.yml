@@ -9,10 +9,7 @@ spec:
   image: {{image}}
   port: 8080
   ingresses:
-    - https://samordning-hendelse-api.prod-fss-pub.nais.io
-    - https://samordning-hendelse-api.nais.adeo.no
-    - https://samordning-hendelse-api.intern.nav.no
-  webproxy: true
+    - https://samordning-hendelse-api.nav.no
   maskinporten:
     enabled: true
   liveness:
@@ -30,39 +27,58 @@ spec:
     initialDelay: 45
     failureThreshold: 60
     periodSeconds: 5
-  envFrom:
-    - secret: samordning-hendelse-api
-  vault:
-    enabled: true
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_18
+        tier: db-custom-1-3840
+        highAvailability: true
+        diskSize: 5
+        diskAutoresize: true
+        pointInTimeRecovery: true
+        databases:
+          - name: samordning-hendelser
+        flags:
+          - name: cloudsql.enable_pgaudit
+            value: "on"
+          - name: pgaudit.log_parameter
+            value: "on"
+          - name: pgaudit.log
+            value: "write,ddl,role,read"
+  accessPolicy:
+    inbound:
+      rules:
+        - application: pensjon-samordning
+    outbound:
+      external:
+        - host: tp.prod-fss-pub.nais.io
   replicas:
-    min: 2
-    max: 2
+    min: 0
+    max: 0
   resources:
     limits:
-      memory: 800Mi
+      memory: 1024Mi
     requests:
+      cpu: 500m
       memory: 700Mi
   prometheus:
     enabled: true
     path: actuator/prometheus
   env:
-    - name: BOOTSTRAP_APPNAME
-      value: samordning-hendelse-api/pensjonsamhandling
     - name: SPRING_PROFILES_ACTIVE
       value: prod
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
-    - name: "OTEL_RESOURCE_ATTRIBUTES"
+    - name: OTEL_RESOURCE_ATTRIBUTES
       value: "deployment.environment.name=p"
+    - name: NEXT_BASE_URL
+      value: https://pensjon-gw.nav.no/samordning
   kafka:
     pool: nav-prod
   observability:
     autoInstrumentation:
       enabled: true
       runtime: java
-      destinations:
-        - id: grafana-lgtm
-        - id: elastic-apm
     logging:
       destinations:
+        - id: elastic
         - id: loki
