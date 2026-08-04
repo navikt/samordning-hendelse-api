@@ -30,11 +30,17 @@ spec:
   gcp:
     sqlInstances:
       - type: POSTGRES_18
-        tier: db-custom-1-3840
+        tier: db-custom-2-5120
         highAvailability: true
-        diskSize: 5
         diskAutoresize: true
+        diskAutoresizeLimit: 50
         pointInTimeRecovery: true
+        autoBackupHour: 4
+        retainedBackups: 14
+        transactionLogRetentionDays: 14
+        maintenance:
+          day: 7
+          hour: 2
         databases:
           - name: samordning-hendelser
         flags:
