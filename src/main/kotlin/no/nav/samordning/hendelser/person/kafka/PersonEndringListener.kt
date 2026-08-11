@@ -7,6 +7,7 @@ import no.nav.samordning.hendelser.person.repository.PersonEndring
 import no.nav.samordning.hendelser.person.repository.PersonEndringRepository
 import no.nav.samordning.hendelser.person.repository.PersonHendelse
 import no.nav.samordning.hendelser.person.repository.PersonHendelseRepository
+import no.nav.samordning.hendelser.person.sporingslogg.SporingsloggProducer
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
@@ -25,6 +26,7 @@ class PersonEndringListener(
     private val personEndringRepository: PersonEndringRepository,
     private val personHendelseRepository: PersonHendelseRepository,
     private val mapper: ObjectMapper,
+    private val sporingsloggProducer: SporingsloggProducer,
 )  {
 
     private val logger: Logger = getLogger(javaClass)
@@ -76,6 +78,10 @@ class PersonEndringListener(
 
             personHendelseRepository.saveAndFlush(PersonHendelse(entity.hendelseId, entity.meldingskode))
             logger.info("Lagrer med hendelseId: ${entity.hendelseId}, meldingskode: ${entity.meldingskode}.")
+
+            logger.info("Sender hendelse til Sporingslogg")
+            val enkelPersonEndring = personEndringHendelser.firstOrNull()
+            enkelPersonEndring?.let { sporingsloggProducer.sendHendelse( it ) }
 
             acknowledgment.acknowledge()
             logger.info("*** Acket melding ferdig")
