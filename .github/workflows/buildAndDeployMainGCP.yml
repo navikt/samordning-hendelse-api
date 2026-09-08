@@ -84,9 +84,7 @@ jobs:
           RESOURCE: nais/topic/manglende-refusjonskrav-prod.yml
           TEAM: pensjonsamhandling
 
-      # Trafikkswitch — kjøres kun manuelt etter at DB-migrering er fullført
       - name: Deploy KrakenD + ApiEndpoints
-        if: ${{ github.event.inputs.switch_traffic == 'true' }}
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: prod-gcp
