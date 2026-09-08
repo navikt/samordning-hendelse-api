@@ -60,8 +60,8 @@ spec:
       external:
         - host: tp.prod-fss-pub.nais.io
   replicas:
-    min: 0
-    max: 0
+    min: 2
+    max: 4
   resources:
     limits:
       memory: 1024Mi
