@@ -50,6 +50,8 @@ spec:
             value: "on"
           - name: pgaudit.log
             value: "write,ddl,role,read"
+          - name: pgaudit.log_relation
+            value: "on"
   accessPolicy:
     inbound:
       rules:
