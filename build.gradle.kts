@@ -5,6 +5,10 @@ version = "1"
 description = "samordning-hendelse-api"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
+// CVE-2026-65905, CVE-2026-68525, CVE-2026-65182: tomcat-embed-core 11.0.24
+// (nyeste via Spring Boot-BOM) — tving patchet versjon 11.0.25
+extra["tomcat.version"] = "11.0.25"
+
 val logstashEncoderVersion = "9.0"
 val jakartaAnnotationApiVersion = "3.0.0"
 val jakartaInjectApiVersion = "2.0.1"
