@@ -7,7 +7,6 @@ on:
       - '*/**'
       - '!release/*'
       - '!master'
-  pull_request:
 
 jobs:
   build_and_release:
@@ -16,7 +15,7 @@ jobs:
     steps:
       # Checkout
       - name: 'Checkout'
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: 'Java 21'
         uses: actions/setup-java@v5
         with:
@@ -28,3 +27,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew clean build --stacktrace
+
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v3
+        if: success() || failure() # Reports even if some tests fail
+        with:
+          name: Gradle Tests
+          path: '**/build/test-results/**/*.xml' # Default Gradle test output path
+          reporter: java-junit

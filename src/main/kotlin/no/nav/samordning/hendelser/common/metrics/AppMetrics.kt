@@ -20,8 +20,7 @@ class AppMetrics(private val registry: MeterRegistry,
     private var totalAntallHendelser: Number = 0
     private var totalAntallHendelserTpYtelser: Number = 0
 
-    private val hendelserLestCounterList = HashMap<String, Counter>()
-    private val hendelserTpYtelserLestCounterList = HashMap<String, Counter>()
+    private val hendelseLestCounter = HashMap<String, Counter>()
 
     init {
         Gauge.builder("samordning_hendelser_total", ::totalAntallHendelser).register(registry)
@@ -48,24 +47,13 @@ class AppMetrics(private val registry: MeterRegistry,
         timer.scheduleAtFixedRate(counterTask, delay, period)
     }
 
-    fun incHendelserLest(tpnr: String, antall: Double) {
+    fun incrementLestCounter(tpnr: String, antall: Double, counterName: String) {
         try {
-            hendelserLestCounterList.getOrPut(tpnr) {
-                Counter.builder("samordning_hendelser_lest")
-                        .tag("tpnr", tpnr).register(registry)
-            }.increment(antall)
-        } catch (e: NullPointerException) {
-            log.info("No counter for tpnr: $tpnr")
-        }
-    }
-
-    fun incHendelserTpYtelserLest(tpnr: String, antall: Double) {
-        try {
-            hendelserTpYtelserLestCounterList.getOrPut(tpnr) {
-                Counter.builder("samordning_hendelser_tp_ytelser_lest")
+            hendelseLestCounter.getOrPut(tpnr) {
+                Counter.builder(counterName)
                     .tag("tpnr", tpnr).register(registry)
             }.increment(antall)
-        } catch (e: NullPointerException) {
+        } catch (_: NullPointerException) {
             log.info("No counter for tpnr: $tpnr")
         }
     }

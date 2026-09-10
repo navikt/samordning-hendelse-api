@@ -1,4 +1,6 @@
-tpconfig.url: https://tp-q2.dev.intern.nav.no/api/tpconfig
+tpconfig.url: https://tp-q2.dev-fss-pub.nais.io/api/tpconfig
+
+MAX_POOL_SIZE: 5
 
 maskinporten.validation:
   environment: DEV
@@ -8,3 +10,21 @@ VEDTAK_HENDELSE_KAFKA_TOPIC: pensjonsamhandling.sam-vedtak-hendelser-q2
 YTELSE_HENDELSE_KAFKA_TOPIC: pensjonsamhandling.tp-hendelser-q2
 PERSON_ENDRING_KAFKA_TOPIC: pensjonsamhandling.person-endring-q2
 MANGLENDE_REFUSJONSKRAV_KAFKA_TOPIC: pensjonsamhandling.manglende-refusjonskrav-q2
+
+spring:
+  datasource:
+    url: ${NAIS_DATABASE_SAMORDNING_HENDELSE_API_Q2_SAMORDNING_HENDELSER_JDBC_URL}
+    hikari:
+      maximum-pool-size: ${MAX_POOL_SIZE}
+      minimum-idle: 1
+      connection-timeout: 10000
+      idle-timeout: 300000
+      max-lifetime: 1800000
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true

@@ -3,7 +3,7 @@ management:
   endpoints.web.exposure.include: prometheus, health
 
 
-DESIRED_YTELSESTYPER: ALDER,AFP,OMS,AAP,GJENLEV,KRIGP,GAM_YRK,UFOREP,uforeperioderMedGrad
+DESIRED_YTELSESTYPER: ALDER,AFP,OMS,AAP,GJENLEV,KRIGP,GAM_YRK,UFOREP,AFP_PRIVAT
 
 spring:
   jpa:
@@ -36,8 +36,3 @@ spring:
           location: ${KAFKA_KEYSTORE_PATH}
           password: ${KAFKA_CREDSTORE_PASSWORD}
         key.password: ${KAFKA_CREDSTORE_PASSWORD}
-vault:
-  postgres:
-    datasource:
-      max-pool-size: 50
-      url: ${SPRING_DATASOURCE_URL}

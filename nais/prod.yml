@@ -9,10 +9,7 @@ spec:
   image: {{image}}
   port: 8080
   ingresses:
-    - https://samordning-hendelse-api.prod-fss-pub.nais.io
-    - https://samordning-hendelse-api.nais.adeo.no
-    - https://samordning-hendelse-api.intern.nav.no
-  webproxy: true
+    - https://samordning-hendelse-api.nav.no
   maskinporten:
     enabled: true
   liveness:
@@ -30,41 +27,66 @@ spec:
     initialDelay: 45
     failureThreshold: 60
     periodSeconds: 5
-  envFrom:
-    - secret: samordning-hendelse-api
-  vault:
-    enabled: true
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_18
+        tier: db-custom-2-5120
+        highAvailability: true
+        diskAutoresize: true
+        diskAutoresizeLimit: 50
+        pointInTimeRecovery: true
+        autoBackupHour: 4
+        retainedBackups: 14
+        transactionLogRetentionDays: 7
+        maintenance:
+          day: 7
+          hour: 2
+        databases:
+          - name: samordning-hendelser
+        flags:
+          - name: cloudsql.enable_pgaudit
+            value: "on"
+          - name: pgaudit.log_parameter
+            value: "on"
+          - name: pgaudit.log
+            value: "write,ddl,role,read"
+          - name: pgaudit.log_relation
+            value: "on"
+  accessPolicy:
+    inbound:
+      rules:
+        - application: pensjon-samordning
+    outbound:
+      external:
+        - host: tp.prod-fss-pub.nais.io
   replicas:
     min: 2
-    max: 2
+    max: 4
   resources:
     limits:
-      cpu: 600m
       memory: 1024Mi
     requests:
       cpu: 500m
-      memory: 512Mi
+      memory: 700Mi
   prometheus:
     enabled: true
     path: actuator/prometheus
   env:
-    - name: BOOTSTRAP_APPNAME
-      value: samordning-hendelse-api/pensjonsamhandling
     - name: SPRING_PROFILES_ACTIVE
       value: prod
     - name: LOGGING_CONFIG
       value: classpath:logback-json.xml
-    - name: "OTEL_RESOURCE_ATTRIBUTES"
+    - name: OTEL_RESOURCE_ATTRIBUTES
       value: "deployment.environment.name=p"
+    - name: NEXT_BASE_URL
+      value: https://pensjon-gw.nav.no/samordning
   kafka:
     pool: nav-prod
   observability:
     autoInstrumentation:
       enabled: true
       runtime: java
-      destinations:
-        - id: grafana-lgtm
-        - id: elastic-apm
     logging:
       destinations:
+        - id: elastic
         - id: loki

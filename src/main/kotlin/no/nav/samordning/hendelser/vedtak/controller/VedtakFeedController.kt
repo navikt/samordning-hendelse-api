@@ -48,7 +48,7 @@ class VedtakFeedController(
         @RequestParam(value = "sekvensnummer", required = false) @Min(1) sekvensnummer: Long?
     ): Feed<VedtakHendelseDTO> {
         val hendelser = hendelseService.fetchSeqAndHendelser(tpnr, sekvensnummer, side, antall)
-        metrics.incHendelserLest(tpnr, hendelser.numberOfElements.toDouble())
+        metrics.incrementLestCounter(tpnr, hendelser.numberOfElements.toDouble(), "samordning_hendelser_lest")
         return feedBuilder.forPath(VEDTAK_HENDELSER_PATH)
             .withTpnr(tpnr)
             .withSekvensnummer(sekvensnummer)
