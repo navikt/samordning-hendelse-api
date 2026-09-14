@@ -18,7 +18,8 @@
         <logger name="no.nav.samordning" level="DEBUG" />
         <logger name="org.springframework.security" level="INFO" />
         <logger name="kafka" level="ERROR"/>
-
+        <!-- Spring Boot 4 logger JDBC URL som ofte inkluderer brukernavn og passord. -->
+        <logger name="org.hibernate.orm.connections.pooling" level="WARN" />
 
         <root level="INFO">
             <appender-ref ref="STDOUT_JSON" />
@@ -41,6 +42,8 @@
         <logger name="no.nav.samordning" level="INFO" />
         <logger name="org.springframework.security" level="WARN" />
         <logger name="kafka" level="ERROR"/>
+        <!-- Spring Boot 4 logger JDBC URL som ofte inkluderer brukernavn og passord. -->
+        <logger name="org.hibernate.orm.connections.pooling" level="WARN" />
 
         <root level="INFO">
             <appender-ref ref="STDOUT_JSON" />
