@@ -15,9 +15,9 @@ val jakartaInjectApiVersion = "2.0.1"
 val mockkVersion = "1.14.7"
 
 plugins {
-    kotlin("jvm") version "2.4.10"
-    kotlin("plugin.spring") version "2.4.10"
-    kotlin("plugin.jpa") version "2.4.10"
+    kotlin("jvm") version "2.4.20"
+    kotlin("plugin.spring") version "2.4.20"
+    kotlin("plugin.jpa") version "2.4.20"
     id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -35,15 +35,15 @@ repositories {
 
 dependencies {
     implementation(kotlin("reflect"))
-    implementation("tools.jackson.module:jackson-module-kotlin:3.0.3")
+    implementation("tools.jackson.module:jackson-module-kotlin:3.2.2")
     implementation("tools.jackson.datatype:jackson-datatype-jsr310:3.0.0-rc2")
-    implementation("io.micrometer:micrometer-core:1.16.2")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.16.2")
+    implementation("io.micrometer:micrometer-core:1.17.1")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.17.1")
     implementation("no.nav:vault-jdbc:1.3.10")
-    implementation("no.nav.pensjonsamhandling:maskinporten-validation-spring:3.1.0")
+    implementation("no.nav.pensjonsamhandling:maskinporten-validation-spring:3.1.5")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
-    implementation("org.postgresql:postgresql:42.7.10")
-    implementation("org.hibernate.validator:hibernate-validator:9.1.0.Final")
+    implementation("org.postgresql:postgresql:42.7.13")
+    implementation("org.hibernate.validator:hibernate-validator:9.1.3.Final")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -62,12 +62,12 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
-    testImplementation("io.zonky.test:embedded-database-spring-test:2.7.1")
-    testImplementation("io.zonky.test:embedded-postgres:2.2.0")
+    testImplementation("io.zonky.test:embedded-database-spring-test:2.8.0")
+    testImplementation("io.zonky.test:embedded-postgres:2.2.2")
     testImplementation("jakarta.el:jakarta.el-api:6.0.1")
     testImplementation("com.ninja-squad:springmockk:5.0.1")
     testImplementation("org.mock-server:mockserver-spring-test-listener-no-dependencies:5.15.0")
-    testImplementation("no.nav.pensjonsamhandling:maskinporten-validation-spring-test:3.1.0")
+    testImplementation("no.nav.pensjonsamhandling:maskinporten-validation-spring-test:3.1.5")
 
 }
 
