@@ -73,9 +73,3 @@ jobs:
           CLUSTER: dev-gcp
           RESOURCE: nais/topic/manglende-refusjonskrav-dev.yml
           TEAM: pensjonsamhandling
-
-      - name: Deploy KrakenD + ApiEndpoints
-        uses: nais/deploy/actions/deploy@v2
-        env:
-          CLUSTER: dev-gcp
-          RESOURCE: nais/apiendpoints/krakend-dev.yaml,nais/apiendpoints/apiendpoints-dev-gcp.yaml
