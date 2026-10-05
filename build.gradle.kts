@@ -66,7 +66,7 @@ dependencies {
     testImplementation("io.zonky.test:embedded-postgres:2.2.0")
     testImplementation("jakarta.el:jakarta.el-api:6.0.1")
     testImplementation("com.ninja-squad:springmockk:5.0.1")
-    testImplementation("org.mock-server:mockserver-spring-test-listener-no-dependencies:5.15.0")
+    testImplementation("org.mock-server:mockserver-spring-test-listener-no-dependencies:7.6.0")
     testImplementation("no.nav.pensjonsamhandling:maskinporten-validation-spring-test:3.1.0")
 
 }
