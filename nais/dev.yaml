@@ -37,6 +37,7 @@ spec:
     inbound:
       rules:
         - application: pensjon-samordning-q2
+        - application: pensjon-samordning-dev-gw
     outbound:
       external:
         - host: tp-q2.dev-fss-pub.nais.io

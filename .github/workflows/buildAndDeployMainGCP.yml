@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checkout
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
@@ -46,7 +46,7 @@ jobs:
 
       # Build
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: current
       - name: Build with Gradle
@@ -83,10 +83,4 @@ jobs:
           CLUSTER: prod-gcp
           RESOURCE: nais/topic/manglende-refusjonskrav-prod.yml
           TEAM: pensjonsamhandling
-
-      - name: Deploy KrakenD + ApiEndpoints
-        uses: nais/deploy/actions/deploy@v2
-        env:
-          CLUSTER: prod-gcp
-          RESOURCE: nais/apiendpoints/krakend-prod.yaml,nais/apiendpoints/apiendpoints-prod-gcp.yaml
 
