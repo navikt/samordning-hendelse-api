@@ -55,8 +55,8 @@ dependencies {
     implementation("org.springframework:spring-core")
     implementation("jakarta.annotation:jakarta.annotation-api:$jakartaAnnotationApiVersion")
     implementation("jakarta.inject:jakarta.inject-api:$jakartaInjectApiVersion")
-    implementation("org.flywaydb:flyway-core:12.0.1")
-    implementation("org.flywaydb:flyway-database-postgresql:12.0.1")
+    implementation("org.flywaydb:flyway-core:13.6.0")
+    implementation("org.flywaydb:flyway-database-postgresql:13.6.0")
 
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
