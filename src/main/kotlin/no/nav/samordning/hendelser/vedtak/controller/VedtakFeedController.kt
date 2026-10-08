@@ -58,7 +58,7 @@ class VedtakFeedController(
     @GetMapping("/hendelser")
     @ResponseStatus(MOVED_PERMANENTLY)
     fun redirect(request: HttpServletRequest) = ResponseEntity.status(MOVED_PERMANENTLY)
-        .header(HttpHeaders.LOCATION, VEDTAK_HENDELSER_PATH + request.queryString)
+        .header(HttpHeaders.LOCATION, VEDTAK_HENDELSER_PATH + (request.queryString?.let { "?$it" } ?: ""))
         .build<Unit>()
 
     companion object {
