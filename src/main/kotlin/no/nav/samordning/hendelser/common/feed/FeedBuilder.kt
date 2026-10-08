@@ -15,8 +15,11 @@ class FeedBuilder(
     fun forPath(path: String) = Builder(baseUrl.cloneBuilder().path(path))
 
     class Builder(private val baseUrl: UriComponentsBuilder) {
+        private var offset: Long = 0
+
         fun withSekvensnummer(sekvensnummer: Long?): Builder {
             if (sekvensnummer != null) baseUrl.queryParam("sekvensnummer", sekvensnummer)
+            offset = sekvensnummer ?: 0
             return this
         }
 
@@ -27,7 +30,7 @@ class FeedBuilder(
 
         fun <T: SequentialDTO> build(page: Page<out SequentialDO<T>>) = Feed(
             page.map(SequentialDO<T>::toDTO),
-            if (page.hasNext()) baseUrl.queryParam("antall", page.size)
+            if (page.size + offset < page.totalElements) baseUrl.queryParam("antall", page.size)
                 .queryParam("side", page.number + 1)
                 .build().toUri()
             else null,
