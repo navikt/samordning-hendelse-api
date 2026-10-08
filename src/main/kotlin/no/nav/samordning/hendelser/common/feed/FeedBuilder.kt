@@ -30,7 +30,7 @@ class FeedBuilder(
 
         fun <T: SequentialDTO> build(page: Page<out SequentialDO<T>>) = Feed(
             page.map(SequentialDO<T>::toDTO),
-            if (page.size + offset <= page.totalElements) baseUrl.queryParam("antall", page.size)
+            if (page.totalElements > 0 && page.size + offset <= page.totalElements) baseUrl.queryParam("antall", page.size)
                 .queryParam("side", page.number + 1)
                 .build().toUri()
             else null,
