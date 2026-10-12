@@ -1,6 +1,6 @@
 package no.nav.samordning.hendelser
 
-import no.nav.samordning.hendelser.vedtak.hendelse.VedtakHendelse
+import no.nav.samordning.hendelser.vedtak.repository.VedtakHendelse
 import java.time.LocalDate
 
 object TestData {

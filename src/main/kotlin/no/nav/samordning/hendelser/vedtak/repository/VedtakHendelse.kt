@@ -1,4 +1,4 @@
-package no.nav.samordning.hendelser.vedtak.hendelse
+package no.nav.samordning.hendelser.vedtak.repository
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
@@ -6,6 +6,7 @@ import jakarta.persistence.*
 import jakarta.persistence.GenerationType.IDENTITY
 import no.nav.samordning.hendelser.common.feed.SequentialDO
 import no.nav.samordning.hendelser.common.security.support.SEKVENSNUMMER_DEFINITION
+import no.nav.samordning.hendelser.vedtak.domain.VedtakHendelseDTO
 import org.hibernate.annotations.Generated
 import org.hibernate.generator.EventType
 import tools.jackson.databind.annotation.JsonDeserialize

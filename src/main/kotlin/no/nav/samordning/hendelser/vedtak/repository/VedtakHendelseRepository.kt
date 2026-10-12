@@ -1,4 +1,4 @@
-package no.nav.samordning.hendelser.vedtak.hendelse
+package no.nav.samordning.hendelser.vedtak.repository
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -6,11 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface HendelseRepository : JpaRepository<VedtakHendelse, Long> {
+interface VedtakHendelseRepository : JpaRepository<VedtakHendelse, Long> {
 
-    fun findAllByTpnrAndYtelsesTypeIn(
+    fun findAllByTpnr(
         tpnr: String,
-        ytelsesTyper: Set<String>,
         pageable: Pageable
     ): Page<VedtakHendelse>
 }

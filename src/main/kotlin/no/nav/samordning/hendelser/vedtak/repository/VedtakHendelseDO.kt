@@ -1,4 +1,4 @@
-package no.nav.samordning.hendelser.vedtak.hendelse
+package no.nav.samordning.hendelser.vedtak.repository
 
 import jakarta.persistence.*
 import jakarta.persistence.GenerationType.IDENTITY
@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 @Entity
 @Table(name = "VEDTAK_HENDELSE")
-class HendelseContainerDO(
+class VedtakHendelseDO(
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(columnDefinition = "SERIAL")
     val id: Long,

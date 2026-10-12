@@ -13,8 +13,8 @@ import no.nav.samordning.hendelser.common.feed.FeedBuilder
 import no.nav.samordning.hendelser.common.metrics.AppMetrics
 import no.nav.samordning.hendelser.common.security.TpConfigOrgNoValidator
 import no.nav.samordning.hendelser.common.security.support.SCOPE_SAMORDNING
-import no.nav.samordning.hendelser.vedtak.hendelse.VedtakHendelseDTO
-import no.nav.samordning.hendelser.vedtak.service.HendelseService
+import no.nav.samordning.hendelser.vedtak.domain.VedtakHendelseDTO
+import no.nav.samordning.hendelser.vedtak.service.VedtakHendelseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus.MOVED_PERMANENTLY
@@ -32,7 +32,7 @@ class VedtakFeedController(
 ) {
 
     @Autowired
-    private lateinit var hendelseService: HendelseService
+    private lateinit var vedtakHendelseService: VedtakHendelseService
 
     @Autowired
     private lateinit var metrics: AppMetrics
@@ -47,7 +47,7 @@ class VedtakFeedController(
         @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Int,
         @RequestParam(value = "sekvensnummer", required = false) @Min(1) sekvensnummer: Long?
     ): Feed<VedtakHendelseDTO> {
-        val hendelser = hendelseService.fetchSeqAndHendelser(tpnr, sekvensnummer, side, antall)
+        val hendelser = vedtakHendelseService.fetchSeqAndHendelser(tpnr, sekvensnummer, side, antall)
         metrics.incrementLestCounter(tpnr, hendelser.numberOfElements.toDouble(), "samordning_hendelser_lest")
         return feedBuilder.forPath(VEDTAK_HENDELSER_PATH)
             .withTpnr(tpnr)

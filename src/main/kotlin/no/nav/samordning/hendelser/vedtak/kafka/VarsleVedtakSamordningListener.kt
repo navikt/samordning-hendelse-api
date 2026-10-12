@@ -1,8 +1,8 @@
 package no.nav.samordning.hendelser.vedtak.kafka
 
 import no.nav.samordning.hendelser.vedtak.config.DatabaseConfig
-import no.nav.samordning.hendelser.vedtak.hendelse.HendelseContainerDO
-import no.nav.samordning.hendelser.vedtak.hendelse.HendelseRepositoryDO
+import no.nav.samordning.hendelser.vedtak.repository.VedtakHendelseDO
+import no.nav.samordning.hendelser.vedtak.repository.VedtakHendelseRepositoryDO
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
@@ -16,7 +16,7 @@ import tools.jackson.module.kotlin.readValue
 @Service
 @Transactional
 class VarsleVedtakSamordningListener(
-    private val hendelseRepository: HendelseRepositoryDO,
+    private val hendelseRepository: VedtakHendelseRepositoryDO,
     private val mapper: ObjectMapper,
     private val databaseConfig: DatabaseConfig,
 ) {
@@ -37,7 +37,7 @@ class VarsleVedtakSamordningListener(
         }
 
         if (samHendelse.ytelsesType in databaseConfig.ytelsesTyper) try {
-            val hendelse = hendelseRepository.saveAndFlush(HendelseContainerDO(samHendelse))
+            val hendelse = hendelseRepository.saveAndFlush(VedtakHendelseDO(samHendelse))
             LOG.info("Lagrer ${hendelse.id} med tpnr='${hendelse.tpnr}', identifikator='*****', vedtakId='${hendelse.vedtakId}', samId='${hendelse.samId}', ytelsesType='${hendelse.ytelsesType}', fom='${hendelse.fom}', tom='${hendelse.tom}'")
             acknowledgment.acknowledge()
             LOG.info("*** Acket melding ferdig")

@@ -1,8 +1,8 @@
 package no.nav.samordning.hendelser.vedtak.database
 
 import no.nav.samordning.hendelser.config.IntegrationTest
-import no.nav.samordning.hendelser.vedtak.hendelse.VedtakHendelse
-import no.nav.samordning.hendelser.vedtak.hendelse.VedtakHendelseDTO
+import no.nav.samordning.hendelser.vedtak.repository.VedtakHendelse
+import no.nav.samordning.hendelser.vedtak.domain.VedtakHendelseDTO
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs
 import org.junit.jupiter.api.Assertions.assertEquals

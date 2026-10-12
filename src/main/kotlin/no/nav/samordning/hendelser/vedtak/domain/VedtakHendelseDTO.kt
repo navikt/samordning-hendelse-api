@@ -1,4 +1,4 @@
-package no.nav.samordning.hendelser.vedtak.hendelse
+package no.nav.samordning.hendelser.vedtak.domain
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.samordning.hendelser.common.feed.SequentialDTO
