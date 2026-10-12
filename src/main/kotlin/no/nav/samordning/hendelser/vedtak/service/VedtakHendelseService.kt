@@ -15,7 +15,7 @@ class VedtakHendelseService(
         get() = vedtakHendelseRepository.count()
 
     fun fetchSeqAndHendelser(tpnr: String, sekvensnummer: Long?, side: Int, antall: Int) =
-        vedtakHendelseRepository.findAllByTpnr(
+        vedtakHendelseRepository.findAllByTpnrOrderBySekvensnummerAsc(
             tpnr,
             OffsetPageRequest(sekvensnummer?.minus(1)?.coerceAtLeast(0), side, antall)
         )

@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface YtelseHendelserRepository: JpaRepository<YtelseHendelse, Long> {
 
-    fun findByMottaker(mottaker: String, pageable: Pageable): Page<YtelseHendelse>
+    fun findByMottakerOrderBySekvensnummerAsc(mottaker: String, pageable: Pageable): Page<YtelseHendelse>
 }

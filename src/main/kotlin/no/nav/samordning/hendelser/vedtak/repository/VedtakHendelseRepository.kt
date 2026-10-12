@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface VedtakHendelseRepository : JpaRepository<VedtakHendelse, Long> {
 
-    fun findAllByTpnr(
+    fun findAllByTpnrOrderBySekvensnummerAsc(
         tpnr: String,
         pageable: Pageable
     ): Page<VedtakHendelse>

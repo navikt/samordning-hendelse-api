@@ -16,7 +16,7 @@ class YtelseService(
 
 
     fun fetchSeqAndYtelseHendelser(tpnr: String, sekvensnummer: Long?, side: Int, antall: Int) =
-        ytelseHendelserRepository.findByMottaker(
+        ytelseHendelserRepository.findByMottakerOrderBySekvensnummerAsc(
             tpnr,
             OffsetPageRequest(sekvensnummer?.minus(1)?.coerceAtLeast(0), side, antall)
         )
