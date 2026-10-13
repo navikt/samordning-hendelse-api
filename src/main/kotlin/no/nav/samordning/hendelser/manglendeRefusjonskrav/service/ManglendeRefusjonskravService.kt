@@ -16,7 +16,7 @@ class ManglendeRefusjonskravService(
 
 
     fun fetchSeqAndManglendeRefusjonskravHendelser(tpnr: String, sekvensnummer: Long?, side: Int, antall: Int): Page<ManglendeRefusjonskrav> {
-        return manglendeRefusjonskravRepository.findByTpnr(
+        return manglendeRefusjonskravRepository.findByTpnrOrderBySekvensnummerAsc(
             tpnr,
             OffsetPageRequest(sekvensnummer?.minus(1)?.coerceAtLeast(0), side, antall)
         )

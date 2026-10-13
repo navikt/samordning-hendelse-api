@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ManglendeRefusjonskravRepository: JpaRepository<ManglendeRefusjonskrav, Long> {
 
-    fun findByTpnr(tpnr: String, pageable: Pageable): Page<ManglendeRefusjonskrav>
+    fun findByTpnrOrderBySekvensnummerAsc(tpnr: String, pageable: Pageable): Page<ManglendeRefusjonskrav>
 
     fun findBySamId(samId: String): ManglendeRefusjonskrav?
 

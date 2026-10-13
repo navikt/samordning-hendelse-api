@@ -3,25 +3,27 @@ package no.nav.samordning.hendelser.config
 import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.jdbc.core.JdbcTemplate
 
 class FlywayMigrationTest {
 
-    @Test
-    fun sequence_indexes_are_created_when_upgrading_from_v8() {
+    @ParameterizedTest
+    @CsvSource("8, 4", "10, 2")
+    fun sequence_indexes_are_created_when_upgrading(version: String, expectedMigrations: Int) {
         EmbeddedPostgres.builder().start().use { postgres ->
             val dataSource = postgres.postgresDatabase
             Flyway.configure()
                 .dataSource(dataSource)
-                .target("8")
+                .target(version)
                 .load()
                 .migrate()
 
             val flyway = Flyway.configure()
                 .dataSource(dataSource)
                 .load()
-            assertEquals(2, flyway.migrate().migrationsExecuted)
+            assertEquals(expectedMigrations, flyway.migrate().migrationsExecuted)
             flyway.validate()
 
             val indexes = JdbcTemplate(dataSource).queryForList(
@@ -32,14 +34,18 @@ class FlywayMigrationTest {
                 JOIN pg_class c ON c.oid = i.indexrelid
                 WHERE c.relname IN (
                     'vedtak_hendelse_tpnr_sekvensnummer_idx',
-                    'ytelse_hendelser_mottaker_sekvensnummer_idx'
+                    'ytelse_hendelser_mottaker_sekvensnummer_idx',
+                    'person_endring_tpnr_sekvensnummer_idx',
+                    'manglende_refusjonskrav_tpnr_sekvensnummer_idx'
                 )
                 """.trimIndent()
             ).associateBy { it["index_name"] }
 
-            assertEquals(2, indexes.size)
+            assertEquals(4, indexes.size)
             assertEquals(true, indexes.getValue("vedtak_hendelse_tpnr_sekvensnummer_idx")["valid"])
             assertEquals(true, indexes.getValue("ytelse_hendelser_mottaker_sekvensnummer_idx")["valid"])
+            assertEquals(true, indexes.getValue("person_endring_tpnr_sekvensnummer_idx")["valid"])
+            assertEquals(true, indexes.getValue("manglende_refusjonskrav_tpnr_sekvensnummer_idx")["valid"])
             assertEquals(
                 "CREATE INDEX vedtak_hendelse_tpnr_sekvensnummer_idx ON public.vedtak_hendelse USING btree (tpnr, sekvensnummer)",
                 indexes.getValue("vedtak_hendelse_tpnr_sekvensnummer_idx")["definition"]
@@ -47,6 +53,14 @@ class FlywayMigrationTest {
             assertEquals(
                 "CREATE INDEX ytelse_hendelser_mottaker_sekvensnummer_idx ON public.ytelse_hendelser USING btree (mottaker, sekvensnummer)",
                 indexes.getValue("ytelse_hendelser_mottaker_sekvensnummer_idx")["definition"]
+            )
+            assertEquals(
+                "CREATE INDEX person_endring_tpnr_sekvensnummer_idx ON public.person_endring USING btree (tpnr, sekvensnummer)",
+                indexes.getValue("person_endring_tpnr_sekvensnummer_idx")["definition"]
+            )
+            assertEquals(
+                "CREATE INDEX manglende_refusjonskrav_tpnr_sekvensnummer_idx ON public.manglende_refusjonskrav USING btree (tpnr, sekvensnummer)",
+                indexes.getValue("manglende_refusjonskrav_tpnr_sekvensnummer_idx")["definition"]
             )
             assertEquals(0, flyway.migrate().migrationsExecuted)
         }

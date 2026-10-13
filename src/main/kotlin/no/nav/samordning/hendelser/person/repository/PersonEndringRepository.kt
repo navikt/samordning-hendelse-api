@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface PersonEndringRepository: JpaRepository<PersonEndring, Long> {
 
-    fun findByTpnr(tpnr: String, pageable: Pageable): Page<PersonEndring>
+    fun findByTpnrOrderBySekvensnummerAsc(tpnr: String, pageable: Pageable): Page<PersonEndring>
 
 }

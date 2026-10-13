@@ -40,7 +40,7 @@ Alle endepunkter krever Maskinporten-token med scope `nav:pensjon/v1/samordning`
 | `GET` | `/hendelser/manglendeRefusjonskrav` | Manglende refusjonskrav (BSAM002) fra SAM |
 | ~~`GET`~~ | ~~`/hendelser`~~ | ~~Alias for `/hendelser/vedtak` — deprecated~~ |
 
-Vedtakshendelser og ytelsehendelser returneres i stigende sekvensnummerrekkefølge, sortert før paginering. Startpunktet er inklusivt: `sekvensnummer=917` starter med hendelse 917.
+Alle hendelsesfeedene returneres i stigende sekvensnummerrekkefølge, sortert før paginering. Startpunktet er inklusivt: `sekvensnummer=917` starter med hendelse 917.
 
 ## Kafka-topics
 

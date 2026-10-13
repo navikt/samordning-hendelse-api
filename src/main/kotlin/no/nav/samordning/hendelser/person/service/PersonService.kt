@@ -15,7 +15,7 @@ class PersonService(
     private val log = getLogger(javaClass)
 
     fun fetchSeqAndPersonEndringHendelser(tpnr: String, sekvensnummer: Long?, side: Int, antall: Int): Page<PersonEndring> =
-        personEndringRepository.findByTpnr(
+        personEndringRepository.findByTpnrOrderBySekvensnummerAsc(
             tpnr,
             OffsetPageRequest(sekvensnummer?.minus(1)?.coerceAtLeast(0), side, antall)
         )
