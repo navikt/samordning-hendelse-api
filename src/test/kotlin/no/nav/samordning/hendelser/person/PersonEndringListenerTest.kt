@@ -1,7 +1,12 @@
 package no.nav.samordning.hendelser.person
 
 import com.ninjasquad.springmockk.MockkBean
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import no.nav.samordning.hendelser.common.consumer.OrdningDto
+import no.nav.samordning.hendelser.common.consumer.TpConfigConsumer
 import no.nav.samordning.hendelser.config.IntegrationTest
 import no.nav.samordning.hendelser.person.domain.Adresse
 import no.nav.samordning.hendelser.person.domain.Meldingskode
@@ -16,10 +21,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.Acknowledgment
+import org.springframework.kafka.support.SendResult
 import tools.jackson.databind.ObjectMapper
 import java.time.LocalDate
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -28,7 +36,10 @@ import kotlin.test.assertTrue
 class PersonEndringListenerTest {
 
     @MockkBean(relaxed = true)
-    private lateinit var sporingsloggProducer: SporingsloggProducer
+    private lateinit var kafkaTemplate: KafkaTemplate<String, String>
+
+    @MockkBean(relaxed = true)
+    private lateinit var tpconsumer: TpConfigConsumer
 
     @Autowired
     private lateinit var personEndringRepository: PersonEndringRepository
@@ -39,16 +50,23 @@ class PersonEndringListenerTest {
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
+    private lateinit var sporingsloggProducer: SporingsloggProducer
 
     private lateinit var listener: PersonEndringListener
     private lateinit var acknowledgment: Acknowledgment
+    //private val mockFuture = CompletableFuture.completedFuture(mockk<SendResult<String, String>>())
+
 
     @BeforeEach
     fun setup() {
-        every { sporingsloggProducer.sendHendelse(any()) } just Runs
-        listener = PersonEndringListener(personEndringRepository, personHendelseRepository, objectMapper, sporingsloggProducer)
-        acknowledgment = mockk(relaxed = true)
+        every { kafkaTemplate.send(any<String>(), any<String>()) } returns CompletableFuture.completedFuture(mockk<SendResult<String, String>>())
+        //every { kafkaTemplate.send(any<String>(), any<String>()) } returns mockFuture
+        coEvery { tpconsumer.hentOrdning (any()) } returns OrdningDto("Dummy", "1234", "90110223121", "8000999012", emptyList())
 
+        sporingsloggProducer = SporingsloggProducer(kafkaTemplate, "sporingsloog-topic", tpconsumer)
+        listener = PersonEndringListener(personEndringRepository, personHendelseRepository, sporingsloggProducer, objectMapper)
+
+        acknowledgment = mockk(relaxed = true)
         personEndringRepository.deleteAll()
         personHendelseRepository.deleteAll()
     }
@@ -63,7 +81,7 @@ class PersonEndringListenerTest {
     fun `skal lagre personendring med adresse med enkelt tpnr`() {
         val hendelseId = UUID.randomUUID().toString()
         val fnr = "12345678901"
-        val tpnr = "123"
+        val tpnr = "1234"
         val meldingskode = Meldingskode.ADRESSE
 
         val hendelse = PersonEndringKafkaHendelse(
@@ -96,15 +114,15 @@ class PersonEndringListenerTest {
         assertNotNull(saved[0].adresse)
         assertEquals("Adresselinje2", saved[0].adresse?.adresselinje2)
 
+        verify(exactly = 1) { kafkaTemplate.send(any<String>(), any<String>()) }
         verify { acknowledgment.acknowledge() }
-        verify(atLeast = 1) { sporingsloggProducer.sendHendelse(any())  }
     }
 
     @Test
     fun `skal lagre personendring med enkelt tpnr`() {
         val hendelseId = UUID.randomUUID().toString()
         val fnr = "12345678901"
-        val tpnr = "123"
+        val tpnr = "1234"
         val meldingskode = Meldingskode.SIVILSTAND
 
         val hendelse = PersonEndringKafkaHendelse(
@@ -128,8 +146,8 @@ class PersonEndringListenerTest {
         assertEquals(meldingskode, saved[0].meldingskode)
         assertEquals(1L, saved[0].sekvensnummer)
 
+        verify(exactly = 1) { kafkaTemplate.send(any<String>(), any<String>()) }
         verify { acknowledgment.acknowledge() }
-        verify(atLeast = 1) { sporingsloggProducer.sendHendelse(any())  }
 
     }
 
@@ -137,7 +155,7 @@ class PersonEndringListenerTest {
     fun `skal lagre personendring med flere tpnr`() {
         val hendelseId = UUID.randomUUID().toString()
         val fnr = "12345678901"
-        val tpnrList = listOf("123", "456", "789")
+        val tpnrList = listOf("1234", "5657", "8910")
         val meldingskode = Meldingskode.FODSELSNUMMER
 
         val hendelse = PersonEndringKafkaHendelse(
@@ -159,14 +177,14 @@ class PersonEndringListenerTest {
             assertTrue(saved.any { it.tpnr == tpnr })
         }
 
+        verify(exactly = 3) { kafkaTemplate.send(any<String>(), any<String>()) }
         verify { acknowledgment.acknowledge() }
-        verify(atLeast = 1) { sporingsloggProducer.sendHendelse(any())  }
 
     }
 
     @Test
     fun `skal sette sekvensnummer basert paa siste sekvensnummer for tpnr`() {
-        val tpnr = "123"
+        val tpnr = "1234"
         val fnr = "12345678901"
 
         // Lagre to tidligere hendelser
@@ -200,15 +218,13 @@ class PersonEndringListenerTest {
         val saved = personEndringRepository.findAll().last { it.tpnr == tpnr }
         assertNotNull(saved)
         assertEquals(3L, saved.sekvensnummer)
-        verify(atLeast = 1) { sporingsloggProducer.sendHendelse(any())  }
-
     }
 
     @Test
     fun `skal ignorere duplikat hendelse basert paa hendelseId og meldingskode`() {
         val hendelseId = UUID.randomUUID().toString()
         val fnr = "12345678901"
-        val tpnr = "123"
+        val tpnr = "1234"
         val meldingskode = Meldingskode.SIVILSTAND
 
         val hendelse = PersonEndringKafkaHendelse(
@@ -231,8 +247,8 @@ class PersonEndringListenerTest {
         val saved = personEndringRepository.findAll()
         assertEquals(1, saved.size)
 
+        verify(exactly = 1) { kafkaTemplate.send(any<String>(), any<String>()) }
         verify(exactly = 2) { acknowledgment.acknowledge() }
-        verify(atLeast = 1) { sporingsloggProducer.sendHendelse(any())  }
 
     }
 
@@ -240,7 +256,7 @@ class PersonEndringListenerTest {
     fun `skal lagre personHendelse med hendelseId og meldingskode`() {
         val hendelseId = UUID.randomUUID().toString()
         val fnr = "12345678901"
-        val tpnr = "123"
+        val tpnr = "1234"
         val meldingskode = Meldingskode.ADRESSE
 
         val hendelse = PersonEndringKafkaHendelse(
@@ -256,7 +272,7 @@ class PersonEndringListenerTest {
         listener.listener(hendelseJson, consumerRecord, acknowledgment)
 
         assertTrue(personHendelseRepository.existsByHendelseIdAndMeldingskode(hendelseId, meldingskode))
-
+        verify(exactly = 1) { kafkaTemplate.send(any<String>(), any<String>()) }
         verify { acknowledgment.acknowledge() }
     }
 
@@ -264,7 +280,7 @@ class PersonEndringListenerTest {
     fun `verifiser at hendelsen ikke ackes ved database-feil`() {
         val hendelseId = UUID.randomUUID().toString()
         val fnr = "12345678901"
-        val tpnr = "123"
+        val tpnr = "1234"
 
         val hendelse = PersonEndringKafkaHendelse(
             hendelseId = hendelseId,
@@ -278,12 +294,12 @@ class PersonEndringListenerTest {
 
         // Mock repository for aa kaste exception
         val failingRepository = mockk<PersonEndringRepository>()
-        val failingListener = PersonEndringListener(failingRepository, personHendelseRepository, objectMapper, sporingsloggProducer)
+        val failingListener = PersonEndringListener(failingRepository, personHendelseRepository, sporingsloggProducer, objectMapper)
 
         assertThrows<RuntimeException> {
             failingListener.listener(hendelseJson, consumerRecord, acknowledgment)
         }
-
+        verify(exactly = 0) { kafkaTemplate.send(any<String>(), any<String>()) }
         verify(exactly = 0) { acknowledgment.acknowledge() }
     }
 
@@ -303,7 +319,7 @@ class PersonEndringListenerTest {
     @Test
     fun `skal lagre alle meldingskoder`() {
         val fnr = "12345678901"
-        val tpnr = "123"
+        val tpnr = "1234"
 
         Meldingskode.entries.forEach { meldingskode ->
             val hendelseId = UUID.randomUUID().toString()
@@ -319,7 +335,6 @@ class PersonEndringListenerTest {
 
             val hendelseJson = objectMapper.writeValueAsString(hendelse)
             val consumerRecord = mockConsumerRecord(hendelseJson)
-
             listener.listener(hendelseJson, consumerRecord, acknowledgment)
         }
 
