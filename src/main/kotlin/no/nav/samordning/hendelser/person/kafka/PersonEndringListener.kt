@@ -1,6 +1,7 @@
 package no.nav.samordning.hendelser.person.kafka
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import kotlinx.coroutines.runBlocking
 import no.nav.samordning.hendelser.person.domain.Adresse
 import no.nav.samordning.hendelser.person.domain.Meldingskode
 import no.nav.samordning.hendelser.person.repository.PersonEndring
@@ -25,8 +26,8 @@ import java.time.LocalDate
 class PersonEndringListener(
     private val personEndringRepository: PersonEndringRepository,
     private val personHendelseRepository: PersonHendelseRepository,
-    private val mapper: ObjectMapper,
     private val sporingsloggProducer: SporingsloggProducer,
+    private val mapper: ObjectMapper,
 )  {
 
     private val logger: Logger = getLogger(javaClass)
@@ -73,11 +74,9 @@ class PersonEndringListener(
 
             personHendelseRepository.saveAndFlush(PersonHendelse(entity.hendelseId, entity.meldingskode))
             logger.info("Lagrer med hendelseId: ${entity.hendelseId}, meldingskode: ${entity.meldingskode}.")
-
-            logger.info("Sender hendelse til Sporingslogg")
-            val enkelPersonEndring = personEndringHendelser.firstOrNull()
-            enkelPersonEndring?.let { sporingsloggProducer.sendHendelse( it ) }
-
+            runBlocking {
+                sendHendelseSporingslogg(personEndringHendelser, hendelse)
+            }
             acknowledgment.acknowledge()
             logger.info("*** Acket melding ferdig")
 
@@ -88,7 +87,16 @@ class PersonEndringListener(
         }
 
     }
+
+    private suspend fun sendHendelseSporingslogg(personEndringHendelser: List<PersonEndring>, hendelseData: String) {
+        logger.info("Sender hendelse til Sporingslogg")
+        val tpnrSet = personEndringHendelser.map { hendelse -> hendelse.tpnr }.toSet()
+        val enkelPersonEndring = personEndringHendelser.firstOrNull()
+        enkelPersonEndring?.let { sporingsloggProducer.sendHendelse( hendelseData, enkelPersonEndring , tpnrSet) }
+    }
+
 }
+
 
 data class PersonEndringKafkaHendelse(
     val hendelseId: String,

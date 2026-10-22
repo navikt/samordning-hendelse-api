@@ -51,3 +51,4 @@ VEDTAK_HENDELSE_KAFKA_TOPIC: test-topic
 YTELSE_HENDELSE_KAFKA_TOPIC: test-ytelse-topic
 PERSON_ENDRING_KAFKA_TOPIC: test-person-endring-topic
 MANGLENDE_REFUSJONSKRAV_KAFKA_TOPIC: test-manglende-refusjonskrav-topic
+SPRONGSLOGG_KAFKA_TOPIC: dummy-sporingslogg-kafka-topic

@@ -68,6 +68,7 @@ dependencies {
     testImplementation("com.ninja-squad:springmockk:5.0.1")
     testImplementation("org.mock-server:mockserver-spring-test-listener-no-dependencies:5.15.0")
     testImplementation("no.nav.pensjonsamhandling:maskinporten-validation-spring-test:3.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
 }
 
