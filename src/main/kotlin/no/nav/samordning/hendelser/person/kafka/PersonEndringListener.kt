@@ -73,10 +73,13 @@ class PersonEndringListener(
             logger.info("Lagrer med meldingskode: ${entity}, tpnr: ${entity.tpnr}.")
 
             personHendelseRepository.saveAndFlush(PersonHendelse(entity.hendelseId, entity.meldingskode))
-            logger.info("Lagrer med hendelseId: ${entity.hendelseId}, meldingskode: ${entity.meldingskode}.")
+            logger.info("Lagret med hendelseId: ${entity.hendelseId}, meldingskode: ${entity.meldingskode}.")
+
             runBlocking {
-                sendHendelseSporingslogg(personEndringHendelser, hendelse)
+                logger.debug("Sender hendelse til SporingsloggProducer")
+                sporingsloggProducer.sendHendelse(personEndringHendelser, hendelse)
             }
+
             acknowledgment.acknowledge()
             logger.info("*** Acket melding ferdig")
 
@@ -86,13 +89,6 @@ class PersonEndringListener(
             throw e
         }
 
-    }
-
-    private suspend fun sendHendelseSporingslogg(personEndringHendelser: List<PersonEndring>, hendelseData: String) {
-        logger.info("Sender hendelse til Sporingslogg")
-        val tpnrSet = personEndringHendelser.map { hendelse -> hendelse.tpnr }.toSet()
-        val enkelPersonEndring = personEndringHendelser.firstOrNull()
-        enkelPersonEndring?.let { sporingsloggProducer.sendHendelse( hendelseData, enkelPersonEndring , tpnrSet) }
     }
 
 }

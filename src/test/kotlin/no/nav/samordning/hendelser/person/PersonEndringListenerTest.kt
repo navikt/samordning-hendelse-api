@@ -2,7 +2,6 @@ package no.nav.samordning.hendelser.person
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.samordning.hendelser.common.consumer.OrdningDto
@@ -54,13 +53,15 @@ class PersonEndringListenerTest {
 
     private lateinit var listener: PersonEndringListener
     private lateinit var acknowledgment: Acknowledgment
-    //private val mockFuture = CompletableFuture.completedFuture(mockk<SendResult<String, String>>())
 
 
     @BeforeEach
     fun setup() {
-        every { kafkaTemplate.send(any<String>(), any<String>()) } returns CompletableFuture.completedFuture(mockk<SendResult<String, String>>())
-        //every { kafkaTemplate.send(any<String>(), any<String>()) } returns mockFuture
+        val mockSendResult = mockk<SendResult<String, String>>()
+        val completedFuture = CompletableFuture.completedFuture(mockSendResult)
+
+        // Use coEvery since the target call inside uses coroutine suspension
+        coEvery { kafkaTemplate.send(any<String>(), any<String>()) } returns completedFuture
         coEvery { tpconsumer.hentOrdning (any()) } returns OrdningDto("Dummy", "1234", "90110223121", "8000999012", emptyList())
 
         sporingsloggProducer = SporingsloggProducer(kafkaTemplate, "sporingsloog-topic", tpconsumer)
@@ -344,6 +345,8 @@ class PersonEndringListenerTest {
         Meldingskode.entries.forEach { meldingskode ->
             assertTrue(saved.any { it.meldingskode == meldingskode })
         }
+        verify(exactly = 4) { kafkaTemplate.send(any<String>(), any<String>()) }
+
     }
 
     private fun mockConsumerRecord(value: String): ConsumerRecord<String, String> {

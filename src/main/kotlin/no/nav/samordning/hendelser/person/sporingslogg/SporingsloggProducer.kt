@@ -1,44 +1,48 @@
 package no.nav.samordning.hendelser.person.sporingslogg
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import kotlinx.coroutines.future.await
 import no.nav.samordning.hendelser.common.consumer.TpConfigConsumer
 import no.nav.samordning.hendelser.person.repository.PersonEndring
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import tools.jackson.databind.cfg.DateTimeFeature
 import tools.jackson.databind.json.JsonMapper
 import java.time.LocalDateTime
 import java.util.*
 
-@Component
+@Service
 class SporingsloggProducer(private val kafkaTemplate: KafkaTemplate<String, String>,
     @param:Value($$"${SPRONGSLOGG_KAFKA_TOPIC}") private val topic: String,
     private val tpconsumer: TpConfigConsumer) {
 
+    private val logger: Logger = getLogger(javaClass)
     private val mapper = JsonMapper.builder()
         .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
         .build()
 
+    suspend fun sendHendelse(personEndringHendelser: List<PersonEndring>, hendelseData: String) {
+        val tpnrSet = personEndringHendelser.map { hendelse -> hendelse.tpnr }.toSet()
+        val personEndring = personEndringHendelser.firstOrNull() ?: return
 
-    private val logger: Logger = getLogger(javaClass)
-
-    suspend fun sendHendelse(hendelseData: String, personEndring: PersonEndring, tpnrSet: Collection<String>) {
         tpnrSet.forEach { tpnr ->
             val mottaker = tpconsumer.hentOrdning(tpnr)?.orgNr // <-- hente Org.nr fra TP-API ut ifra TPNR
             if (mottaker.isNullOrBlank()) return@forEach
+            logger.info("*** Sender person endring over kafka til sporingslogg ***")
             try {
                 val loggMelding = createLoggMelding(hendelseData, personEndring, mottaker)
-                logger.info("Sender person endring over kafka til sporingslogg: Mottaker = $mottaker fra tpnr: $tpnr")
+                logger.info("Tpnr: $tpnr, Mottaker = $mottaker")
                 logger.debug("behandlingsGrunnlag: ${loggMelding.behandlingsGrunnlag}")
                 val payloadData = loggMelding.toEncodeData()
-                kafkaTemplate.send(topic, payloadData)
+                kafkaTemplate.send(topic, payloadData).await()
             } catch (ex: Exception) {
                 logger.error("Feil ved sending personendring-Hendelse", ex)
             }
         }
+
         logger.info("*** Person endring sendt til sporingslogg END ***")
     }
 
@@ -63,7 +67,7 @@ class SporingsloggProducer(private val kafkaTemplate: KafkaTemplate<String, Stri
 }
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-data class LoggMelding(
+private data class LoggMelding(
     val id: String?,
     val person: String?,
     val mottaker: String?,
@@ -74,7 +78,4 @@ data class LoggMelding(
     val samtykkeToken: String?,
     val dataForespoersel: String?,
     val leverandoer: String?
-) {
-
-
-}
+)
