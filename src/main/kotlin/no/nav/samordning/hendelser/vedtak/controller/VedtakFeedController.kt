@@ -44,7 +44,7 @@ class VedtakFeedController(
     fun hendelser(
         @RequestParam(value = "tpnr") @Digits(integer = 4, fraction = 0) tpnr: String,
         @RequestParam(value = "side", required = false, defaultValue = "0") @PositiveOrZero side: Int,
-        @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(0) @Max(10000) antall: Int,
+        @RequestParam(value = "antall", required = false, defaultValue = "10000") @Min(1) @Max(10000) antall: Int,
         @RequestParam(value = "sekvensnummer", required = false) @Min(1) sekvensnummer: Long?
     ): Feed<VedtakHendelseDTO> {
         val hendelser = vedtakHendelseService.fetchSeqAndHendelser(tpnr, sekvensnummer, side, antall)
