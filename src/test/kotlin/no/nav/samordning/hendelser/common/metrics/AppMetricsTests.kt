@@ -24,7 +24,7 @@ internal class AppMetricsTests {
 
     @Test
     fun hendelser_lest_metrics_are_incremented() {
-        mockMvc.get("/hendelser?tpnr=1000") {
+        mockMvc.get("/hendelser/vedtak?tpnr=1000") {
             headers {
                 setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, PERMITTED_ORG_NO).serialize())
             }

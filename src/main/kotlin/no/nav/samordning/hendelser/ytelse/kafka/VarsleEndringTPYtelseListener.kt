@@ -1,5 +1,6 @@
 package no.nav.samordning.hendelser.ytelse.kafka
 
+import no.nav.samordning.hendelser.ytelse.domain.HendelseTypeCode
 import no.nav.samordning.hendelser.ytelse.domain.YtelseHendelseDTO
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelse
 import no.nav.samordning.hendelser.ytelse.repository.YtelseHendelserRepository
@@ -26,12 +27,18 @@ class VarsleEndringTPYtelseListener(
     @KafkaListener(topics = ["\${YTELSE_HENDELSE_KAFKA_TOPIC}"])
     fun listener(hendelse: String, cr: ConsumerRecord<String, String>, acknowledgment: Acknowledgment) {
         logger.info("*** Innkommende YtelseHendelse (VarsleEndringTPYtelse). Offset: ${cr.offset()}, Partition: ${cr.partition()}, Key: ${cr.key()}")
+        val hendelseType: HendelseTypeCode
+        val tpnr: String
+        val ytelseType: String
 
         val ytelseHendelser: List<YtelseHendelse> = try {
             logger.debug("hendelse json: $hendelse")
             MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["id"].asString())
 
             val kafkaHendelse = mapper.readValue<YtelseHendelseDTO>(hendelse)
+            hendelseType = kafkaHendelse.hendelseType
+            tpnr = kafkaHendelse.tpnr
+            ytelseType = kafkaHendelse.ytelseType
 
             mapper.readTree(hendelse)["mottakere"].asIterable().map { mottaker ->
                 YtelseHendelse(
@@ -54,18 +61,10 @@ class VarsleEndringTPYtelseListener(
         }
 
         try {
-            val mottakereLog = mutableMapOf<String, Long>()
-            val entitiesLog = ytelseHendelser.map { ytelseHendelse ->
-                val sisteSekvensnummer = ytelseHendelserRepository.getFirstByMottakerOrderBySekvensnummerDesc(ytelseHendelse.mottaker)
-                    ?.sekvensnummer ?: 0
-                ytelseHendelse.sekvensnummer = sisteSekvensnummer + 1
-                mottakereLog[ytelseHendelse.mottaker] = ytelseHendelse.sekvensnummer
-                ytelseHendelserRepository.save(ytelseHendelse)
-            }
-            ytelseHendelserRepository.flush()
-            val entity = entitiesLog.first()
+            val mottakereLog = ytelseHendelserRepository.saveAllAndFlush(ytelseHendelser)
+                .associate { it.mottaker to it.sekvensnummer }
 
-            logger.info("Lagrer med hendelseType: ${entity.hendelseType}, tpnr: ${entity.tpnr}, mottaker-sekvensnummer: ${mottakereLog}, ytelseTypeCode: ${entity.ytelseType}.")
+            logger.info("Lagrer med hendelseType: ${hendelseType}, tpnr: ${tpnr}, mottaker-sekvensnummer: ${mottakereLog}, ytelseTypeCode: ${ytelseType}.")
             acknowledgment.acknowledge()
             logger.info("*** Acket melding ferdig")
         } catch (e: Exception) {

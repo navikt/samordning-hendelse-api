@@ -51,9 +51,6 @@ class ManglendeRefusjonskravListener(
         }
 
         try {
-
-            val sisteSekvensnummer = manglendeRefusjonskravRepository.getFirstByTpnrOrderBySekvensnummerDesc(manglendeRefusjonskrav.tpnr) ?.sekvensnummer ?: 0
-            manglendeRefusjonskrav.sekvensnummer = sisteSekvensnummer + 1
             manglendeRefusjonskravRepository.saveAndFlush(manglendeRefusjonskrav)
 
             acknowledgment.acknowledge()

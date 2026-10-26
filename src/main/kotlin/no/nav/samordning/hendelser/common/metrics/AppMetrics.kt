@@ -4,7 +4,7 @@ import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import jakarta.annotation.PostConstruct
-import no.nav.samordning.hendelser.vedtak.service.HendelseService
+import no.nav.samordning.hendelser.vedtak.service.VedtakHendelseService
 import no.nav.samordning.hendelser.ytelse.service.YtelseService
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.stereotype.Component
@@ -12,8 +12,8 @@ import java.util.*
 
 @Component
 class AppMetrics(private val registry: MeterRegistry,
-    private val hendelseService: HendelseService,
-    private val ytelseService: YtelseService) {
+                 private val vedtakHendelseService: VedtakHendelseService,
+                 private val ytelseService: YtelseService) {
 
     private val log = getLogger(javaClass)
 
@@ -30,7 +30,7 @@ class AppMetrics(private val registry: MeterRegistry,
     @PostConstruct
     fun initMetrics() {
         scheduleTask {
-            totalAntallHendelser = hendelseService.totalHendelser
+            totalAntallHendelser = vedtakHendelseService.totalHendelser
             totalAntallHendelserTpYtelser = ytelseService.totalHendelsertpYtelser
         }
     }

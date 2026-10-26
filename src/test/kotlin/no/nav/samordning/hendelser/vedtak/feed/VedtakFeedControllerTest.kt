@@ -1,25 +1,39 @@
 package no.nav.samordning.hendelser.vedtak.feed
-import no.nav.samordning.hendelser.config.IntegrationTest
 
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
 import no.nav.samordning.hendelser.common.security.support.SCOPE_SAMORDNING
+import no.nav.samordning.hendelser.config.IntegrationTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 
 @IntegrationTest
-internal class FeedControllerTest {
+internal class VedtakFeedControllerTest {
 
     @Autowired
     private lateinit var maskinportenValidatorTokenGenerator: MaskinportenValidatorTokenGenerator
 
     @Autowired
     private lateinit var mockMvc: MockMvc
+
+    @ParameterizedTest
+    @CsvSource(
+        "/hendelser, /hendelser/vedtak",
+        "/hendelser?, /hendelser/vedtak",
+        "/hendelser?tpnr=3010&sekvensnummer=910&antall=100&side=0, /hendelser/vedtak?tpnr=3010&sekvensnummer=910&antall=100&side=0"
+    )
+    fun `legacy endpoint redirects with query string preserved`(url: String, expectedLocation: String) {
+        mockMvc.get(url).andExpect {
+            status { isEqualTo(301) }
+            header { string(HttpHeaders.LOCATION, expectedLocation) }
+        }
+    }
 
     @ParameterizedTest(name = "Valid requests returns ok with content")
     @ValueSource(strings = [URL_VEDTAK, URL_TP_YTELSER])
@@ -78,7 +92,7 @@ internal class FeedControllerTest {
 
     @Test
     fun bad_parameters_return_400() {
-        mockMvc.get("/hendelser?tpnr=4000&side=-1") {
+        mockMvc.get("/hendelser/vedtak?tpnr=4000&side=-1") {
             headers {
                 setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
             }

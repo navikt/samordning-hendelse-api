@@ -1,22 +1,33 @@
 package no.nav.samordning.hendelser.person.repository
 
 import jakarta.persistence.*
+import no.nav.samordning.hendelser.common.feed.SequentialDO
+import no.nav.samordning.hendelser.common.security.support.SEKVENSNUMMER_DEFINITION
 import no.nav.samordning.hendelser.person.domain.Adresse
 import no.nav.samordning.hendelser.person.domain.Meldingskode
+import no.nav.samordning.hendelser.person.domain.PersonResponse
+import org.hibernate.annotations.Generated
 import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.generator.EventType
 import org.hibernate.type.SqlTypes.JSON
 import java.time.LocalDate
 import kotlin.jvm.Transient
 
 @Entity
 @Table(name = "PERSON_ENDRING")
-data class PersonEndring(
+class PersonEndring(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "SERIAL")
     val id: Long,
-    @Column(name = "SEKVENSNUMMER", nullable = false)
-    var sekvensnummer: Long = 0,
+    @Generated(event = [EventType.INSERT])
+    @Column(
+        nullable = false,
+        insertable = false,
+        updatable = false,
+        columnDefinition = SEKVENSNUMMER_DEFINITION
+    )
+    override val sekvensnummer: Long = 0,
     @Column(name = "TPNR", nullable = false)
     val tpnr: String,
     @Column(name = "FNR", nullable = false)
@@ -39,5 +50,17 @@ data class PersonEndring(
     //brukt for lagre personHendelse lenger ned i kafkalisner
     @Transient
     val hendelseId: String
+): SequentialDO<PersonResponse> {
 
-)
+    override fun toDTO() = PersonResponse(
+        sekvensnummer,
+        tpnr,
+        fnr,
+        fnrGammelt,
+        sivilstand,
+        sivilstandDato,
+        doedsdato,
+        adresse,
+        meldingskode
+    )
+}

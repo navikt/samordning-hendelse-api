@@ -1,4 +1,4 @@
-package no.nav.samordning.hendelser.vedtak.hendelse
+package no.nav.samordning.hendelser.vedtak.domain
 
 enum class YtelseType(val type: String) {
     OMS("Omstillingsstønad"),

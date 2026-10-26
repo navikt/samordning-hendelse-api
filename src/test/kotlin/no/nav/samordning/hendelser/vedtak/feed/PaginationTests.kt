@@ -28,7 +28,7 @@ internal class PaginationTests {
     @Test
     fun iterate_feed_with_next_page_url() {
         val nextUrl = JSONObject(
-            mockMvc.get("/hendelser/vedtak?tpnr=4000&antall=2") {
+            mockMvc.get("/hendelser/vedtak?tpnr=4000&sekvensnummer=1&antall=2") {
                 headers {
                     setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING,
                         PERMITTED_ORG_NO
@@ -38,6 +38,26 @@ internal class PaginationTests {
         ).getString("nextUrl")
 
         assertEquals("$nextBaseUrl/hendelser/vedtak?tpnr=4000&sekvensnummer=1&antall=2&side=1", nextUrl)
+
+        mockMvc.get(nextUrl)
+            .andExpect {
+                MockMvcResultMatchers.jsonPath("$.nextUrl").value(IsNull.nullValue())
+            }
+    }
+
+    @Test
+    fun iterate_feed_with_next_page_url_without_sekvensnummer() {
+        val nextUrl = JSONObject(
+            mockMvc.get("/hendelser/vedtak?tpnr=4000&antall=2") {
+                headers {
+                    setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING,
+                        PERMITTED_ORG_NO
+                    ).serialize())
+                }
+            }.andReturn().response.contentAsString
+        ).getString("nextUrl")
+
+        assertEquals("$nextBaseUrl/hendelser/vedtak?tpnr=4000&antall=2&side=1", nextUrl)
 
         mockMvc.get(nextUrl)
             .andExpect {

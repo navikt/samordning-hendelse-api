@@ -1,6 +1,5 @@
 package no.nav.samordning.hendelser.person
 
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.samordning.hendelser.config.IntegrationTest
@@ -155,12 +154,12 @@ class PersonEndringListenerTest {
     }
 
     @Test
-    fun `skal sette sekvensnummer basert på siste sekvensnummer for tpnr`() {
+    fun `skal sette sekvensnummer basert paa siste sekvensnummer for tpnr`() {
         val tpnr = "123"
         val fnr = "12345678901"
 
         // Lagre to tidligere hendelser
-        repeat(2) { i ->
+        repeat(2) { _ ->
             val hendelse = PersonEndringKafkaHendelse(
                 hendelseId = UUID.randomUUID().toString(),
                 tpNr = listOf(tpnr),
@@ -187,13 +186,13 @@ class PersonEndringListenerTest {
 
         listener.listener(hendelseJson, consumerRecord, acknowledgment)
 
-        val saved = personEndringRepository.getFirstByTpnrOrderBySekvensnummerDesc(tpnr)
+        val saved = personEndringRepository.findAll().last { it.tpnr == tpnr }
         assertNotNull(saved)
         assertEquals(3L, saved.sekvensnummer)
     }
 
     @Test
-    fun `skal ignorere duplikat hendelse basert på hendelseId og meldingskode`() {
+    fun `skal ignorere duplikat hendelse basert paa hendelseId og meldingskode`() {
         val hendelseId = UUID.randomUUID().toString()
         val fnr = "12345678901"
         val tpnr = "123"
@@ -262,11 +261,9 @@ class PersonEndringListenerTest {
         val hendelseJson = objectMapper.writeValueAsString(hendelse)
         val consumerRecord = mockConsumerRecord(hendelseJson)
 
-        // Mock repository for å kaste exception
+        // Mock repository for aa kaste exception
         val failingRepository = mockk<PersonEndringRepository>()
         val failingListener = PersonEndringListener(failingRepository, personHendelseRepository, objectMapper)
-
-        every { failingRepository.getFirstByTpnrOrderBySekvensnummerDesc(any()) } throws RuntimeException("Database error")
 
         assertThrows<RuntimeException> {
             failingListener.listener(hendelseJson, consumerRecord, acknowledgment)
@@ -293,7 +290,7 @@ class PersonEndringListenerTest {
         val fnr = "12345678901"
         val tpnr = "123"
 
-        Meldingskode.values().forEach { meldingskode ->
+        Meldingskode.entries.forEach { meldingskode ->
             val hendelseId = UUID.randomUUID().toString()
             val hendelse = PersonEndringKafkaHendelse(
                 hendelseId = hendelseId,
@@ -314,7 +311,7 @@ class PersonEndringListenerTest {
         val saved = personEndringRepository.findAll()
         assertEquals(4, saved.size)
 
-        Meldingskode.values().forEach { meldingskode ->
+        Meldingskode.entries.forEach { meldingskode ->
             assertTrue(saved.any { it.meldingskode == meldingskode })
         }
     }

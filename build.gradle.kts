@@ -76,6 +76,7 @@ tasks{
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
             freeCompilerArgs.add("-Xjsr305=strict")
+            freeCompilerArgs.add("-Xannotation-default-target=param-property")
         }
     }
 

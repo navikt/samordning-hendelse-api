@@ -80,7 +80,7 @@ spec:
     - name: OTEL_RESOURCE_ATTRIBUTES
       value: "deployment.environment.name=p"
     - name: NEXT_BASE_URL
-      value: https://pensjon-gw.nav.no/samordning
+      value: https://samordning-hendelse-api.nav.no
   kafka:
     pool: nav-prod
   observability:

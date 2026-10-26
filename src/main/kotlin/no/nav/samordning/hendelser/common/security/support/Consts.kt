@@ -4,3 +4,5 @@ const val SCOPE_PREFIX = "SCOPE_"
 const val SCOPE_SAMORDNING = "nav:pensjon/v1/samordning"
 const val ROLE_PREFIX = "ROLE_"
 const val ROLE_SAMHANDLER = "SAMHANDLER"
+
+const val SEKVENSNUMMER_DEFINITION = "BIGINT NOT NULL DEFAULT 0"

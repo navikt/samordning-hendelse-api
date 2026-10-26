@@ -57,7 +57,7 @@ spec:
     - name: OTEL_RESOURCE_ATTRIBUTES
       value: "deployment.environment.name=q2"
     - name: NEXT_BASE_URL
-      value: https://pensjon-gw.ekstern.dev.nav.no/samordning
+      value: https://samordning-hendelse-api-q2.ekstern.dev.nav.no
   kafka:
     pool: nav-dev
   prometheus:
