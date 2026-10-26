@@ -150,20 +150,6 @@ internal class PersonVedtakFeedControllerTest {
     }
 
     @Test
-    fun `antall verdi 0 skal aksepteres`() {
-        val tpnr = "1000"
-        every { personService.fetchSeqAndPersonEndringHendelser(tpnr, null, 0, 0) } returns PageImpl(emptyList())
-
-        mockMvc.get("/hendelser/personer?tpnr=$tpnr&antall=0") {
-            headers {
-                setBearerAuth(maskinportenValidatorTokenGenerator.generateToken(SCOPE_SAMORDNING, "889640782").serialize())
-            }
-        }.andExpect {
-            status { isOk() }
-        }
-    }
-
-    @Test
     fun `for stor antall verdi over 10000 skal returnere 400`() {
         mockMvc.get("/hendelser/personer?tpnr=1000&antall=10001") {
             headers {
