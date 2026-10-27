@@ -52,7 +52,7 @@ jobs:
 
       # Deploy app
       - name: Deploy to dev-gcp
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@v3
         env:
           CLUSTER: dev-gcp
           RESOURCE: nais/dev.yaml
@@ -61,14 +61,14 @@ jobs:
           TIMEOUT: 20m
 
       - name: Deploy person-endring Topic Q2
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@v3
         env:
           CLUSTER: dev-gcp
           RESOURCE: nais/topic/person-endring-dev.yml
           TEAM: pensjonsamhandling
 
       - name: Deploy manglende-refusjonskrav Topic Q2
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@v3
         env:
           CLUSTER: dev-gcp
           RESOURCE: nais/topic/manglende-refusjonskrav-dev.yml
