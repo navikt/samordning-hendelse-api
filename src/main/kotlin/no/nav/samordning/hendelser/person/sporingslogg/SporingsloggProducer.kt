@@ -32,15 +32,11 @@ class SporingsloggProducer(private val kafkaTemplate: KafkaTemplate<String, Stri
             val mottaker = tpconsumer.hentOrdning(tpnr)?.orgNr // <-- hente Org.nr fra TP-API ut ifra TPNR
             if (mottaker.isNullOrBlank()) return@forEach
             logger.info("*** Sender person endring over kafka til sporingslogg ***")
-            try {
-                val loggMelding = createLoggMelding(hendelseData, personEndring, mottaker)
-                logger.info("Tpnr: $tpnr, Mottaker = $mottaker")
-                logger.debug("behandlingsGrunnlag: ${loggMelding.behandlingsGrunnlag}")
-                val payloadData = loggMelding.toEncodeData()
-                kafkaTemplate.send(topic, payloadData).await()
-            } catch (ex: Exception) {
-                logger.error("Feil ved sending personendring-Hendelse", ex)
-            }
+            val loggMelding = createLoggMelding(hendelseData, personEndring, mottaker)
+            logger.info("Tpnr: $tpnr, Mottaker = $mottaker")
+            logger.debug("behandlingsGrunnlag: ${loggMelding.behandlingsGrunnlag}")
+            val payloadData = loggMelding.toEncodeData()
+            kafkaTemplate.send(topic, payloadData).await()
         }
 
         logger.info("*** Person endring sendt til sporingslogg END ***")
