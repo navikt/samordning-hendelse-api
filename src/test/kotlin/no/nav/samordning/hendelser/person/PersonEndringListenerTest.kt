@@ -2,6 +2,7 @@ package no.nav.samordning.hendelser.person
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.samordning.hendelser.common.consumer.OrdningDto
@@ -15,10 +16,7 @@ import no.nav.samordning.hendelser.person.repository.PersonEndringRepository
 import no.nav.samordning.hendelser.person.repository.PersonHendelseRepository
 import no.nav.samordning.hendelser.person.sporingslogg.SporingsloggProducer
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.Acknowledgment
@@ -29,6 +27,7 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 @IntegrationTest
@@ -302,6 +301,30 @@ class PersonEndringListenerTest {
         }
         verify(exactly = 0) { kafkaTemplate.send(any<String>(), any<String>()) }
         verify(exactly = 0) { acknowledgment.acknowledge() }
+    }
+
+    @Test
+    fun `skal ikke acke naar Kafka-sending til sporingslogg feiler`() {
+        val sendFailure = IllegalStateException("Kafka send failed")
+        every { kafkaTemplate.send(any<String>(), any<String>()) } returns
+            CompletableFuture.failedFuture<SendResult<String, String>>(sendFailure)
+
+        val hendelse = PersonEndringKafkaHendelse(
+            hendelseId = UUID.randomUUID().toString(),
+            tpNr = listOf("1234"),
+            fnr = "12345678901",
+            meldingsKode = Meldingskode.SIVILSTAND
+        )
+        val hendelseJson = objectMapper.writeValueAsString(hendelse)
+        val failure = runCatching {
+            listener.listener(hendelseJson, mockConsumerRecord(hendelseJson), acknowledgment)
+        }.exceptionOrNull()
+
+        assertAll(
+            { assertSame(sendFailure, failure) },
+            { verify(exactly = 1) { kafkaTemplate.send(any<String>(), any<String>()) } },
+            { verify(exactly = 0) { acknowledgment.acknowledge() } }
+        )
     }
 
     @Test
