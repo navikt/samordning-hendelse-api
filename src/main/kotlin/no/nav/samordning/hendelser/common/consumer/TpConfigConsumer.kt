@@ -1,12 +1,16 @@
 package no.nav.samordning.hendelser.common.consumer
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import io.netty.channel.ChannelOption
 import io.netty.handler.timeout.ReadTimeoutHandler
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.awaitBody
+import org.springframework.web.server.ResponseStatusException
 import reactor.netty.http.client.HttpClient
 
 @Service
@@ -21,6 +25,18 @@ class TpConfigConsumer(@Value("\${tpconfig.url}") private val tpConfigUri: Strin
                 .statusCode.is2xxSuccessful
                 .also { log.info("validateOrganisation status [$orgno, $tpnr]: $it") }
 
+    suspend fun hentOrdning(tpnr: String): OrdningDto? =
+            webClient.get()
+            .uri("$tpConfigUri/api/ordning/{tpnr}", tpnr)
+            .retrieve()
+            .onStatus({ it.isError }) { response ->
+                // Handle errors gracefully (4xx or 5xx)
+                when (response.statusCode()) {
+                    HttpStatus.NOT_FOUND -> throw ResponseStatusException(HttpStatus.NOT_FOUND, "Ordning not found")
+                    else -> throw ResponseStatusException(HttpStatus.BAD_GATEWAY, "Remote server error")
+                }
+            }
+            .awaitBody<OrdningDto>() // Under the hood, this uses bodyToMono and suspends natively
 
     private fun httpClient(): HttpClient =
         HttpClient.create().proxyWithSystemProperties().option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
@@ -31,3 +47,12 @@ class TpConfigConsumer(@Value("\${tpconfig.url}") private val tpConfigUri: Strin
         private const val CONNECT_TIMEOUT_MILLIS = 3000
     }
 }
+
+data class OrdningDto(
+    val navn: String,
+    val tpNr: String,
+    val orgNr: String,
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    val tssId: String? = null,
+    val alias: List<String> = emptyList()
+)

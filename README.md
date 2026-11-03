@@ -17,6 +17,19 @@ flowchart LR
     HA -->|REST + paginering| TP_EXT[TP-ordningene\neksternt]
 ```
 
+## Sporingslogg for personendringer
+
+Når samordning-hendelse-api behandler en personendring fra Kafka,
+sender tjenesten også hendelsen til Sporingslogg. Meldingen inneholder
+personopplysningene fra hendelsen og organisasjonsnummeret til mottakeren,
+som hentes fra tp-config for den aktuelle TP-ordningen.
+
+Sporingslogg oppbevarer opplysningene i 11 år. Oppbevaring og sletting
+håndteres av Sporingslogg, ikke av samordning-hendelse-api.
+
+Loggingen skjer når personhendelsen behandles, ikke når TP-ordningen
+henter den fra REST-feeden.
+
 ## REST API
 
 Alle endepunkter krever Maskinporten-token med scope `nav:pensjon/v1/samordning` og validert TP-orgnummer.
