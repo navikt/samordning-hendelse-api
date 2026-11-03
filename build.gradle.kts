@@ -15,9 +15,9 @@ val jakartaInjectApiVersion = "2.0.1"
 val mockkVersion = "1.14.7"
 
 plugins {
-    kotlin("jvm") version "2.4.10"
-    kotlin("plugin.spring") version "2.4.10"
-    kotlin("plugin.jpa") version "2.4.10"
+    kotlin("jvm") version "2.4.21"
+    kotlin("plugin.spring") version "2.4.21"
+    kotlin("plugin.jpa") version "2.4.21"
     id("org.springframework.boot") version "4.1.2"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -39,7 +39,7 @@ dependencies {
     implementation("tools.jackson.datatype:jackson-datatype-jsr310:3.0.0-rc2")
     implementation("io.micrometer:micrometer-registry-prometheus:1.17.2")
     implementation("no.nav:vault-jdbc:1.4.1")
-    implementation("no.nav.pensjonsamhandling:maskinporten-validation-spring:3.1.0")
+    implementation("no.nav.pensjonsamhandling:maskinporten-validation-spring:3.1.5")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
     implementation("org.postgresql:postgresql:42.7.14")
     implementation("org.hibernate.validator:hibernate-validator:9.1.5.Final")
@@ -66,7 +66,7 @@ dependencies {
     testImplementation("jakarta.el:jakarta.el-api:6.0.1")
     testImplementation("com.ninja-squad:springmockk:5.0.1")
     testImplementation("org.mock-server:mockserver-spring-test-listener-no-dependencies:9.2.0")
-    testImplementation("no.nav.pensjonsamhandling:maskinporten-validation-spring-test:3.1.0")
+    testImplementation("no.nav.pensjonsamhandling:maskinporten-validation-spring-test:3.1.5")
 
 }
 
