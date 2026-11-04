@@ -40,7 +40,6 @@ class PersonFeedController(
     ): Feed<PersonResponse> {
         val personEndringHendelser = service.fetchSeqAndPersonEndringHendelser(tpnr, sekvensnummer, side, antall)
 
-        log.debug("tpnr = $tpnr, personHendelser.size = ${personEndringHendelser.size}")
         return feedBuilder.forPath(PERSON_FEED_PATH)
             .withTpnr(tpnr)
             .withSekvensnummer(sekvensnummer)
