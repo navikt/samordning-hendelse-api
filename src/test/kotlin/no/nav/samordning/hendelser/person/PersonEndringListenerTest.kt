@@ -6,7 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.samordning.hendelser.common.consumer.OrdningDto
-import no.nav.samordning.hendelser.common.consumer.TpConfigConsumer
+import no.nav.samordning.hendelser.common.consumer.TpConsumer
 import no.nav.samordning.hendelser.config.IntegrationTest
 import no.nav.samordning.hendelser.person.domain.Adresse
 import no.nav.samordning.hendelser.person.domain.Meldingskode
@@ -37,7 +37,7 @@ class PersonEndringListenerTest {
     private lateinit var kafkaTemplate: KafkaTemplate<String, String>
 
     @MockkBean(relaxed = true)
-    private lateinit var tpconsumer: TpConfigConsumer
+    private lateinit var tpconsumer: TpConsumer
 
     @Autowired
     private lateinit var personEndringRepository: PersonEndringRepository

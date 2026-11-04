@@ -1,4 +1,4 @@
-tpconfig.url: https://tp.prod-fss-pub.nais.io/api/tpconfig
+tp.url: https://tp.prod-fss-pub.nais.io
 
 
 VEDTAK_HENDELSE_KAFKA_TOPIC: pensjonsamhandling.sam-vedtak-hendelser-p

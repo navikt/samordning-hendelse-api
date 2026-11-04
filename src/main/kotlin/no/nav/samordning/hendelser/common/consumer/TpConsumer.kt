@@ -14,13 +14,13 @@ import org.springframework.web.server.ResponseStatusException
 import reactor.netty.http.client.HttpClient
 
 @Service
-class TpConfigConsumer(@Value("\${tpconfig.url}") private val tpConfigUri: String) {
+class TpConsumer(@Value("\${tp.url}") private val tpConfigUri: String) {
     private val log = getLogger(javaClass)
 
     private val webClient = WebClient.builder().clientConnector(ReactorClientHttpConnector(httpClient())).build()
 
     fun validateOrganisation(orgno: String, tpnr: String): Boolean? =
-            webClient.get().uri("$tpConfigUri/organisation/validate/" + tpnr + "_" + orgno)
+            webClient.get().uri("$tpConfigUri/api/tpconfig/organisation/validate/" + tpnr + "_" + orgno)
                 .retrieve().toBodilessEntity().block()!!
                 .statusCode.is2xxSuccessful
                 .also { log.info("validateOrganisation status [$orgno, $tpnr]: $it") }
