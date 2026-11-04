@@ -68,6 +68,7 @@ dependencies {
     testImplementation("org.mock-server:mockserver-spring-test-listener-no-dependencies:9.2.0")
     testImplementation("no.nav.pensjonsamhandling:maskinporten-validation-spring-test:3.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
 
 }
 
