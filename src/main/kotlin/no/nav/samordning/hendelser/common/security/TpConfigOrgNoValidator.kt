@@ -2,13 +2,13 @@ package no.nav.samordning.hendelser.common.security
 
 import jakarta.servlet.http.HttpServletRequest
 import no.nav.pensjonsamhandling.maskinporten.validation.orgno.RequestAwareOrganisationValidator
-import no.nav.samordning.hendelser.common.consumer.TpConfigConsumer
+import no.nav.samordning.hendelser.common.consumer.TpConsumer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
 class TpConfigOrgNoValidator(
-    private val tpConfigConsumer: TpConfigConsumer,
+    private val tpConfigConsumer: TpConsumer,
     @Value("\${maskinporten.validation.required:#{null}}") private val requiredOrgNo: String?
 ) : RequestAwareOrganisationValidator {
 

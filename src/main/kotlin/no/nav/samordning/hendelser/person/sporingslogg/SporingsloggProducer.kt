@@ -2,7 +2,7 @@ package no.nav.samordning.hendelser.person.sporingslogg
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import kotlinx.coroutines.future.await
-import no.nav.samordning.hendelser.common.consumer.TpConfigConsumer
+import no.nav.samordning.hendelser.common.consumer.TpConsumer
 import no.nav.samordning.hendelser.person.repository.PersonEndring
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
@@ -17,7 +17,7 @@ import java.util.*
 @Service
 class SporingsloggProducer(private val kafkaTemplate: KafkaTemplate<String, String>,
     @param:Value($$"${SPRONGSLOGG_KAFKA_TOPIC}") private val topic: String,
-    private val tpconsumer: TpConfigConsumer) {
+    private val tpconsumer: TpConsumer) {
 
     private val logger: Logger = getLogger(javaClass)
     private val mapper = JsonMapper.builder()
