@@ -33,7 +33,7 @@ class SporingsloggProducer(private val kafkaTemplate: KafkaTemplate<String, Stri
             if (mottaker.isNullOrBlank()) return@forEach
             logger.info("*** Sender person endring over kafka til sporingslogg ***")
             val loggMelding = createLoggMelding(hendelseData, personEndring, mottaker)
-            logger.info("Tpnr: $tpnr, Mottaker = $mottaker")
+            logger.info("Tpnr: $tpnr, Mottaker: $mottaker, Topic: $topic")
             logger.debug("behandlingsGrunnlag: ${loggMelding.behandlingsGrunnlag}")
             val payloadData = loggMelding.toEncodeData()
             kafkaTemplate.send(topic, payloadData).await()
@@ -52,7 +52,7 @@ class SporingsloggProducer(private val kafkaTemplate: KafkaTemplate<String, Stri
             behandlingsGrunnlag = "GDPR Art. 6(1)e. Samordningsloven §27 første og andre ledd. GDPR Art. 9(2)b",
             uthentingsTidspunkt = LocalDateTime.now(),
             leverteData = hendelseData,
-            dataForespoersel = "Oppdatert persondata i nav",
+            dataForespoersel = "Oppdatert persondata i fra nav-PDL",
             leverandoer = "" //ikke i bruk
         ))
     }
