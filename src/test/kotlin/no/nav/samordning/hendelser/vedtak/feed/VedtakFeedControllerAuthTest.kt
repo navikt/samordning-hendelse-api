@@ -3,7 +3,7 @@ package no.nav.samordning.hendelser.vedtak.feed
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import no.nav.pensjonsamhandling.maskinporten.validation.test.MaskinportenValidatorTokenGenerator
-import no.nav.samordning.hendelser.common.consumer.TpConfigConsumer
+import no.nav.samordning.hendelser.common.consumer.TpConsumer
 import no.nav.samordning.hendelser.common.security.support.SCOPE_SAMORDNING
 import no.nav.samordning.hendelser.config.IntegrationTest
 import no.nav.samordning.hendelser.vedtak.controller.VedtakFeedController.Companion.VEDTAK_HENDELSER_PATH
@@ -26,7 +26,7 @@ internal class VedtakFeedControllerAuthTest {
     private lateinit var mockMvc: MockMvc
 
     @MockkBean
-    private lateinit var tpConfigConsumer: TpConfigConsumer
+    private lateinit var tpConfigConsumer: TpConsumer
 
     @Test
     fun `Valid request is ok`() {

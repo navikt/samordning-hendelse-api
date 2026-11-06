@@ -9,11 +9,14 @@ spring:
   flyway:
     enabled: false
   kafka:
+    bootstrap-servers: localhost:9092
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      bootstrap-servers: localhost:9092
       group-id: hendelse-api
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
     properties:
       security.protocol: PLAINTEXT
       ssl:
@@ -29,7 +32,7 @@ management:
   endpoint.prometheus.enabled: true
   endpoints.web.exposure.include: prometheus, health
 
-tpconfig.url: http://localhost
+tp.url: http://localhost
 
 NEXT_BASE_URL: http://localhost
 DESIRED_YTELSESTYPER: AP,AAP,PT,GP,IP,ET
@@ -51,3 +54,4 @@ VEDTAK_HENDELSE_KAFKA_TOPIC: test-topic
 YTELSE_HENDELSE_KAFKA_TOPIC: test-ytelse-topic
 PERSON_ENDRING_KAFKA_TOPIC: test-person-endring-topic
 MANGLENDE_REFUSJONSKRAV_KAFKA_TOPIC: test-manglende-refusjonskrav-topic
+SPRONGSLOGG_KAFKA_TOPIC: dummy-sporingslogg-kafka-topic
