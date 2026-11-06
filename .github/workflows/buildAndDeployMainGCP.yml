@@ -63,7 +63,7 @@ jobs:
           tag: ${{ github.event.repository.name }}-main
 
       - name: Deploy to prod-gcp
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@v3
         env:
           CLUSTER: prod-gcp
           RESOURCE: nais/prod.yml
@@ -71,14 +71,14 @@ jobs:
           TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
 
       - name: Deploy person-endring Topic
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@v3
         env:
           CLUSTER: prod-gcp
           RESOURCE: nais/topic/person-endring-prod.yml
           TEAM: pensjonsamhandling
 
       - name: Deploy manglende-refusjonskrav Topic
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@v3
         env:
           CLUSTER: prod-gcp
           RESOURCE: nais/topic/manglende-refusjonskrav-prod.yml
