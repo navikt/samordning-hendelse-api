@@ -7,6 +7,7 @@ import no.nav.samordning.hendelser.person.repository.PersonEndring
 import no.nav.samordning.hendelser.person.repository.PersonEndringRepository
 import no.nav.samordning.hendelser.person.repository.PersonHendelse
 import no.nav.samordning.hendelser.person.repository.PersonHendelseRepository
+import no.nav.samordning.hendelser.person.sporingslogg.SporingsloggProducer
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
@@ -24,6 +25,7 @@ import java.time.LocalDate
 class PersonEndringListener(
     private val personEndringRepository: PersonEndringRepository,
     private val personHendelseRepository: PersonHendelseRepository,
+    private val sporingsloggProducer: SporingsloggProducer,
     private val mapper: ObjectMapper,
 )  {
 
@@ -34,7 +36,6 @@ class PersonEndringListener(
         logger.info("*** Innkommende PersonEndringHendelse. Offset: ${cr.offset()}, Partition: ${cr.partition()}, Key: ${cr.key()}")
 
         val personEndringHendelser: List<PersonEndring> = try {
-            logger.debug("hendelse json: $hendelse")
             MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["hendelseId"].asString())
             val kafkaHendelse = mapper.readValue<PersonEndringKafkaHendelse>(hendelse)
 
@@ -67,10 +68,11 @@ class PersonEndringListener(
             val personEndring = personEndringRepository.saveAllAndFlush(personEndringHendelser)
 
             val entity = personEndring.first()
-            logger.info("Lagrer med meldingskode: ${entity}, tpnr: ${entity.tpnr}.")
-
             personHendelseRepository.saveAndFlush(PersonHendelse(entity.hendelseId, entity.meldingskode))
-            logger.info("Lagrer med hendelseId: ${entity.hendelseId}, meldingskode: ${entity.meldingskode}.")
+            logger.info("Lagret med hendelseId: ${entity.hendelseId}, meldingskode: ${entity.meldingskode},  tpnr: ${entity.tpnr}.")
+
+            logger.debug("Sender hendelse til SporingsloggProducer")
+            sporingsloggProducer.sendHendelse(personEndringHendelser, hendelse)
 
             acknowledgment.acknowledge()
             logger.info("*** Acket melding ferdig")
@@ -82,7 +84,9 @@ class PersonEndringListener(
         }
 
     }
+
 }
+
 
 data class PersonEndringKafkaHendelse(
     val hendelseId: String,

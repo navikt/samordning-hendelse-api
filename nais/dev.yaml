@@ -40,7 +40,7 @@ spec:
         - application: pensjon-samordning-dev-gw
     outbound:
       external:
-        - host: tp-q2.dev-fss-pub.nais.io
+        - host: tp-api-q2.dev-fss-pub.nais.io
   replicas:
     min: 2
     max: 2
