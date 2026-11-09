@@ -37,7 +37,6 @@ class PersonEndringListener(
         logger.info("*** Innkommende PersonEndringHendelse. Offset: ${cr.offset()}, Partition: ${cr.partition()}, Key: ${cr.key()}")
 
         val personEndringHendelser: List<PersonEndring> = try {
-            logger.debug("hendelse json: $hendelse")
             MDC.put("X-Transaction-Id", mapper.readTree(hendelse)["hendelseId"].asString())
             val kafkaHendelse = mapper.readValue<PersonEndringKafkaHendelse>(hendelse)
 
@@ -70,10 +69,8 @@ class PersonEndringListener(
             val personEndring = personEndringRepository.saveAllAndFlush(personEndringHendelser)
 
             val entity = personEndring.first()
-            logger.info("Lagrer med meldingskode: ${entity}, tpnr: ${entity.tpnr}.")
-
             personHendelseRepository.saveAndFlush(PersonHendelse(entity.hendelseId, entity.meldingskode))
-            logger.info("Lagret med hendelseId: ${entity.hendelseId}, meldingskode: ${entity.meldingskode}.")
+            logger.info("Lagret med hendelseId: ${entity.hendelseId}, meldingskode: ${entity.meldingskode},  tpnr: ${entity.tpnr}.")
 
             runBlocking {
                 logger.debug("Sender hendelse til SporingsloggProducer")
