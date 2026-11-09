@@ -1,5 +1,4 @@
-tp.url: https://tp.prod-fss-pub.nais.io
-
+tp.url: https://tp-api.prod-fss-pub.nais.io
 
 VEDTAK_HENDELSE_KAFKA_TOPIC: pensjonsamhandling.sam-vedtak-hendelser-p
 YTELSE_HENDELSE_KAFKA_TOPIC: pensjonsamhandling.tp-hendelser
