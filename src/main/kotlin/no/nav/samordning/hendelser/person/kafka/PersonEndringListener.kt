@@ -1,7 +1,6 @@
 package no.nav.samordning.hendelser.person.kafka
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import kotlinx.coroutines.runBlocking
 import no.nav.samordning.hendelser.person.domain.Adresse
 import no.nav.samordning.hendelser.person.domain.Meldingskode
 import no.nav.samordning.hendelser.person.repository.PersonEndring
@@ -72,10 +71,8 @@ class PersonEndringListener(
             personHendelseRepository.saveAndFlush(PersonHendelse(entity.hendelseId, entity.meldingskode))
             logger.info("Lagret med hendelseId: ${entity.hendelseId}, meldingskode: ${entity.meldingskode},  tpnr: ${entity.tpnr}.")
 
-            runBlocking {
-                logger.debug("Sender hendelse til SporingsloggProducer")
-                sporingsloggProducer.sendHendelse(personEndringHendelser, hendelse)
-            }
+            logger.debug("Sender hendelse til SporingsloggProducer")
+            sporingsloggProducer.sendHendelse(personEndringHendelser, hendelse)
 
             acknowledgment.acknowledge()
             logger.info("*** Acket melding ferdig")

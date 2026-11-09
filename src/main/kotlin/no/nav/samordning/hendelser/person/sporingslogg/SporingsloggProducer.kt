@@ -1,7 +1,9 @@
 package no.nav.samordning.hendelser.person.sporingslogg
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.future.await
+import kotlinx.coroutines.runBlocking
 import no.nav.samordning.hendelser.common.consumer.TpConsumer
 import no.nav.samordning.hendelser.person.repository.PersonEndring
 import org.slf4j.Logger
@@ -24,19 +26,23 @@ class SporingsloggProducer(private val kafkaTemplate: KafkaTemplate<String, Stri
         .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
         .build()
 
-    suspend fun sendHendelse(personEndringHendelser: List<PersonEndring>, hendelseData: String) {
+    fun sendHendelse(personEndringHendelser: List<PersonEndring>, hendelseData: String) {
         val tpnrSet = personEndringHendelser.map { hendelse -> hendelse.tpnr }.toSet()
         val personEndring = personEndringHendelser.firstOrNull() ?: return
 
-        tpnrSet.forEach { tpnr ->
-            val mottaker = tpconsumer.hentOrdning(tpnr)?.orgNr // <-- hente Org.nr fra TP-API ut ifra TPNR
-            if (mottaker.isNullOrBlank()) return@forEach
-            logger.info("*** Sender person endring over kafka til sporingslogg ***")
-            val loggMelding = createLoggMelding(hendelseData, personEndring, mottaker)
-            logger.info("Tpnr: $tpnr, Mottaker: $mottaker, Topic: $topic")
-            logger.debug("behandlingsGrunnlag: ${loggMelding.behandlingsGrunnlag}")
-            val payloadData = loggMelding.toEncodeData()
-            kafkaTemplate.send(topic, payloadData).await()
+        runBlocking {
+            tpnrSet.asFlow().collect { tpnr ->
+                val mottaker = tpconsumer.hentOrdning(tpnr)?.orgNr // <-- hente Org.nr fra TP-API ut ifra TPNR
+                mottaker?.let {
+                    logger.info("*** Sender person endring over kafka til sporingslogg ***")
+                    val loggMelding = createLoggMelding(hendelseData, personEndring, it)
+                    logger.info("Tpnr: $tpnr, Mottaker: $mottaker, Topic: $topic")
+                    logger.debug("behandlingsGrunnlag: ${loggMelding.behandlingsGrunnlag}")
+                    val payloadData = loggMelding.toEncodeData()
+                    kafkaTemplate.send(topic, payloadData).await()
+
+                }
+            }
         }
 
         logger.info("*** Person endring sendt til sporingslogg END ***")
