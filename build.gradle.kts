@@ -15,9 +15,9 @@ val jakartaInjectApiVersion = "2.0.1"
 val mockkVersion = "1.14.7"
 
 plugins {
-    kotlin("jvm") version "2.4.10"
-    kotlin("plugin.spring") version "2.4.10"
-    kotlin("plugin.jpa") version "2.4.10"
+    kotlin("jvm") version "2.4.21"
+    kotlin("plugin.spring") version "2.4.21"
+    kotlin("plugin.jpa") version "2.4.21"
     id("org.springframework.boot") version "4.1.2"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -39,10 +39,10 @@ dependencies {
     implementation("tools.jackson.datatype:jackson-datatype-jsr310:3.0.0-rc2")
     implementation("io.micrometer:micrometer-registry-prometheus:1.17.2")
     implementation("no.nav:vault-jdbc:1.4.1")
-    implementation("no.nav.pensjonsamhandling:maskinporten-validation-spring:3.1.0")
+    implementation("no.nav.pensjonsamhandling:maskinporten-validation-spring:3.1.5")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
     implementation("org.postgresql:postgresql:42.7.14")
-    implementation("org.hibernate.validator:hibernate-validator:9.1.5.Final")
+    implementation("org.hibernate.validator:hibernate-validator:9.1.6.Final")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -54,8 +54,8 @@ dependencies {
     implementation("org.springframework:spring-core")
     implementation("jakarta.annotation:jakarta.annotation-api:$jakartaAnnotationApiVersion")
     implementation("jakarta.inject:jakarta.inject-api:$jakartaInjectApiVersion")
-    implementation("org.flywaydb:flyway-core:13.12.0")
-    implementation("org.flywaydb:flyway-database-postgresql:13.12.0")
+    implementation("org.flywaydb:flyway-core:13.12.1")
+    implementation("org.flywaydb:flyway-database-postgresql:13.12.1")
 
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
@@ -66,9 +66,9 @@ dependencies {
     testImplementation("jakarta.el:jakarta.el-api:6.0.1")
     testImplementation("com.ninja-squad:springmockk:5.0.1")
     testImplementation("org.mock-server:mockserver-spring-test-listener-no-dependencies:9.2.0")
-    testImplementation("no.nav.pensjonsamhandling:maskinporten-validation-spring-test:3.1.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
+    testImplementation("no.nav.pensjonsamhandling:maskinporten-validation-spring-test:3.1.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.11.0")
 
 }
 
