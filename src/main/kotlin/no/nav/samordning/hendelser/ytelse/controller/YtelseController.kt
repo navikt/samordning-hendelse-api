@@ -41,7 +41,6 @@ class YtelseController(
         @RequestParam(value = "sekvensnummer", required = false) @Min(1) sekvensnummer: Long?
     ): Feed<YtelseHendelseResponse> {
         val ytelseHendelser = service.fetchSeqAndYtelseHendelser(tpnr, sekvensnummer, side, antall)
-        log.debug("tpnr = $tpnr, ytelseHendelser.size = ${ytelseHendelser.numberOfElements}")
         metrics.incrementLestCounter(tpnr, ytelseHendelser.numberOfElements.toDouble(), "samordning_hendelser_tp_ytelser_lest")
         return feedBuilder.forPath(YTELSE_HENDELSER_URL)
             .withTpnr(tpnr)

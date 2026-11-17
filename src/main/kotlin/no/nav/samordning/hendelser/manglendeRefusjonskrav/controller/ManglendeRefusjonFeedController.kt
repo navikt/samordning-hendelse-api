@@ -39,7 +39,6 @@ class ManglendeRefusjonFeedController(
         @RequestParam(value = "sekvensnummer", required = false) @Min(1) sekvensnummer: Long?
     ): Feed<ManglendeRefusjonskravResponse> {
         val manglendeRefusjonskravHendelser = service.fetchSeqAndManglendeRefusjonskravHendelser(tpnr, sekvensnummer, side, antall)
-        log.debug("tpnr = $tpnr, manglendeRefusjonskravHendelser.size = ${manglendeRefusjonskravHendelser.size}")
         return feedBuilder.forPath(MANGLENDE_REFUSJONSKRAV_PATH)
             .withTpnr(tpnr)
             .withSekvensnummer(sekvensnummer)
