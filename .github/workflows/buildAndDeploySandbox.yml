@@ -44,7 +44,7 @@ jobs:
 
       # Build image
       - name: Nais docker-build
-        uses: nais/docker-build-push@v0
+        uses: nais/docker-build-push@v1
         id: docker-build-push
         with:
           team: pensjonsamhandling
